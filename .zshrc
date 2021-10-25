@@ -4,6 +4,10 @@ eval "$(starship init zsh)"
 # Language encoding
 export LANG=ja_JP.UTF-8
 
+# Golang
+export GOPATH=$(go env GOPATH)
+export PATH=$PATH:$GOPATH/bin
+
 # Turn off auto correct
 unsetopt correct
 
@@ -34,3 +38,6 @@ zstyle ':completion:*:default' menu select=1
 
 # Syntax highlight
 zinit light zdharma/fast-syntax-highlighting
+
+# alias
+alias terraform='docker container run --rm --name terraform --mount type=bind,source=$(pwd),target=/terraform -w /terraform --env-file .env hashicorp/terraform:1.0.9'
