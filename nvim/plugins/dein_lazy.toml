@@ -1,0 +1,36 @@
+[[plugins]]
+repo = 'Shougo/defx.nvim'
+depends = ['defx-icons', 'defx-git']
+hook_add = '''
+  map <silent> <Leader>f
+    \ :Defx -toggle -split=vertical -show-ignored-files
+    \ -winwidth=30 -direction=topleft -resume<CR>
+'''
+hook_source = '''
+  call defx#custom#option('_', {
+    \ 'columns': 'indent:git:icons:space:filename:type',
+    \ })
+'''
+
+[[plugins]]
+repo = 'kristijanhusak/defx-icons'
+
+[[plugins]]
+repo = 'kristijanhusak/defx-git'
+
+[plugins.ftplugin]
+defx= '''
+  source ~/.config/nvim/plugins/defx.rc.vim
+'''
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+
+[[plugins]]
+repo = 'Shougo/neosnippet.vim'
+depends = 'neosnippet-snippets'
+on_event = 'InsertCharPre'
+on_ft = 'snippet'
+hook_add = '''
+  source ~/.config/nvim/plugins/neosnippet.rc.vim
+'''
