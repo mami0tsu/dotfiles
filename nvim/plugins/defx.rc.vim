@@ -20,7 +20,7 @@ nnoremap <silent><buffer><expr> K
 nnoremap <silent><buffer><expr> N
   \ defx#do_action('new_file')
 nnoremap <silent><buffer><expr> d
- \ defx#do_action('remove')
+  \ defx#do_action('remove')
 nnoremap <silent><buffer><expr> r
   \ defx#do_action('rename')
 nnoremap <silent><buffer><expr> x
