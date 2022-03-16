@@ -39,5 +39,13 @@ zstyle ':completion:*:default' menu select=1
 # Syntax highlight
 zinit light zdharma/fast-syntax-highlighting
 
-# alias
+# Alias
 alias terraform='docker container run --rm --name terraform --mount type=bind,source=$(pwd),target=/terraform -w /terraform --env-file .env hashicorp/terraform:1.0.9'
+
+# Volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Deno
+export DENO_HOME="${HOME}/.deno"
+export PATH="${DENO_HOME}/bin:${PATH}"

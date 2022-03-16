@@ -121,3 +121,6 @@ hook_add = '''
 
 [[plugins]]
 repo = 'jiangmiao/auto-pairs'
+
+[[plugins]]
+repo = 'mattn/emmet-vim'
