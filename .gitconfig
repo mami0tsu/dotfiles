@@ -16,12 +16,12 @@
 [core]
 	editor = vim
 [alias]
-  a = add
-  b = branch
-  cm = commit -m
-  f = fetch
-  l = log --oneline
-  r = restore
-	ss = status -s
-  s = switch
-  sc = switch -c
+    a = add
+    b = branch
+    c = commit -m
+    f = fetch
+    l = log --oneline
+    r = restore
+    s = status -s
+    sw = switch
+    swc = switch -c
