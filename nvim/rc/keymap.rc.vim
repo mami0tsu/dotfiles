@@ -13,7 +13,7 @@ nnoremap gj :tabclose<CR>
 nnoremap gh gT
 nnoremap gl gt
 
-inoremap <silent> ^[ <Esc>
-vnoremap <silent> ^[ <Esc>
-tnoremap <silent> ^[ <C-\><C-n>
+inoremap <silent> <C-[> <Esc>
+vnoremap <silent> <C-[> <Esc>
+tnoremap <silent> <C-[> <C-\><C-n>
 " }}}
