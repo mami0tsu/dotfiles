@@ -1,0 +1,32 @@
+add_newline = true
+scan_timeout = 10
+
+[cmd_duration]
+show_milliseconds = true
+
+[character]
+error_symbol = "[>](bold red)"
+format = '$symbol'
+success_symbol = "[>](bole green)"
+
+[directory]
+format = '[-\[](bold white)[$path]($style)[\]](bold white)'
+truncation_length = 100 
+
+[git_status]
+ahead = "${count}↑"
+behind = "${count}↓"
+conflicted = "${count}="
+deleted = "${count}x"
+diverged = "${count}⇕"
+modified = "${count}!"
+renamed = "${count}»"
+staged = '[++\($count\)](green)'
+stashed = "${count}*"
+untracked = "${count}?"
+
+[username]
+format = '[\[](bold white)[$user]($style)[\]](bold white)'
+show_always = true
+style_user = "bold green"
+style_root = "bold red"

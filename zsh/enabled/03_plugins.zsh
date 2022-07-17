@@ -1,0 +1,1 @@
+/Users/mamiotsu/dotfiles/zsh/03_plugins.zsh
