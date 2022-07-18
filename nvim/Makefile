@@ -1,22 +1,11 @@
 .PHONY: init
-init:
+init: install
 	mkdir -p ${HOME}/.config
 
 .PHONY: install
 install:
-	if test $(uname) = Darwin; then
-		brew install neovim
-	elif test $(uname) = Linux; then
-		if grep 'NAME="Ubuntu"' /etc/os-release > /dev/null; then
-			sudo update
-			sudo apt install -y neovim
-		else
-			echo 'Your platform is not supported.'
-			exit 1
-	else
-		echo 'Your platform is not supported.'
-		exit 1
-	fi
+	chmod +x install.sh
+	./install.sh
 
 .PHONY: deploy
 deploy: init
