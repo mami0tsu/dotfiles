@@ -5,6 +5,7 @@ init: ## init zsh, nvim, git
 	make zsh
 	make nvim
 	make git
+	make wezterm
 	
 .PHONY: zsh
 zsh:
@@ -17,12 +18,17 @@ nvim:
 .PHONY: git
 git:
 	cd git && make deploy
+
+.PHONY: wezterm
+wezterm:
+	cd wezterm && make deploy
 	
 .PHONY: clean
 clean:
 	cd zsh && make clean
 	cd nvim && make clean
 	cd git && make clean
+	cd wezterm && make clean
 
 .PHONY: help
 help: ## this help
