@@ -9,6 +9,7 @@ elif test $(uname) = Linux; then
     else
         echo 'Your platform is not supported.'
         exit 1
+    fi
 else
     echo 'Your platform is not supported.'
     exit 1
