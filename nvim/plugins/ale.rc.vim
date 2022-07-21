@@ -5,7 +5,7 @@ let g:ale_linters = {
 let g:ale_fixers = {
       \   'javascript': ['prettier'],
       \   'typescript': ['prettier'],
-      \   'markdown': ['prettier']
+      \   'markdown': ['prettier'],
       \   'go': ['gofmt'],
       \}
 
