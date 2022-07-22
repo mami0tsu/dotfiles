@@ -1,3 +1,4 @@
 alias cat='bat'
-alias ls='exa -l -a -h --git --time-style long-iso'
+alias ls='exa -l -h --git --time-style long-iso'
+alias v='nvim'
 alias vim='nvim'
