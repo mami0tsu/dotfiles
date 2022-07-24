@@ -12,9 +12,9 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 ### End of Zinit's installer chunk
 
-SCRIPT_DIR=$HOME/dotfiles
+SCRIPT_DIR=$HOME/.config
 
-for file in $SCRIPT_DIR/zsh/enabled/*.zsh; do
+for file in $SCRIPT_DIR/zsh/*.zsh; do
     source $file
 done
 

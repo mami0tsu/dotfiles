@@ -1,19 +1,19 @@
-ENABLED := ${PWD}/enabled
+CONFIG := ${HOME}/.config/zsh
 
 .PHONY: init
 init:
-	ln -svf ${PWD}/00_zshrc ${HOME}/.zshrc
+	ln -sfnv ${PWD}/00_zshrc ${HOME}/.zshrc
 
 .PHONY: deploy
 deploy: init
-	mkdir -p ${PWD}/enabled && \
-	ln -svf ${PWD}/01_config.zsh ${ENABLED} && \
-	ln -svf ${PWD}/02_aliases.zsh ${ENABLED} && \
-	ln -svf ${PWD}/03_plugins.zsh ${ENABLED} && \
-	ln -svf ${PWD}/04_starship.toml ${HOME}/.config/starship.toml
+	mkdir -p ${CONFIG} && \
+	ln -sfnv ${PWD}/01_config.zsh ${CONFIG} && \
+	ln -sfnv ${PWD}/02_aliases.zsh ${CONFIG} && \
+	ln -sfnv ${PWD}/03_plugins.zsh ${CONFIG} && \
+	ln -sfnv ${PWD}/04_starship.toml ${HOME}/.config/starship.toml
 
 .PHONY: clean
 clean:
 	unlink ${HOME}/.zshrc || true && \
 	unlink ${HOME}/.config/starship.toml || true && \
-	rm -rf $(ENABLED) || true
+	rm -rf $(CONFIG) || true

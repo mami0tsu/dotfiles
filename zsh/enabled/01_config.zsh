@@ -1,1 +1,0 @@
-/Users/mamiotsu/dotfiles/zsh/01_config.zsh
