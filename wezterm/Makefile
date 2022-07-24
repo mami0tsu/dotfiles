@@ -9,7 +9,7 @@ install:
 
 .PHONY: deploy
 deploy: init
-	ln -svf ${PWD}/wezterm.lua ${HOME}/.config/wezterm/wezterm.lua
+	ln -sfnv ${PWD}/wezterm.lua ${HOME}/.config/wezterm/wezterm.lua
 
 .PHONY: clean
 clean:
