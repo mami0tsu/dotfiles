@@ -8,7 +8,7 @@ install:
 	./install.sh
 
 .PHONY: deploy
-deploy: init
+deploy:
 	ln -sfnv ${PWD} ${HOME}/.config/nvim
 	
 .PHONY: clean

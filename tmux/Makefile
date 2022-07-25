@@ -7,7 +7,7 @@ install:
 	./install.sh
 
 .PHONY: deploy
-deploy: init
+deploy:
 	ln -sfnv ${PWD}/tmux.conf ${HOME}/.tmux.conf
 
 .PHONY: clean

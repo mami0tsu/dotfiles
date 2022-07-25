@@ -4,7 +4,7 @@ init:
 	./init.sh
 
 .PHONY: deploy
-deploy: init
+deploy: 
 	cat ${PWD}/gitconfig >> ${HOME}/.gitconfig
 
 .PHONY: clean

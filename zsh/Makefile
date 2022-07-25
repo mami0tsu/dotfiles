@@ -5,7 +5,7 @@ init:
 	ln -sfnv ${PWD}/00_zshrc ${HOME}/.zshrc
 
 .PHONY: deploy
-deploy: init
+deploy:
 	mkdir -p ${CONFIG} && \
 	ln -sfnv ${PWD}/01_config.zsh ${CONFIG} && \
 	ln -sfnv ${PWD}/02_aliases.zsh ${CONFIG} && \
