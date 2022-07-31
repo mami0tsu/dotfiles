@@ -9,7 +9,7 @@ install:
 
 .PHONY: deploy
 deploy:
-	ln -sfnv ${PWD} ${HOME}/.config/nvim
+	ln -sfnv ${PWD} ${HOME}/.config
 	
 .PHONY: clean
 clean:
