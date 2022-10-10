@@ -2,40 +2,50 @@ if &compatible
   set nocompatible
 endif
 
-source ~/.config/nvim/rc/filetype.rc.vim
-source ~/.config/nvim/rc/indent.rc.vim
-source ~/.config/nvim/rc/keymap.rc.vim
-
-" Dein {{{
-let s:vimdir = $HOME . '/.vim'
-let s:dein_dir = s:vimdir . '/dein'
-let s:dein_github = s:dein_dir . '/repos/github.com'
-let s:dein_repo_name = 'Shougo/dein.vim'
-let s:dein_repo_dir = s:dein_github . '/' . s:dein_repo_name
-let s:dein_toml = '~/.config/nvim/plugins/dein.toml'
-let s:dein_lazy_toml = '~/.config/nvim/plugins/dein_lazy.toml'
-
-"  Install dein automatically
-if !isdirectory(s:dein_repo_dir)
-  call system('git clone https://github.com/Shougo/dein.vim ' .
-   \ shellescape(s:dein_repo_dir))
+let $CACHE = expand('~/.cache')
+if !isdirectory($CACHE)
+  call mkdir($CACHE, 'p')
 endif
 
-let &runtimepath = &runtimepath . ',' . s:dein_repo_dir
+" Load dein
+if &runtimepath !~# '/dein.vim'
+  let s:dein_dir = $CACHE . '/dein/repos/github.com/Shougo/dein.vim'
+  if !isdirectory(s:dein_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+  endif
+  execute 'set runtimepath^=' . s:dein_dir
+endif
 
-if dein#load_state(s:dein_dir)
-  call dein#begin(s:dein_dir)
+let g:dein#auto_recache = v:true
 
+let g:dein#lazy_rplugins = v:true
+let g:dein#install_progress_type = 'floating'
+let g:dein#install_check_diff = v:true
+let g:dein#enable_notification = v:true
+let g:dein#install_check_remote_threshold = 24 * 60 * 60
+let g:dein#auto_remote_plugins = v:false
+let g:dein#install_copy_vim = v:true
+
+let s:dein_plugin_dir= $CACHE . '/dein'
+if dein#load_state(s:dein_plugin_dir)
+  let s:base_dir = fnamemodify(expand('<sfile>'), ':h') . '/'
+  let s:dein_toml = s:base_dir . 'dein.toml'
+  let s:dein_lazy_toml = s:base_dir . 'dein_lazy.toml'
+  let s:ddu_toml = s:base_dir . 'ddu.toml'
+
+  call dein#begin(s:dein_plugin_dir, [
+        \ expand('<sfile>'), s:dein_toml, s:dein_lazy_toml
+        \ ])
+  
   call dein#load_toml(s:dein_toml, {'lazy': 0})
   call dein#load_toml(s:dein_lazy_toml, {'lazy': 1})
-
+  call dein#load_toml(s:ddu_toml, {'lazy': 1})
+  
   call dein#end()
   call dein#save_state()
 endif
-" }}}
 
-source ~/.config/nvim/rc/settings.rc.vim
-
-if has('vim_starting') && dein#check_install()
-  call dein#install()
-endif
+source ~/.config/nvim/rc/filetype.rc.vim
+source ~/.config/nvim/rc/indent.rc.vim
+source ~/.config/nvim/rc/mappings.rc.vim
+source ~/.config/nvim/rc/options.rc.vim
