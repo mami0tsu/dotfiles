@@ -31,6 +31,7 @@ if dein#load_state(s:dein_plugin_dir)
   let s:base_dir = fnamemodify(expand('<sfile>'), ':h') . '/'
   let s:dein_toml = s:base_dir . 'dein.toml'
   let s:dein_lazy_toml = s:base_dir . 'dein_lazy.toml'
+  let s:dein_ft_toml = s:base_dir . 'dein_ft.toml'
   let s:ddu_toml = s:base_dir . 'ddu.toml'
 
   call dein#begin(s:dein_plugin_dir, [

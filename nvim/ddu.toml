@@ -13,7 +13,7 @@ hook_source = '''
       \   ],
       \   'sourceOptions': {
       \     '_': {
-      \       'columns': ['filename'],
+      \       'columns': ['icon_filename'],
       \     },
       \   },
       \   'kindOptions': {
@@ -34,8 +34,12 @@ repo = 'Shougo/ddu-commands.vim'
 depends = 'ddu.vim'
 on_cmd = 'Ddu'
 
+# [[plugins]]
+# repo = 'Shougo/ddu-column-filename'
+# on_source = 'ddu.vim'
+
 [[plugins]]
-repo = 'Shougo/ddu-column-filename'
+repo = 'ryota2357/ddu-column-icon_filename'
 on_source = 'ddu.vim'
 
 [[plugins]]
@@ -62,7 +66,7 @@ hook_add = '''
   nnoremap <Space>f <Cmd>Ddu
     \ -name=filer-`win_getid()` -ui=filer -resume -sync file
     \ -source-option-path=`getcwd()`
-    \ -source-option-columns=filename<CR>
+    \ -source-option-columns=icon_filename<CR>
 '''
 [plugins.ftplugin]
 ddu-filer = '''
@@ -71,6 +75,8 @@ ddu-filer = '''
   nnoremap <buffer><silent> *
     \ <Cmd>call ddu#ui#filer#do_action('toggleAllItems')<CR>
   nnoremap <buffer><silent> <Space>f
+    \ <Cmd>call ddu#ui#filer#do_action('quit')<CR>
+  nnoremap <buffer><silent> q
     \ <Cmd>call ddu#ui#filer#do_action('quit')<CR>
   nnoremap <buffer> o
     \ <Cmd>call ddu#ui#filer#do_action('expandItem',
@@ -111,6 +117,22 @@ ddu-filer = '''
   nnoremap <buffer> ~
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
     \ {'name': 'narrow', 'params': {'path': expand('~')}})<CR>
+  nnoremap <buffer> >
+    \ <Cmd>call ddu#ui#filer#do_action('updateOptions', {
+    \   'sourceOptions': {
+    \     'file': {
+    \       'matchers': ToggleHidden('file'),
+    \     },
+    \   },
+    \ })<CR>
+
+  function! ToggleHidden(name)
+    let current = ddu#custom#get_current(b:ddu_ui_name)
+    let source_options = get(current, 'sourceOptions', {})
+    let source_options_name = get(source_options, a:name, {})
+    let matchers = get(source_options_name, 'matchers', [])
+    return empty(matchers) ? ['matcher_hidden'] : []
+  endfunction
 '''
 
 [[plugins]]
@@ -123,6 +145,10 @@ on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'Shougo/ddu-filter-matcher_substring'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-filter-matcher_hidden'
 on_source = 'ddu.vim'
 
 [[plugins]]
