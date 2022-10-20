@@ -1,0 +1,10 @@
+[[plugins]]
+repo = 'neovim/nvim-lspconfig'
+on_ft = ['go', 'terraform']
+if = 'has("nvim")'
+depends = 'ddc.vim'
+lua_source = '''
+  require'lspconfig'.gopls.setup{}
+  require'lspconfig'.terraformls.setup{}
+  --require'lspconfig'.vimls.setup{}
+'''
