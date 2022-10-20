@@ -8,3 +8,16 @@ lua_source = '''
   require'lspconfig'.terraformls.setup{}
   --require'lspconfig'.vimls.setup{}
 '''
+
+[[plugins]]
+repo = 'nvim-treesitter/nvim-treesitter'
+on_event = 'BufRead'
+hook_post_update = 'TSUpdate'
+lua_source = '''
+  require'nvim-treesitter.configs'.setup {
+      ensure_installed = 'all',
+      highlight = {
+          enable = true,
+      },
+  }
+'''
