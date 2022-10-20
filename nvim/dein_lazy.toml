@@ -1,2 +1,11 @@
 [[plugins]]
 repo = 'vim-denops/denops.vim'
+
+[[plugins]]
+repo = 'previm/previm'
+hook_add = '''
+  let g:previm_open_cmd = 'open -a Google\ Chrome'
+'''
+
+[[plugins]]
+repo = 'jiangmiao/auto-pairs'

@@ -32,7 +32,9 @@ if dein#load_state(s:dein_plugin_dir)
   let s:dein_toml = s:base_dir . 'dein.toml'
   let s:dein_lazy_toml = s:base_dir . 'dein_lazy.toml'
   let s:dein_ft_toml = s:base_dir . 'dein_ft.toml'
+  let s:ddc_toml = s:base_dir . 'ddc.toml'
   let s:ddu_toml = s:base_dir . 'ddu.toml'
+  let s:neovim_toml = s:base_dir . 'neovim.toml'
 
   call dein#begin(s:dein_plugin_dir, [
         \ expand('<sfile>'), s:dein_toml, s:dein_lazy_toml
@@ -40,7 +42,9 @@ if dein#load_state(s:dein_plugin_dir)
   
   call dein#load_toml(s:dein_toml, {'lazy': 0})
   call dein#load_toml(s:dein_lazy_toml, {'lazy': 1})
+  call dein#load_toml(s:ddc_toml, {'lazy': 1})
   call dein#load_toml(s:ddu_toml, {'lazy': 1})
+  call dein#load_toml(s:neovim_toml, {'lazy': 1})
   
   call dein#end()
   call dein#save_state()
