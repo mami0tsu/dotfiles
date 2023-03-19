@@ -3,27 +3,27 @@ repo = 'Shougo/ddu.vim'
 depends = 'denops.vim'
 on_source = 'denops.vim'
 hook_source = '''
-  call ddu#custom#patch_global({
-      \   'ui': 'filer',
-      \   'sources': [
+  call ddu#custom#patch_global(#{
+      \   ui: 'filer',
+      \   sources: [
       \     {
       \       'name': 'file',
       \       'params': {},
       \     },
       \   ],
-      \   'sourceOptions': {
-      \     '_': {
-      \       'columns': ['icon_filename'],
+      \   sourceOptions: #{
+      \     _: #{
+      \       columns: ['icon_filename'],
       \     },
       \   },
-      \   'kindOptions': {
-      \     'file': {
-      \       'defaultAction': 'open',
+      \   kindOptions: #{
+      \     file: #{
+      \       defaultAction: 'open',
       \     },
       \   },
-      \   'uiParams': {
-      \     'filer': {
-      \       'split': 'floating',
+      \   uiParams: #{
+      \     filer: #{
+      \       split: 'floating',
       \     }
       \   },
       \ })
@@ -83,14 +83,14 @@ ddu-filer = '''
     \ {'mode': 'toggle'})<CR>
   nnoremap <buffer> h
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'narrow', 'params': {'path': ".."}})<CR>
+    \ {'name': 'narrow', 'params': #{'path': ".."}})<CR>
   nnoremap <buffer><expr> l
-    \ ddu#ui#filer#is_directory() ?
+    \ ddu#ui#filer#is_tree() ?
     \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<CR>" :
     \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<CR>"
   nnoremap <buffer> c
     \ <Cmd>call ddu#ui#filer#multi_actions([
-    \ ['itemAction', {'name': 'copy'}],
+    \ ['itemAction', #{'name': 'copy'}],
     \ ['clearSelectAllItems'],
     \ ])<CR>
   nnoremap <buffer> d
@@ -118,9 +118,9 @@ ddu-filer = '''
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
     \ {'name': 'narrow', 'params': {'path': expand('~')}})<CR>
   nnoremap <buffer> >
-    \ <Cmd>call ddu#ui#filer#do_action('updateOptions', {
-    \   'sourceOptions': {
-    \     'file': {
+    \ <Cmd>call ddu#ui#filer#do_action('updateOptions', #{
+    \   'sourceOptions': #{
+    \     'file': #{
     \       'matchers': ToggleHidden('file'),
     \     },
     \   },
