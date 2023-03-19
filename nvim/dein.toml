@@ -9,3 +9,6 @@ repo = 'jiangmiao/auto-pairs'
 
 [[plugins]]
 repo = 'tomtom/tcomment_vim'
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
