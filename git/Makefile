@@ -1,11 +1,11 @@
 .PHONY: init
-init:
+init: deploy
 	chmod +x init.sh
 	./init.sh
 
 .PHONY: deploy
 deploy: 
-	cat ${PWD}/gitconfig >> ${HOME}/.gitconfig
+	cat $(CURDIR)/gitconfig >> ${HOME}/.gitconfig
 
 .PHONY: clean
 clean:

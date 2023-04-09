@@ -1,6 +1,5 @@
 .PHONY: init
-init: install
-	mkdir -p ${HOME}/.config/wezterm
+init: install deploy
 
 .PHONY: install
 install:
@@ -9,7 +8,8 @@ install:
 
 .PHONY: deploy
 deploy:
-	ln -sfnv ${PWD}/wezterm.lua ${HOME}/.config/wezterm/wezterm.lua
+	mkdir -p ${HOME}/.config/wezterm
+	ln -sfnv $(CURDIR)/wezterm.lua ${HOME}/.config/wezterm/wezterm.lua
 
 .PHONY: clean
 clean:

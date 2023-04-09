@@ -1,5 +1,5 @@
 .PHONY: init
-init: install
+init: install deploy
 
 .PHONY: install
 install:
@@ -8,7 +8,7 @@ install:
 
 .PHONY: deploy
 deploy:
-	ln -sfnv ${PWD}/tmux.conf ${HOME}/.tmux.conf
+	ln -sfnv $(CURDIR)/tmux.conf ${HOME}/.tmux.conf
 
 .PHONY: clean
 clean:

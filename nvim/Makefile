@@ -1,6 +1,5 @@
 .PHONY: init
-init: install
-	mkdir -p ${HOME}/.config
+init: install deploy
 
 .PHONY: install
 install:
@@ -9,7 +8,8 @@ install:
 
 .PHONY: deploy
 deploy:
-	ln -sfnv ${PWD} ${HOME}/.config
+	mkdir -p ${HOME}/.config
+	ln -sfnv $(CURDIR) ${HOME}/.config
 	
 .PHONY: clean
 clean:

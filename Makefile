@@ -1,28 +1,28 @@
 .DEFAULT_GOAL: help
 
 .PHONY: init
-init: ## init zsh, tmux, nvim, git
-	cd zsh && make init && make deploy
-	cd tmux && make init && make deploy
-	cd nvim && make init && make deploy
-	cd git && make init && make deploy
-	cd wezterm && make init && make deploy
+init: ## init
+	make -C zsh init
+	make -C tmux init
+	make -C nvim init
+	make -C git init
+	make -C wezterm init
 
 .PHONY: update
 update: ## update
-	cd zsh && make deploy
-	cd tmux && make deploy
-	cd nvim && make deploy
-	cd git && make deploy
-	cd wezterm && make deploy
+	make -C zsh deploy
+	make -C tmux deploy
+	make -C nvim deploy
+	make -C git deploy
+	make -C wezterm deploy
 	
 .PHONY: clean
 clean: ## clean
-	cd zsh && make clean
-	cd tmux && make clean
-	cd nvim && make clean
-	cd git && make clean
-	cd wezterm && make clean
+	make -C zsh clean
+	make -C tmux clean
+	make -C nvim clean
+	make -C git clean
+	make -C wezterm clean
 
 .PHONY: help
 help: ## this help

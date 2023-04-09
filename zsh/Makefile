@@ -1,16 +1,20 @@
+BREWFILE := ${HOME}/.brewfile
 CONFIG := ${HOME}/.config/zsh
 
 .PHONY: init
-init:
-	ln -sfnv ${PWD}/00_zshrc ${HOME}/.zshrc
+init: deploy
+	/bin/bash -c "$(shell curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+	brew bundle --file $(BREWFILE)
 
 .PHONY: deploy
 deploy:
-	mkdir -p ${CONFIG} && \
-	ln -sfnv ${PWD}/01_config.zsh ${CONFIG} && \
-	ln -sfnv ${PWD}/02_aliases.zsh ${CONFIG} && \
-	ln -sfnv ${PWD}/03_plugins.zsh ${CONFIG} && \
-	ln -sfnv ${PWD}/04_starship.toml ${HOME}/.config/starship.toml
+	ln -sfnv $(CURDIR)/.zshrc ${HOME} && \
+	mkdir -p $(CONFIG) && \
+	ln -sfnv $(CURDIR)/config.zsh $(CONFIG) && \
+	ln -sfnv $(CURDIR)/aliases.zsh $(CONFIG) && \
+	ln -sfnv $(CURDIR)/plugins.zsh $(CONFIG) && \
+	ln -sfnv $(CURDIR)/starship.toml ${HOME}/.config/starship.toml && \
+	ln -sfnv $(CURDIR)/.brewfile $(BREWFILE)
 
 .PHONY: clean
 clean:
