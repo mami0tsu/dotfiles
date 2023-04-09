@@ -1,6 +1,7 @@
 export LANG=ja_JP.UTF-8
 export EDITOR=nvim
 export VISUAL=nvim
+export PATH="$PATH:$HOME/go/bin"
 
 # History
 HISTFILE=~/.zsh_history
