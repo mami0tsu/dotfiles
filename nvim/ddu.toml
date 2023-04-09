@@ -65,7 +65,7 @@ on_source = 'ddu.vim'
 hook_add = '''
   nnoremap <Space>f <Cmd>Ddu
     \ -name=filer-`win_getid()` -ui=filer -resume -sync file
-    \ -source-option-path=`getcwd()`
+    \ -source-option-path=`t:->get('ddu_ui_filer_path', '')`
     \ -source-option-columns=icon_filename<CR>
 '''
 [plugins.ftplugin]
@@ -80,58 +80,58 @@ ddu-filer = '''
     \ <Cmd>call ddu#ui#filer#do_action('quit')<CR>
   nnoremap <buffer> o
     \ <Cmd>call ddu#ui#filer#do_action('expandItem',
-    \ {'mode': 'toggle'})<CR>
+    \ #{ mode: 'toggle' })<CR>
   nnoremap <buffer> h
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'narrow', 'params': #{'path': ".."}})<CR>
+    \ #{ name: 'narrow', params: #{ path: '..' }})<CR>
   nnoremap <buffer><expr> l
     \ ddu#ui#filer#is_tree() ?
-    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<CR>" :
-    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<CR>"
+    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', #{ name: 'narrow' })<CR>" :
+    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', #{ name: 'open' })<CR>"
   nnoremap <buffer> c
     \ <Cmd>call ddu#ui#filer#multi_actions([
-    \ ['itemAction', #{'name': 'copy'}],
-    \ ['clearSelectAllItems'],
+    \   ['itemAction', #{ name: 'copy' }],
+    \   ['clearSelectAllItems'],
     \ ])<CR>
   nnoremap <buffer> d
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'delete'})<CR>
+    \ #{ name: 'delete' })<CR>
   nnoremap <buffer> D
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'trash'})<CR>
+    \ #{ name: 'trash' })<CR>
   nnoremap <buffer> m
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'move'})<CR>
+    \ #{ name: 'move' })<CR>
   nnoremap <buffer> r
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'rename'})<CR>
+    \ #{ name: 'rename' })<CR>
   nnoremap <buffer> p
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'paste'})<CR>
+    \ #{ name: 'paste' })<CR>
   nnoremap <buffer> K
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'newDirectory'})<CR>
+    \ #{ name: 'newDirectory' })<CR>
   nnoremap <buffer> N
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'newFile'})<CR>
+    \ #{ name: 'newFile' })<CR>
   nnoremap <buffer> ~
     \ <Cmd>call ddu#ui#filer#do_action('itemAction',
-    \ {'name': 'narrow', 'params': {'path': expand('~')}})<CR>
+    \ #{ name: 'narrow', params: #{ path: expand('~') }})<CR>
   nnoremap <buffer> >
     \ <Cmd>call ddu#ui#filer#do_action('updateOptions', #{
-    \   'sourceOptions': #{
-    \     'file': #{
-    \       'matchers': ToggleHidden('file'),
+    \   sourceOptions: #{
+    \     file: #{
+    \       matchers: ToggleHidden('file'),
     \     },
     \   },
     \ })<CR>
 
   function! ToggleHidden(name)
-    let current = ddu#custom#get_current(b:ddu_ui_name)
-    let source_options = get(current, 'sourceOptions', {})
-    let source_options_name = get(source_options, a:name, {})
-    let matchers = get(source_options_name, 'matchers', [])
-    return empty(matchers) ? ['matcher_hidden'] : []
+    const current = ddu#custom#get_current(b:ddu_ui_name)
+    const source_options = current->get('sourceOptions', {})
+    const source_options_name = source_options->get(a:name, {})
+    const matchers = source_options_name->get('matchers', [])
+    return matchers->empty() ? ['matcher_hidden'] : []
   endfunction
 '''
 
