@@ -5,7 +5,7 @@ init: deploy
 
 .PHONY: deploy
 deploy: 
-	cat $(CURDIR)/gitconfig >> ${HOME}/.gitconfig
+	ln -sfnv $(CURDIR)/.gitconfig ${HOME}
 
 .PHONY: clean
 clean:
