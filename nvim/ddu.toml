@@ -3,30 +3,31 @@ repo = 'Shougo/ddu.vim'
 depends = 'denops.vim'
 on_source = 'denops.vim'
 hook_source = '''
-  call ddu#custom#patch_global(#{
-      \   ui: 'filer',
-      \   sources: [
-      \     {
-      \       'name': 'file',
-      \       'params': {},
-      \     },
-      \   ],
-      \   sourceOptions: #{
-      \     _: #{
-      \       columns: ['icon_filename'],
-      \     },
-      \   },
-      \   kindOptions: #{
-      \     file: #{
-      \       defaultAction: 'open',
-      \     },
-      \   },
-      \   uiParams: #{
-      \     filer: #{
-      \       split: 'floating',
-      \     }
-      \   },
-      \ })
+    call ddu#custom#patch_global(#{
+        \   ui: 'filer',
+        \   sources: [
+        \     {
+        \       'name': 'file',
+        \       'params': {},
+        \     },
+        \   ],
+        \   sourceOptions: #{
+        \     _: #{
+        \       columns: ['filename'],
+        \     },
+        \   },
+        \   kindOptions: #{
+        \     file: #{
+        \       defaultAction: 'open',
+        \     },
+        \   },
+        \   uiParams: #{
+        \     filer: #{
+        \       split: 'floating',
+        \       sort: 'filename',
+        \     }
+        \   },
+        \ })
 '''
 
 [[plugins]]
@@ -34,9 +35,9 @@ repo = 'Shougo/ddu-commands.vim'
 depends = 'ddu.vim'
 on_cmd = 'Ddu'
 
-# [[plugins]]
-# repo = 'Shougo/ddu-column-filename'
-# on_source = 'ddu.vim'
+[[plugins]]
+repo = 'Shougo/ddu-column-filename'
+on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'ryota2357/ddu-column-icon_filename'
