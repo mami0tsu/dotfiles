@@ -10,7 +10,7 @@ hook_add = '''
 [[plugins]]
 repo = 'prettier/vim-prettier'
 build = 'npm install'
-on_ft = ['markdown', 'toml', 'yaml']
+on_ft = ['markdown']
 hook_source = '''
   autocmd BufWritePre,InsertLeave *.md PrettierAsync
 '''
