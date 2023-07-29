@@ -1,5 +1,7 @@
 " FileType {{{
 au BufNewFile,BufRead *.go set filetype=go
+au BufNewFile,BufRead *.lua set filetype=lua
+au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.tf set filetype=terraform
 au BufNewFile,BufRead *.ts set filetype=typescript
 au BufNewFile,BufRead *.tsx set filetype=typescript
@@ -11,6 +13,7 @@ au BufNewFile,BufRead *.vim set filetype=vim
 
 " Indentation settings {{{
 au Filetype go setlocal ts=4 sts=4 sw=4
+au Filetype lua setlocal ts=2 sts=2 sw=2
 au Filetype terraform setlocal ts=2 sts=2 sw=2
 au Filetype typescript setlocal ts=2 sts=2 sw=2
 au Filetype toml setlocal ts=4 sts=4 sw=4
