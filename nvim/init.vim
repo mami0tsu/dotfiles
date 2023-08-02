@@ -1,7 +1,3 @@
-if &compatible
-    set nocompatible
-endif
-
 let $CACHE = '~/.cache'->expand()
 if !($CACHE->isdirectory())
     call mkdir($CACHE, 'p')
