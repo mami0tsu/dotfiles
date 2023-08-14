@@ -13,7 +13,8 @@ deploy:
 	ln -sfnv $(CURDIR)/config.zsh $(CONFIG) && \
 	ln -sfnv $(CURDIR)/aliases.zsh $(CONFIG) && \
 	ln -sfnv $(CURDIR)/plugins.zsh $(CONFIG) && \
-	ln -sfnv $(CURDIR)/starship.toml ${HOME}/.config/starship.toml && \
+	ln -sfnv $(CURDIR)/rtx.toml ${HOME}/.config/rtx/rtx.toml && \
+	ln -sfnv $(CURDIR)/starship.toml ${HOME}/.config/starship/starship.toml && \
 	ln -sfnv $(CURDIR)/.brewfile $(BREWFILE)
 
 .PHONY: clean

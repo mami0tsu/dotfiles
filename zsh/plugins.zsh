@@ -27,8 +27,3 @@ zinit light sharkdp/bat
 ## https://github.com/ogham/exa
 zinit ice wait lucid as"program" from"gh-r" mv"bin -> exa" pick"exa/exa"
 zinit light ogham/exa
-
-# starship
-## https://github.com/starship/starship
-zinit ice wait lucid as"program" from"gh-r" mv"starship* -> starship"
-zinit light starship/starship

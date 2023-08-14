@@ -1,0 +1,8 @@
+[tools]
+awscli = '2.13.9'
+deno = '1.36.1'
+github-cli = '2.32.1'
+go = '1.21.0'
+jq = '1.6'
+starship = '1.16.0'
+terraform = '1.5.5'
