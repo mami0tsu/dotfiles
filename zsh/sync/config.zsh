@@ -20,6 +20,5 @@ zstyle ':completion:*:default' menu select=1
 export RTX_DATA_DIR=$HOME/.rtx
 export RTX_CACHE_DIR=$RTX_DATA_DIR/cache
 export RTX_CONFIG_FILE=$HOME/.config/rtx/rtx.toml
-eval "$($HOME/bin/rtx activate zsh)"
 
 export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml

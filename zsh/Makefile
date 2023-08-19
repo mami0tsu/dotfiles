@@ -10,10 +10,10 @@ init: deploy
 deploy:
 	ln -sfnv $(CURDIR)/.zshrc ${HOME} && \
 	mkdir -p $(CONFIG) && \
-	ln -sfnv $(CURDIR)/config.zsh $(CONFIG) && \
-	ln -sfnv $(CURDIR)/aliases.zsh $(CONFIG) && \
-	ln -sfnv $(CURDIR)/plugins.zsh $(CONFIG) && \
+	ln -sfnv $(CURDIR)/sync $(CONFIG) && \
+	ln -sfnv $(CURDIR)/defer $(CONFIG) && \
 	ln -sfnv $(CURDIR)/rtx.toml ${HOME}/.config/rtx/rtx.toml && \
+	ln -sfnv $(CURDIR)/sheldon.toml ${HOME}/.config/sheldon/sheldon.toml
 	ln -sfnv $(CURDIR)/starship.toml ${HOME}/.config/starship/starship.toml && \
 	ln -sfnv $(CURDIR)/.brewfile $(BREWFILE)
 

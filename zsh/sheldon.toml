@@ -1,0 +1,35 @@
+shell = 'zsh'
+
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+
+[plugins.git-open]
+github = 'paulirish/git-open'
+apply = ['defer']
+
+[plugins.zsh-autosuggestions]
+github = 'zsh-users/zsh-autosuggestions'
+apply = ['defer']
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ['defer']
+
+# [plugins.rtx]
+# inline = 'eval "$($HOME/bin/rtx activate zsh)"'
+
+[plugins.starship]
+inline = 'eval "$(starship init zsh)"'
+
+[plugins.sync]
+local = '~/.config/zsh/sync'
+use = ['*.zsh']
+
+[plugins.defer]
+local = '~/.config/zsh/defer'
+use = ['*.zsh']
+apply = ['defer']
