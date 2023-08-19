@@ -19,8 +19,8 @@ apply = ['defer']
 github = "zsh-users/zsh-syntax-highlighting"
 apply = ['defer']
 
-# [plugins.rtx]
-# inline = 'eval "$($HOME/bin/rtx activate zsh)"'
+[plugins.rtx]
+inline = 'eval "$($HOME/bin/rtx activate zsh)"'
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
