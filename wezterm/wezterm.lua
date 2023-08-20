@@ -9,7 +9,7 @@ config.font = wezterm.font('FirgeNerd Console', { weight = 'Regular', stretch = 
 config.font_dirs = { 'fonts' }
 config.font_size = 16.0
 config.hide_tab_bar_if_only_one_tab = true
-config.leader = { key = 't', mods = 'CTRL', timeout_milliseconds = 1000 }
+-- config.leader = { key = 't', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.use_ime = true
 
 -- config.keys = {
