@@ -1,0 +1,9 @@
+varsion: "3"
+
+tasks:
+  deploy:
+    vars:
+      BREWFILE: $HOME/.Brewfile
+    cmds:
+      - ln -sfnv $(pwd)/brewfile {{.BREWFILE}}
+      - brew bundle --global

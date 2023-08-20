@@ -1,0 +1,13 @@
+version: "3"
+
+vars:
+  CONFIG_DIR: $HOME/.config
+
+tasks:
+  deploy:
+    cmds:
+      - ln -sfnv $(pwd) {{.CONFIG_DIR}}
+
+  clean:
+    cmds:
+      - unlink {{.CONFIG_DIR}}/$(basename $(pwd))

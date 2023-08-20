@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  deploy:
+    cmds:
+      - ln -sfnv $(pwd)/tmux.conf $HOME/.tmux.conf
+
+  clean:
+    cmds:
+      - unlink $HOME/.tmux.conf

@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  deploy:
+    cmds:
+      - ln -sfnv $(pwd)/gitconfig $HOME/.gitconfig
+
+  clean:
+    cmds:
+      - unlink $HOME/.gitconfig

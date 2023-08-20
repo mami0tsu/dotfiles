@@ -1,0 +1,15 @@
+version: "3"
+
+vars:
+  CONFIG_DIR: $HOME/.config/wezterm
+
+tasks:
+  deploy:
+    cmds:
+      - mkdir -p {{.CONFIG_DIR}}
+      - ln -sfnv $(pwd)/wezterm.lua {{.CONFIG_DIR}}/wezterm.lua
+
+  clean:
+    cmds:
+      - unlink {{.CONFIG_DIR}}/wezterm.lua
+      - rmdir {{.CONFIG_DIR}}
