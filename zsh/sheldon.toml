@@ -5,7 +5,7 @@ github = 'romkatv/zsh-defer'
 apply = ['source']
 
 [templates]
-defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+defer = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"
 
 [plugins.git-open]
 github = 'paulirish/git-open'
@@ -16,7 +16,7 @@ github = 'zsh-users/zsh-autosuggestions'
 apply = ['defer']
 
 [plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
+github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
 
 [plugins.rtx]
