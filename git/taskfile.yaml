@@ -2,8 +2,11 @@ version: "3"
 
 tasks:
   deploy:
+    vars:
+      HOSTNAME:
+        sh: hostname -s
     cmds:
-      - ln -sfnv $(pwd)/gitconfig $HOME/.gitconfig
+      - ln -sfnv $(pwd)/gitconfig.{{.HOSTNAME}} $HOME/.gitconfig
 
   clean:
     cmds:
