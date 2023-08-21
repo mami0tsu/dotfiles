@@ -1,0 +1,36 @@
+version: "3"
+
+vars:
+  TARGET: git nvim tmux wezterm zsh
+
+includes:
+  brew:
+    taskfile: ./brew
+    dir: ./brew
+  git:
+    taskfile: ./git
+    dir: ./git
+  nvim:
+    taskfile: ./nvim
+    dir: ./nvim
+  tmux:
+    taskfile: ./tmux
+    dir: ./tmux
+  wezterm:
+    taskfile: ./wezterm
+    dir: ./wezterm
+  zsh:
+    taskfile: ./zsh
+    dir: ./zsh
+
+tasks:
+  deploy:
+    cmds:
+      - task brew:deploy
+      - for: { var: TARGET }
+        cmd: task {{.ITEM}}:deploy
+  clean:
+    cmds:
+      - for: { var: TARGET }
+        cmd: task {{.ITEM}}:clean
+      - task brew:clean
