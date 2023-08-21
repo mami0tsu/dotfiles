@@ -1,8 +1,5 @@
 version: "3"
 
-vars:
-  TARGET: git nvim tmux wezterm zsh
-
 includes:
   brew:
     taskfile: ./brew
@@ -22,6 +19,9 @@ includes:
   zsh:
     taskfile: ./zsh
     dir: ./zsh
+
+vars:
+  TARGET: git nvim tmux wezterm zsh
 
 tasks:
   deploy:
