@@ -29,6 +29,7 @@ tasks:
       - task brew:deploy
       - for: { var: TARGET }
         cmd: task {{.ITEM}}:deploy
+
   clean:
     cmds:
       - for: { var: TARGET }
