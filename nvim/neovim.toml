@@ -1,13 +1,6 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-on_ft = ['go', 'terraform']
-if = 'has("nvim")'
-depends = 'ddc.vim'
 lua_source = '''
-  require'lspconfig'.gopls.setup{}
-  require'lspconfig'.terraformls.setup{}
-  --require'lspconfig'.vimls.setup{}
-
   vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {
       update_in_insert = false,
@@ -21,6 +14,36 @@ lua_source = '''
           )
         end
       },
+  })
+'''
+
+[[plugins]]
+repo = 'williamboman/mason.nvim'
+depends = 'nvim-lspconfig'
+on_event = ['BufRead']
+lua_source = '''
+  require('mason').setup({
+    ui = {
+      icons = {
+        package_installed = "✓",
+        package_pending = "➜",
+        package_uninstalled = "✗",
+      },
+    },
+  })
+'''
+
+[[plugins]]
+repo = 'williamboman/mason-lspconfig.nvim'
+on_source = 'nvim-lspconfig'
+lua_source = '''
+  require('mason-lspconfig').setup_handlers({
+    function(server_name)
+      local nvim_lsp = require('lspconfig')
+      local opts = {}
+
+      nvim_lsp[server_name].setup(ops)
+    end
   })
 '''
 
