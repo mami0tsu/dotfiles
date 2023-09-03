@@ -40,9 +40,7 @@ lua_source = '''
   require('mason-lspconfig').setup_handlers({
     function(server_name)
       local nvim_lsp = require('lspconfig')
-      local opts = {}
-
-      nvim_lsp[server_name].setup(ops)
+      nvim_lsp[server_name].setup({})
     end
   })
 '''
@@ -65,7 +63,7 @@ repo = 'rcarriga/nvim-notify'
 on_lua = 'notify'
 lua_source = '''
   require('notify').setup({
-    render = "fade",
+    render = "compact",
     stages = "static",
     timeout = 1000,
   })
