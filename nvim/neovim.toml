@@ -59,3 +59,14 @@ lua_source = '''
       },
   }
 '''
+
+[[plugins]]
+repo = 'rcarriga/nvim-notify'
+on_lua = 'notify'
+lua_source = '''
+  require('notify').setup({
+    render = "fade",
+    stages = "static",
+    timeout = 1000,
+  })
+'''
