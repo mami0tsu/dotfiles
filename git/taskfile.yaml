@@ -6,7 +6,10 @@ tasks:
       HOSTNAME:
         sh: hostname -s
     cmds:
-      - ln -sfnv $(pwd)/gitconfig.{{.HOSTNAME}} $HOME/.gitconfig
+      - |
+        if [ {{.HOSTNAME}} -eq 'mami0tsu' ]; then
+          ln -sfnv $(pwd)/gitconfig $HOME/.gitconfig
+        fi
 
   clean:
     cmds:
