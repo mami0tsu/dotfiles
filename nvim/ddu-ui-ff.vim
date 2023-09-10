@@ -9,6 +9,7 @@ nnoremap / <Cmd>Ddu
     \ -name=ff line
     \ <CR>
 " }}}
+
 " ddu-ff {{{
 nnoremap <buffer> <Space>
     \ <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
