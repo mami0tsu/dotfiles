@@ -10,14 +10,6 @@ depends = 'ddu.vim'
 on_cmd = 'Ddu'
 
 [[plugins]]
-repo = 'Shougo/ddu-column-filename'
-on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'ryota2357/ddu-column-icon_filename'
-on_source = 'ddu.vim'
-
-[[plugins]]
 repo = 'Shougo/ddu-ui-ff'
 on_source = 'ddu.vim'
 hooks_file = '$BASE_DIR/ddu-ui-ff.vim'
@@ -36,13 +28,37 @@ repo = 'Shougo/ddu-source-file_rec'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'Shougo/ddu-filter-matcher_substring'
+repo = 'Shougo/ddu-source-line'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'Shougo/ddu-filter-matcher_hidden'
+repo = 'shun/ddu-source-rg'
 on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'Shougo/ddu-kind-file'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-kind-word'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'uga-rosa/ddu-filter-converter_devicon'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-filter-matcher_relative'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-filter-matcher_substring'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-column-filename'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'ryota2357/ddu-column-icon_filename'
 on_source = 'ddu.vim'

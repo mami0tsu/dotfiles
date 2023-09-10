@@ -10,35 +10,85 @@ call ddu#custom#patch_local('ff', #{
     \     ui: 'ff',
     \     sourceOptions: #{
     \         file: #{
+    \             converters: ['converter_devicon'],
+    \             matchers: [
+    \                 'matcher_relative',
+    \                 'matcher_substring',
+    \             ],
+    \             path: t:->get('ddu_ui_ff_path', getcwd()),
+    \         },
+    \         file_rec: #{
+    \             converters: ['converter_devicon'],
+    \             matchers: [
+    \                 'matcher_relative',
+    \                 'matcher_substring',
+    \             ],
+    \             path: t:->get('ddu_ui_ff_path', getcwd()),
+    \         },
+    \         line: #{
     \             matchers: ['matcher_substring'],
-    \             columns: ['icon_filename'],
-    \             path: t:->get('ddu_ui_ff_path', getcwd())
+    \         },
+    \     },
+    \     sourceParams: #{
+    \         file_rec: #{
+    \             ignoreDirectories: ['.git', '.terraform']
     \         },
     \     },
     \     uiParams: #{
     \         ff: #{
+    \             autoAction: #{ name: 'preview' },
+    \             floatingBorder: 'single',
+    \             filterFloatingPosition: 'top',
+    \             filterSplitDirection: 'aboveleft',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
+    \             previewFloating: v:true,
+    \             previewFloatingBorder: 'single',
+    \             previewHeight: '&lines / 2',
+    \             previewSplit: 'vertical',
+    \             previewWidth: '&columns / 2',
+    \             prompt: '>',
     \             split: 'floating',
+    \             startAutoAction: v:true,
+    \             startFilter: v:true,
+    \             splitDirection: 'aboveleft',
+    \             winHeight: '&lines / 2',
+    \             winWidth: '&columns',
     \         }
+    \     },
+    \     filterParams: #{
+    \         matcher_substring: #{
+    \             highlightMatched: 'Search',
+    \         },
     \     },
     \ })
 call ddu#custom#patch_local('filer', #{
     \     ui: 'filer',
     \     sourceOptions: #{
     \         file: #{
-    \             columns: ['icon_filename'],
+    \             converters: ['converter_devicon'],
     \             path: t:->get('ddu_ui_filer_path', getcwd())
     \         },
     \     },
     \     uiParams: #{
     \         filer: #{
+    \             floatingBorder: 'single',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
     \             previewFloating: v:true,
-    \             previewHeight: '20',
+    \             previewFloatingBorder: 'single',
+    \             previewHeight: '&lines / 2',
     \             previewSplit: 'vertical',
     \             previewWidth: '&columns / 2',
     \             sort: 'filename',
+    \             sortTreesFirst: v:true,
     \             split: 'floating',
-    \             winHeight: '20',
-    \             winWidth: '&columns / 2',
+    \             winHeight: '&lines / 2',
+    \             winWidth: '&columns',
     \         }
     \     },
     \ })
