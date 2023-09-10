@@ -1,18 +1,18 @@
 " hook_add = {{{
-nnoremap <Space>f <Cmd>Ddu
-    \ -name=filer-`win_getid()` -ui=filer -resume -sync file
-    \ -source-option-file-path=`t:->get('ddu_ui_filer_path', '')`
-    \ -source-option-file-columns=icon_filename<CR>
+nnoremap <Space>f
+    \ <Cmd>Ddu -name=filer file<CR>
 " }}}
 
 " ddu-filer = {{{
-nnoremap <buffer><silent> <Space>
+nnoremap <buffer> <Space>
     \ <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
-nnoremap <buffer><silent> *
+nnoremap <buffer> *
     \ <Cmd>call ddu#ui#do_action('toggleAllItems')<CR>
-nnoremap <buffer><silent> <Space>f
+nnoremap <buffer> P
+    \ <Cmd>call ddu#ui#do_action('togglePreview')<CR>
+nnoremap <buffer> <Space>f
     \ <Cmd>call ddu#ui#do_action('quit')<CR>
-nnoremap <buffer><silent> q
+nnoremap <buffer> q
     \ <Cmd>call ddu#ui#do_action('quit')<CR>
 nnoremap <buffer> o
     \ <Cmd>call ddu#ui#do_action('expandItem',
@@ -20,18 +20,6 @@ nnoremap <buffer> o
 nnoremap <buffer> O
     \ <Cmd>call ddu#ui#do_action('expandItem',
     \ #{ maxLevel: -1 })<CR>
-nnoremap <buffer> h
-    \ <Cmd>call ddu#ui#do_action('itemAction',
-    \ #{ name: 'narrow', params: #{ path: '..' }})<CR>
-nnoremap <buffer><expr> l
-    \ ddu#ui#get_item()->get('isTree', v:false) ?
-    \ "<Cmd>call ddu#ui#do_action('itemAction', #{ name: 'narrow' })<CR>" :
-    \ "<Cmd>call ddu#ui#do_action('itemAction', #{ name: 'open' })<CR>"
-nnoremap <buffer> c
-    \ <Cmd>call ddu#ui#multi_actions([
-    \   ['itemAction', #{ name: 'copy' }],
-    \   ['clearSelectAllItems'],
-    \ ])<CR>
 nnoremap <buffer> d
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'delete' })<CR>
@@ -47,21 +35,19 @@ nnoremap <buffer> r
 nnoremap <buffer> p
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'paste' })<CR>
-nnoremap <buffer> P
-    \ <Cmd>call ddu#ui#do_action('preview')<CR>
 nnoremap <buffer> K
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'newDirectory' })<CR>
 nnoremap <buffer> N
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'newFile' })<CR>
-nnoremap <buffer> ~
+nnoremap <buffer> h
     \ <Cmd>call ddu#ui#do_action('itemAction',
-    \ #{ name: 'narrow', params: #{ path: expand('~') } })<CR>
+    \ #{ name: 'narrow', params: #{ path: '..' }})<CR>
 nnoremap <buffer> ~
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'narrow', params: #{ path: getcwd() } })<CR>
-nnoremap <buffer> >
+nnoremap <buffer> .
     \ <Cmd>call ddu#ui#do_action('updateOptions', #{
     \   sourceOptions: #{
     \     file: #{
@@ -69,6 +55,15 @@ nnoremap <buffer> >
     \     },
     \   },
     \ })<CR>
+nnoremap <buffer><expr> l
+    \ ddu#ui#get_item()->get('isTree', v:false) ?
+    \ "<Cmd>call ddu#ui#do_action('itemAction', #{ name: 'narrow' })<CR>" :
+    \ "<Cmd>call ddu#ui#do_action('itemAction', #{ name: 'open' })<CR>"
+nnoremap <buffer> c
+    \ <Cmd>call ddu#ui#multi_actions([
+    \   ['itemAction', #{ name: 'copy' }],
+    \   ['clearSelectAllItems'],
+    \ ])<CR>
 
 function! ToggleHidden(name)
     const current = ddu#custom#get_current(b:ddu_ui_name)
