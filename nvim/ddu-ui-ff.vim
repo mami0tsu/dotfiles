@@ -1,9 +1,9 @@
 " hook_add = {{{
 nnoremap <Space>g <Cmd>Ddu
-    \ -name=ff file file_rec
+    \ -name=rg rg
     \ <CR>
 nnoremap <Space>s <Cmd>Ddu
-    \ -name=ff file file_rec
+    \ -name=ff file_rec
     \ <CR>
 nnoremap / <Cmd>Ddu
     \ -name=ff line
