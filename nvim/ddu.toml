@@ -48,11 +48,19 @@ repo = 'uga-rosa/ddu-filter-converter_devicon'
 on_source = 'ddu.vim'
 
 [[plugins]]
+repo = 'Shougo/ddu-filter-matcher_files'
+on_source = 'ddu.vim'
+
+[[plugins]]
 repo = 'Shougo/ddu-filter-matcher_relative'
 on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'Shougo/ddu-filter-matcher_substring'
+on_source = 'ddu.vim'
+
+[[plugins]]
+repo = 'Shougo/ddu-filter-sorter_alpha'
 on_source = 'ddu.vim'
 
 [[plugins]]

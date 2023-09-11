@@ -11,4 +11,12 @@ repo = 'jiangmiao/auto-pairs'
 repo = 'tomtom/tcomment_vim'
 
 [[plugins]]
-repo = 'mattn/vim-goimports'
+repo = 'reireias/vim-cheatsheet'
+hook_add = '''
+  nnoremap <Space>c <Cmd>Cheat<CR>
+
+  let g:cheatsheet#cheat_file = '~/.config/nvim/cheet/cheetsheet.md'
+  let g:cheatsheet#float_window = 1
+  let g:cheatsheet#float_window_width_ratio = 1
+  let g:cheatsheet#float_window_height_ratio = 1
+'''

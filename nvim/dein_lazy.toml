@@ -14,3 +14,14 @@ on_ft = ['markdown']
 hook_source = '''
   autocmd BufWritePre,InsertLeave *.md PrettierAsync
 '''
+
+[[plugins]]
+repo = 'hashivim/vim-terraform'
+on_ft = ['terraform']
+hook_source = '''
+  let g:terraform_fmt_on_save = 1
+'''
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = ['go']

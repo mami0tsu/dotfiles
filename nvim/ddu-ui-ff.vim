@@ -1,12 +1,12 @@
 " hook_add = {{{
 nnoremap <Space>g <Cmd>Ddu
-    \ -name=rg rg
+    \ -name=grep rg
     \ <CR>
 nnoremap <Space>s <Cmd>Ddu
-    \ -name=ff file_rec
+    \ -name=file file_rec
     \ <CR>
 nnoremap / <Cmd>Ddu
-    \ -name=ff line
+    \ -name=line line
     \ <CR>
 " }}}
 

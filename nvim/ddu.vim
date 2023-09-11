@@ -6,13 +6,102 @@ call ddu#custom#patch_global(#{
     \         },
     \     },
     \ })
-call ddu#custom#patch_local('rg', #{
+call ddu#custom#patch_local('file', #{
+    \     ui: 'ff',
+    \     sourceOptions: #{
+    \         file_rec: #{
+    \             converters: [
+    \                 'converter_devicon',
+    \             ],
+    \             matchers: [
+    \                 'matcher_relative',
+    \                 'matcher_substring',
+    \             ],
+    \             sorters: [
+    \                 'sorter_alpha',
+    \             ],
+    \             path: t:->get('ddu_ui_ff_path', getcwd()),
+    \         },
+    \     },
+    \     sourceParams: #{
+    \         file_rec: #{
+    \             ignoreDirectories: ['.git', '.terraform']
+    \         },
+    \     },
+    \     uiParams: #{
+    \         ff: #{
+    \             autoAction: #{ name: 'preview' },
+    \             floatingBorder: 'single',
+    \             filterFloatingPosition: 'top',
+    \             filterSplitDirection: 'aboveleft',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
+    \             previewFloating: v:true,
+    \             previewFloatingBorder: 'single',
+    \             previewHeight: '&lines / 2',
+    \             previewSplit: 'vertical',
+    \             previewWidth: '&columns / 2',
+    \             prompt: '>',
+    \             split: 'floating',
+    \             startAutoAction: v:true,
+    \             startFilter: v:true,
+    \             splitDirection: 'aboveleft',
+    \             winHeight: '&lines / 2',
+    \             winWidth: '&columns',
+    \         }
+    \     },
+    \     filterParams: #{
+    \         matcher_substring: #{
+    \             highlightMatched: 'Search',
+    \         },
+    \     },
+    \ })
+call ddu#custom#patch_local('filer', #{
+    \     ui: 'filer',
+    \     sourceOptions: #{
+    \         file: #{
+    \             converters: [
+    \                 'converter_devicon',
+    \             ],
+    \             path: t:->get('ddu_ui_filer_path', getcwd()),
+    \         },
+    \     },
+    \     uiParams: #{
+    \         filer: #{
+    \             floatingBorder: 'single',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
+    \             previewFloating: v:true,
+    \             previewFloatingBorder: 'single',
+    \             previewHeight: '&lines / 2',
+    \             previewSplit: 'vertical',
+    \             previewWidth: '&columns / 2',
+    \             sort: 'filename',
+    \             sortTreesFirst: v:true,
+    \             split: 'floating',
+    \             winHeight: '&lines / 2',
+    \             winWidth: '&columns',
+    \         }
+    \     },
+    \ })
+call ddu#custom#patch_local('grep', #{
     \     ui: 'ff',
     \     sourceOptions: #{
     \         rg: #{
-    \             converters: ['converter_devicon'],
+    \             converters: [
+    \                 'converter_devicon',
+    \             ],
     \             matchers: [
+    \                 "matcher_files",
     \                 "matcher_substring",
+    \             ],
+    \             path: t:->get('ddu_ui_ff_path', getcwd()),
+    \             sorters: [
+    \                 'sorter_alpha',
     \             ],
     \             volatile: v:true,
     \         },
@@ -58,32 +147,13 @@ call ddu#custom#patch_local('rg', #{
     \         },
     \     },
     \ })
-call ddu#custom#patch_local('ff', #{
+call ddu#custom#patch_local('line', #{
     \     ui: 'ff',
     \     sourceOptions: #{
-    \         file: #{
-    \             converters: ['converter_devicon'],
-    \             matchers: [
-    \                 'matcher_relative',
-    \                 'matcher_substring',
-    \             ],
-    \             path: t:->get('ddu_ui_ff_path', getcwd()),
-    \         },
-    \         file_rec: #{
-    \             converters: ['converter_devicon'],
-    \             matchers: [
-    \                 'matcher_relative',
-    \                 'matcher_substring',
-    \             ],
-    \             path: t:->get('ddu_ui_ff_path', getcwd()),
-    \         },
     \         line: #{
-    \             matchers: ['matcher_substring'],
-    \         },
-    \     },
-    \     sourceParams: #{
-    \         file_rec: #{
-    \             ignoreDirectories: ['.git', '.terraform']
+    \             matchers: [
+    \                 'matcher_substring',
+    \             ],
     \         },
     \     },
     \     uiParams: #{
@@ -114,34 +184,6 @@ call ddu#custom#patch_local('ff', #{
     \         matcher_substring: #{
     \             highlightMatched: 'Search',
     \         },
-    \     },
-    \ })
-call ddu#custom#patch_local('filer', #{
-    \     ui: 'filer',
-    \     sourceOptions: #{
-    \         file: #{
-    \             converters: ['converter_devicon'],
-    \             path: t:->get('ddu_ui_filer_path', getcwd())
-    \         },
-    \     },
-    \     uiParams: #{
-    \         filer: #{
-    \             floatingBorder: 'single',
-    \             highlights: #{
-    \                 floating: 'Normal',
-    \                 floatingBorder: 'Normal',
-    \             },
-    \             previewFloating: v:true,
-    \             previewFloatingBorder: 'single',
-    \             previewHeight: '&lines / 2',
-    \             previewSplit: 'vertical',
-    \             previewWidth: '&columns / 2',
-    \             sort: 'filename',
-    \             sortTreesFirst: v:true,
-    \             split: 'floating',
-    \             winHeight: '&lines / 2',
-    \             winWidth: '&columns',
-    \         }
     \     },
     \ })
 " }}}
