@@ -25,3 +25,9 @@ hook_source = '''
 [[plugins]]
 repo = 'mattn/vim-goimports'
 on_ft = ['go']
+
+[[plugins]]
+repo = 'Shougo/deol.nvim'
+depends = ['ddu.vim', 'ddc.vim']
+on_source = ['ddu.vim']
+hooks_file = '$BASE_DIR/deol.vim'
