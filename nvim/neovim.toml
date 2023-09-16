@@ -68,3 +68,6 @@ lua_source = '''
     timeout = 1000,
   })
 '''
+
+[[plugins]]
+repo = 'lewis6991/gitsigns.nvim'
