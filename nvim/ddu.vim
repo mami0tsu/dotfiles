@@ -6,6 +6,33 @@ call ddu#custom#patch_global(#{
     \         },
     \     },
     \ })
+call ddu#custom#patch_local('terminal', #{
+    \     ui: 'ff',
+    \     sourceParams: #{
+    \         deol: #{
+    \             commands: [
+    \                 'zsh'
+    \             ],
+    \         },
+    \     },
+    \     kindOptions: #{
+    \         deol: #{
+    \             defaultAction: 'switch',
+    \         },
+    \     },
+    \     uiParams: #{
+    \         ff: #{
+    \             floatingBorder: 'single',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
+    \             split: 'floating',
+    \             winRow: 1,
+    \             winHeight: 1,
+    \         }
+    \     },
+    \ })
 call ddu#custom#patch_local('file', #{
     \     ui: 'ff',
     \     sourceOptions: #{

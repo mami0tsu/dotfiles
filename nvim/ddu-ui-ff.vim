@@ -5,6 +5,9 @@ nnoremap <Space>g <Cmd>Ddu
 nnoremap <Space>s <Cmd>Ddu
     \ -name=file file_rec
     \ <CR>
+nnoremap <Space>t <Cmd>Ddu
+    \ -name=terminal -sync deol
+    \ <CR>
 nnoremap / <Cmd>Ddu
     \ -name=line line
     \ <CR>
@@ -26,7 +29,9 @@ nnoremap <buffer> q
 nnoremap <buffer> i
     \ <Cmd>call ddu#ui#do_action('openFilterWindow')<CR>
 nnoremap <buffer> <CR>
-    \ <Cmd>call ddu#ui#do_action('itemAction')<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction',
+    \ ddu#ui#get_item()->get('action', {})->get('existsDeol', v:false) ?
+    \ #{ name: 'edit' } : {})<CR>
 nnoremap <buffer> N
     \ <Cmd>call ddu#ui#do_action('itemAction',
     \ #{ name: 'newFile' })<CR>
