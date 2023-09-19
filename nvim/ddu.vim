@@ -37,9 +37,6 @@ call ddu#custom#patch_local('file', #{
     \     ui: 'ff',
     \     sourceOptions: #{
     \         file_rec: #{
-    \             converters: [
-    \                 'converter_devicon',
-    \             ],
     \             matchers: [
     \                 'matcher_relative',
     \                 'matcher_substring',
@@ -89,9 +86,6 @@ call ddu#custom#patch_local('filer', #{
     \     ui: 'filer',
     \     sourceOptions: #{
     \         file: #{
-    \             converters: [
-    \                 'converter_devicon',
-    \             ],
     \             path: t:->get('ddu_ui_filer_path', getcwd()),
     \         },
     \     },
@@ -119,9 +113,6 @@ call ddu#custom#patch_local('grep', #{
     \     ui: 'ff',
     \     sourceOptions: #{
     \         rg: #{
-    \             converters: [
-    \                 'converter_devicon',
-    \             ],
     \             matchers: [
     \                 "matcher_files",
     \                 "matcher_substring",
