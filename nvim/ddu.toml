@@ -43,9 +43,9 @@ on_source = 'ddu.vim'
 repo = 'Shougo/ddu-kind-word'
 on_source = 'ddu.vim'
 
-[[plugins]]
-repo = 'uga-rosa/ddu-filter-converter_devicon'
-on_source = 'ddu.vim'
+# [[plugins]]
+# repo = 'uga-rosa/ddu-filter-converter_devicon'
+# on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'Shougo/ddu-filter-matcher_files'
@@ -67,6 +67,6 @@ on_source = 'ddu.vim'
 repo = 'Shougo/ddu-column-filename'
 on_source = 'ddu.vim'
 
-[[plugins]]
-repo = 'ryota2357/ddu-column-icon_filename'
-on_source = 'ddu.vim'
+# [[plugins]]
+# repo = 'ryota2357/ddu-column-icon_filename'
+# on_source = 'ddu.vim'
