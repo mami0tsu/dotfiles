@@ -1,0 +1,73 @@
+[[plugins]]
+repo = 'neovim/nvim-lspconfig'
+lua_source = '''
+  vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+      update_in_insert = false,
+      virtual_text = {
+        format = function(diagnostic)
+          return string.format(
+            '%s (%s: %s)',
+            diagnostic.message,
+            diagnostic.source,
+            diagnostic.code
+          )
+        end
+      },
+  })
+'''
+
+[[plugins]]
+repo = 'williamboman/mason.nvim'
+depends = 'nvim-lspconfig'
+on_event = ['BufRead']
+lua_source = '''
+  require('mason').setup({
+    ui = {
+      icons = {
+        package_installed = "✓",
+        package_pending = "➜",
+        package_uninstalled = "✗",
+      },
+    },
+  })
+'''
+
+[[plugins]]
+repo = 'williamboman/mason-lspconfig.nvim'
+on_source = 'nvim-lspconfig'
+lua_source = '''
+  require('mason-lspconfig').setup_handlers({
+    function(server_name)
+      local nvim_lsp = require('lspconfig')
+      nvim_lsp[server_name].setup({})
+    end
+  })
+'''
+
+[[plugins]]
+repo = 'nvim-treesitter/nvim-treesitter'
+on_event = 'BufRead'
+hook_post_update = 'TSUpdate'
+lua_source = '''
+  require'nvim-treesitter.configs'.setup {
+      ensure_installed = 'all',
+      highlight = {
+          enable = true,
+      },
+  }
+'''
+
+[[plugins]]
+repo = 'rcarriga/nvim-notify'
+on_lua = 'notify'
+lua_source = '''
+  require('notify').setup({
+    render = "compact",
+    stages = "static",
+    timeout = 1000,
+  })
+'''
+
+[[plugins]]
+repo = 'lewis6991/gitsigns.nvim'
