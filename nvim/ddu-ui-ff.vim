@@ -6,7 +6,7 @@ nnoremap <Space>s <Cmd>Ddu
     \ -name=file file_rec
     \ <CR>
 nnoremap <Space>t <Cmd>Ddu
-    \ -name=terminal -sync deol
+    \ -name=terminal deol
     \ <CR>
 nnoremap / <Cmd>Ddu
     \ -name=line line
