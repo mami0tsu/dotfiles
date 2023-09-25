@@ -31,10 +31,10 @@ call ddc#custom#patch_global(#{
     \             timeout: 1000,
     \         },
     \         around: #{
-    \             mark: 'A',
+    \             mark: 'around',
     \         },
     \         buffer: #{
-    \             mark: 'B',
+    \             mark: 'buffer',
     \         },
     \         cmdline: #{
     \             mark: 'cmdline',
