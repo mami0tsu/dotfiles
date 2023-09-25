@@ -34,6 +34,8 @@ set hidden
 set noswapfile
 " }}}
 
+set signcolumn=yes
+
 set termguicolors
 
 command! -nargs=* T split | wincmd j | resize 20 | terminal <args>

@@ -20,7 +20,7 @@ lua_source = '''
 [[plugins]]
 repo = 'williamboman/mason.nvim'
 depends = 'nvim-lspconfig'
-on_event = ['BufRead']
+on_event = 'BufRead'
 lua_source = '''
   require('mason').setup({
     ui = {
@@ -36,6 +36,7 @@ lua_source = '''
 [[plugins]]
 repo = 'williamboman/mason-lspconfig.nvim'
 on_source = 'nvim-lspconfig'
+on_lua = 'mason-lspconfig'
 lua_source = '''
   require('mason-lspconfig').setup_handlers({
     function(server_name)
@@ -71,3 +72,19 @@ lua_source = '''
 
 [[plugins]]
 repo = 'lewis6991/gitsigns.nvim'
+on_event = 'BufRead'
+on_lua = 'gitsigns'
+lua_source = '''
+  require('gitsigns').setup({
+    signs = {
+      add          = { text = '│' },
+      change       = { text = '│' },
+      delete       = { text = '_' },
+      topdelete    = { text = '‾' },
+      changedelete = { text = '~' },
+      untracked    = { text = '┆' },
+    },
+    signcolumn = true,
+    numhl      = true,
+  })
+'''
