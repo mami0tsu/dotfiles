@@ -32,6 +32,10 @@ set hidden
 
 " Do not create swap files
 set noswapfile
+
+" Share clipboard
+set clipboard+=unnamedplus
+
 " }}}
 
 set signcolumn=yes
