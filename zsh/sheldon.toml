@@ -5,7 +5,7 @@ github = 'romkatv/zsh-defer'
 apply = ['source']
 
 [templates]
-defer = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"{% endfor %}{{ hooks?.post | nl }}"
 
 [plugins.git-open]
 github = 'paulirish/git-open'
@@ -19,8 +19,8 @@ apply = ['defer']
 github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
 
-[plugins.rtx]
-inline = 'eval "$($HOME/bin/rtx activate zsh)"'
+[plugins.mise]
+inline = 'eval "$($HOME/.local/bin/mise activate zsh)"'
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'

@@ -6,14 +6,15 @@ vars:
 tasks:
   deploy:
     cmds:
+      - curl https://mise.jdx.dev/install.sh | sh
       - mkdir -p {{.CONFIG_DIR}}/zsh
-      - mkdir -p {{.CONFIG_DIR}}/rtx
+      - mkdir -p {{.CONFIG_DIR}}/mise
       - mkdir -p {{.CONFIG_DIR}}/sheldon
       - mkdir -p {{.CONFIG_DIR}}/starship
       - ln -sfnv $(pwd)/.zshrc $HOME
       - ln -sfnv $(pwd)/sync {{.CONFIG_DIR}}/zsh
       - ln -sfnv $(pwd)/defer {{.CONFIG_DIR}}/zsh
-      - ln -sfnv $(pwd)/rtx.toml {{.CONFIG_DIR}}/rtx/rtx.toml
+      - ln -sfnv $(pwd)/mise.toml {{.CONFIG_DIR}}/mise/config.toml
       - ln -sfnv $(pwd)/sheldon.toml {{.CONFIG_DIR}}/sheldon/sheldon.toml
       - ln -sfnv $(pwd)/starship.toml {{.CONFIG_DIR}}/starship/starship.toml
 
@@ -21,6 +22,6 @@ tasks:
     cmds:
       - unlink $HOME/.zshrc
       - rm -rf {{.CONFIG_DIR}}/zsh
-      - rm -rf {{.CONFIG_DIR}}/rtx
+      - rm -rf {{.CONFIG_DIR}}/mise
       - rm -rf {{.CONFIG_DIR}}/sheldon
       - rm -rf {{.CONFIG_DIR}}/starship
