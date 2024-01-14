@@ -1,8 +1,9 @@
 [tools]
 awscli = ['2.13.9']
-'cargo:eza' = ['0.17.1']
-'cargo:sheldon' = ['0.7.4']
-'cargo:bat' = ['0.24.0']
+"cargo:bat" = ['0.24.0']
+"cargo:eza" = ['0.17.1']
+"cargo:git-delta" = ['0.16.5']
+"cargo:sheldon" = ['0.7.4']
 deno = ['1.37.1']
 github-cli = ['2.32.1']
 go = ['1.21.0']
@@ -17,7 +18,6 @@ starship = ['1.16.0']
 terraform = ['1.6.2']
 terraform-ls = ['0.31.4']
 tree-sitter = ['0.20.8']
-"cargo:git-delta" = "latest"
 
 [settings]
 experimental = true
