@@ -6,7 +6,6 @@ vars:
 tasks:
   deploy:
     cmds:
-      - curl https://mise.jdx.dev/install.sh | sh
       - mkdir -p {{.CONFIG_DIR}}/zsh
       - mkdir -p {{.CONFIG_DIR}}/mise
       - mkdir -p {{.CONFIG_DIR}}/sheldon

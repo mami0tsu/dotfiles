@@ -19,9 +19,6 @@ apply = ['defer']
 github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
 
-[plugins.mise]
-inline = 'eval "$($HOME/.local/bin/mise activate zsh)"'
-
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
 

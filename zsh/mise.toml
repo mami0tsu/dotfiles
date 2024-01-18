@@ -15,7 +15,6 @@ python = ['3.12.1']
 ripgrep = ['13.0.0']
 rust = ['1.75.0']
 starship = ['1.16.0']
-terraform = ['1.6.2']
 terraform-ls = ['0.31.4']
 tree-sitter = ['0.20.8']
 
