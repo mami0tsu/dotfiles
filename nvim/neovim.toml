@@ -59,7 +59,11 @@ lua_add = '''
         'diagnostics'
       },
       lualine_c = {{'filename', path = 3}},
-      lualine_x = {'encoding', 'fileformat', 'filetype'},
+      lualine_x = {
+        'encoding',
+        'fileformat',
+        {'filetype', colored = false}
+      },
       lualine_y = {'progress'},
       lualine_z = {'location'}
     },
