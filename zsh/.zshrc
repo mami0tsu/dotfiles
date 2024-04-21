@@ -1,3 +1,4 @@
+export MISE_ENV_FILE=.env
 eval "$(/opt/homebrew/bin/mise activate zsh)"
 
 export SHELDON_CONFIG_DIR="$HOME/.config/sheldon"

@@ -11,8 +11,13 @@ defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file 
 github = 'paulirish/git-open'
 apply = ['defer']
 
+[plugins.zsh-completions]
+github = 'zsh-users/zsh-completions'
+apply = ['defer']
+
 [plugins.zsh-autosuggestions]
 github = 'zsh-users/zsh-autosuggestions'
+use = ["{{ name }}.zsh"]
 apply = ['defer']
 
 [plugins.zsh-syntax-highlighting]
