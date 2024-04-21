@@ -20,6 +20,10 @@ on_source = 'ddu.vim'
 hooks_file = '$BASE_DIR/ddu-ui-filer.vim'
 
 [[plugins]]
+repo = 'shun/ddu-source-buffer'
+on_source = 'ddu.vim'
+
+[[plugins]]
 repo = 'Shougo/ddu-source-file'
 on_source = 'ddu.vim'
 

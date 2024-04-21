@@ -10,9 +10,7 @@ call ddu#custom#patch_local('terminal', #{
     \     ui: 'ff',
     \     sourceParams: #{
     \         deol: #{
-    \             commands: [
-    \                 'zsh'
-    \             ],
+    \             command: ['zsh'],
     \         },
     \     },
     \     kindOptions: #{
@@ -193,6 +191,45 @@ call ddu#custom#patch_local('line', #{
     \             split: 'floating',
     \             startAutoAction: v:true,
     \             startFilter: v:true,
+    \             splitDirection: 'aboveleft',
+    \             winHeight: '&lines / 2',
+    \             winWidth: '&columns',
+    \         }
+    \     },
+    \     filterParams: #{
+    \         matcher_substring: #{
+    \             highlightMatched: 'Search',
+    \         },
+    \     },
+    \ })
+call ddu#custom#patch_local('buffer', #{
+    \     ui: 'ff',
+    \     sourceOptions: #{
+    \         buffer: #{
+    \             matchers: [
+    \                 'matcher_substring',
+    \             ],
+    \         },
+    \     },
+    \     uiParams: #{
+    \         ff: #{
+    \             autoAction: #{ name: 'preview' },
+    \             floatingBorder: 'single',
+    \             filterFloatingPosition: 'top',
+    \             filterSplitDirection: 'aboveleft',
+    \             highlights: #{
+    \                 floating: 'Normal',
+    \                 floatingBorder: 'Normal',
+    \             },
+    \             previewFloating: v:true,
+    \             previewFloatingBorder: 'single',
+    \             previewHeight: '&lines / 2',
+    \             previewSplit: 'vertical',
+    \             previewWidth: '&columns / 2',
+    \             prompt: '>',
+    \             split: 'floating',
+    \             startAutoAction: v:true,
+    \             startFilter: v:false,
     \             splitDirection: 'aboveleft',
     \             winHeight: '&lines / 2',
     \             winWidth: '&columns',

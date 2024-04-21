@@ -1,4 +1,7 @@
 " hook_add = {{{
+nnoremap <Space>b <Cmd>Ddu
+    \ -name=buffer buffer
+    \ <CR>
 nnoremap <Space>g <Cmd>Ddu
     \ -name=grep rg
     \ <CR>
