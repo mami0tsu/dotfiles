@@ -28,15 +28,32 @@ lua_add = '''
 repo = 'nvim-lualine/lualine.nvim'
 on_lua = 'lualine'
 lua_add = '''
-  require('lualine').setup {
+  local function diff_source()
+    local gitsigns = vim.b.gitsigns_status_dict
+    if gitsigns then
+      return {
+        added = gitsigns.added,
+        modified = gitsigns.changed,
+        removed = gitsigns.removed
+      }
+    end
+  end
+
+  require('lualine').setup({
     options = {
       icons_enabled = true,
       theme = 'auto',
-      component_separators = { left = '|', right = '|'},
-      section_separators = { left = '', right = ''},
+      component_separators = {
+        left = '|',
+        right = '|'
+      },
+      section_separators = {
+        left = '',
+        right = ''
+      },
       disabled_filetypes = {
         statusline = {},
-        winbar = {},
+        winbar = {}
       },
       ignore_focus = {},
       always_divide_middle = true,
@@ -44,14 +61,30 @@ lua_add = '''
       refresh = {
         statusline = 1000,
         tabline = 1000,
-        winbar = 1000,
+        winbar = 1000
       }
     },
     sections = {
       lualine_a = {'mode'},
-      lualine_b = {'branch', 'diff', 'diagnostics'},
-      lualine_c = {'filename'},
-      lualine_x = {'encoding', 'fileformat', 'filetype'},
+      lualine_b = {
+        'branch',
+        {
+          'diff',
+          source = diff_source,
+        },
+        'diagnostics'
+      },
+      lualine_c = {
+        {
+          'filename',
+          path = 3,
+        }
+      },
+      lualine_x = {
+        'encoding',
+        'fileformat',
+        'filetype',
+      },
       lualine_y = {'progress'},
       lualine_z = {'location'}
     },
@@ -63,9 +96,14 @@ lua_add = '''
       lualine_y = {},
       lualine_z = {}
     },
-    tabline = {},
+    tabline = {
+      lualine_a = {'buffers'},
+    },
     winbar = {},
     inactive_winbar = {},
     extensions = {}
-  }
+  })
 '''
+
+[[plugins]]
+repo = 'nvim-tree/nvim-web-devicons'
