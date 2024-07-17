@@ -9,6 +9,8 @@ endif
 set encoding=UTF-8
 set shortmess+=c
 
+set cmdheight=0
+
 " Set statusline
 set laststatus=2
 

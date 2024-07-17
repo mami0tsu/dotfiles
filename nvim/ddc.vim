@@ -49,7 +49,7 @@ call ddc#custom#patch_global(#{
     \             mark: 'line',
     \             matchers: ['matcher_vimregexp'],
     \         },
-    \         nvim-lsp: #{
+    \         lsp: #{
     \             mark: 'lsp',
     \             forceCompletionPattern: '\\.\\w*|::\\w*|->\\w*',
     \             dup: 'force',
@@ -134,7 +134,7 @@ call ddc#custom#patch_filetype(
     \     #{
     \         sources: [
     \             'around',
-    \             'nvim-lsp',
+    \             'lsp',
     \         ],
     \     },
     \ )
