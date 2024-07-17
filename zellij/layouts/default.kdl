@@ -1,0 +1,32 @@
+layout {
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+                format_left   "{tabs}"
+                format_right  "{datetime}"
+                format_space  "#[bg=#000000]"
+
+                border_enabled  "false"
+                border_char     "─"
+                border_format   "#[fg=#a6e3a1]{char}"
+                border_position "top"
+
+                hide_frame_for_single_pane "true"
+
+                tab_normal   "#[fg=#cdd6f4,bg=#000000] {index}:{name} "
+                tab_active   "#[fg=#cdd6f4,bg=#000000,bold] {index}:{name} "
+
+                datetime        "#[fg=#cdd6f4,bg=#000000] {format} "
+                datetime_format "%A, %d %b %Y %H:%M"
+                datetime_timezone "Asia/Tokyo"
+            }
+        }
+    }
+    tab name="infra" cwd="~/src/infra" {
+        pane command="nvim"
+    }
+    tab name="tofu-modules" cwd="~/src/tofu-modules" {
+        pane command="nvim"
+    }
+}
