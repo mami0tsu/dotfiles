@@ -61,3 +61,8 @@ nnoremap <buffer> <CR>
 nnoremap <buffer> q
     \ <Cmd>call ddu#ui#do_action('closeFilterWindow')<CR>
 " }}}
+
+" deol {{{
+nnoremap <buffer> q
+    \ <Plug>(deol_quit)
+" }}}
