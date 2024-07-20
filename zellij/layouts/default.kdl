@@ -1,6 +1,9 @@
 layout {
     default_tab_template {
-        children
+        pane {
+            pane command="nvim"
+            children
+        }
         pane size=1 borderless=true {
             plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
                 format_left   "{tabs}"
@@ -23,10 +26,8 @@ layout {
             }
         }
     }
-    tab name="infra" cwd="~/src/infra" {
-        pane command="nvim"
-    }
-    tab name="tofu-modules" cwd="~/src/tofu-modules" {
-        pane command="nvim"
-    }
+    cwd "$HOME"
+    tab name="shell" focus=true
+    tab name="infra" cwd="src/infra"
+    tab name="tofu-modules" cwd="src/tofu-modules"
 }
