@@ -25,6 +25,11 @@ lua_add = '''
 '''
 
 [[plugins]]
+repo = 'svampkorg/moody.nvim'
+depends = 'catppuccin/nvim'
+on_event = ['ModeChanged', 'BufWinEnter', 'WinEnter']
+
+[[plugins]]
 repo = 'nvim-lualine/lualine.nvim'
 on_lua = 'lualine'
 lua_add = '''

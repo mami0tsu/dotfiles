@@ -12,7 +12,7 @@ repo = 'prettier/vim-prettier'
 build = 'npm install'
 on_ft = ['markdown']
 hook_source = '''
-  autocmd BufWritePre,InsertLeave *.md PrettierAsync
+  autocmd BufWritePre *.md PrettierAsync
 '''
 
 [[plugins]]
