@@ -4,6 +4,8 @@ on_lua = 'catppuccin'
 lua_add = '''
   require('catppuccin').setup({
     flavor = 'mocha',
+    transparent_background = true,
+    show_end_of_buffer = true,
     color_overrides = {
       mocha = {
         base = '#000000',
