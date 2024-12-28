@@ -36,7 +36,7 @@ tasks:
   deploy-new:
     vars:
       config_dir: $HOME/.config
-      target_dir: starship,mise,sheldon
+      target_dir: ghostty,wezterm,starship,mise,sheldon
     cmds:
       - for: { var: target_dir, split: ','}
         cmd: ln -svi $(pwd)/{{.ITEM}} {{.config_dir}}
@@ -44,7 +44,7 @@ tasks:
   clean-new:
     vars:
       config_dir: $HOME/.config
-      target_dir: starship,mise,sheldon
+      target_dir: ghostty,wezterm,starship,mise,sheldon
     cmds:
       - for: { var: target_dir, split: ',' }
         cmd: unlink {{.config_dir}}/{{.ITEM}}
