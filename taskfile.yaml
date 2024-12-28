@@ -40,10 +40,10 @@ tasks:
   internal:deploy:git:
     internal: true
     cmds:
-      - |
-        if [ $(hostname -s) -eq 'mami0tsu' ]; then
-          ln -svi $(pwd)/git/.gitconfig $HOME/.gitconfig
-        fi
+      - ln -svi $(pwd)/git/.gitconfig $HOME/.gitconfig
+    preconditions:
+      - sh: '[ $(hostname -s) = "mami0tsu" ]'
+        msg: "Hostname doesn't equal mami0tsu"
 
   internal:deploy:tmux:
     internal: true
