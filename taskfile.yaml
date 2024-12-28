@@ -1,47 +1,32 @@
-version: "3"
-
-includes:
-  brew:
-    taskfile: ./brew
-    dir: ./brew
-  git:
-    taskfile: ./git
-    dir: ./git
-  tmux:
-    taskfile: ./tmux
-    dir: ./tmux
-  zsh:
-    taskfile: ./zsh
-    dir: ./zsh
-
-vars:
-  TARGET: git tmux zsh
+version: '3'
 
 tasks:
   deploy:
-    cmds:
-      - task brew:deploy
-      - for: { var: TARGET }
-        cmd: task {{.ITEM}}:deploy
-
-  clean:
-    cmds:
-      - for: { var: TARGET }
-        cmd: task {{.ITEM}}:clean
-      - task brew:clean
-
-  deploy-new:
     vars:
       config_dir: $HOME/.config
-      target_dir: nvim,ghostty,wezterm,starship,mise,sheldon
+      target_dir: zellij,zsh,nvim,ghostty,wezterm,starship,mise,sheldon
+      hostname:
+        sh: hostname -s
     cmds:
       - for: { var: target_dir, split: ','}
         cmd: ln -svi $(pwd)/{{.ITEM}} {{.config_dir}}
+      - ln -svi $(pwd)/zsh/.zshrc $HOME/.zshrc
+      - ln -svi $(pwd)/tmux/.tmux.conf $HOME/.tmux.conf
+      - |
+        if [ {{.hostname}} -eq 'mami0tsu' ]; then
+          ln -svi $(pwd)/git/.gitconfig $HOME/.gitconfig
+        fi
+      - |
+        ln -svi $(pwd)/brew/.brewfile $HOME/.brewfile
+        brew bundle --file=$HOME/.brewfile
 
-  clean-new:
+  clean:
     vars:
       config_dir: $HOME/.config
-      target_dir: nvim,ghostty,wezterm,starship,mise,sheldon
+      target_dir: zellij,zsh,nvim,ghostty,wezterm,starship,mise,sheldon
+      target_file: .tmux.conf,.gitconfig,.zshrc,.brewfile
     cmds:
       - for: { var: target_dir, split: ',' }
         cmd: unlink {{.config_dir}}/{{.ITEM}}
+      - for: { var: target_file, split: ',' }
+        cmd: unlink $HOME/{{.ITEM}}
