@@ -1,32 +1,57 @@
 version: '3'
 
+vars:
+  config_dir: $HOME/.config
+  target_dir: ghostty mise nvim sheldon starship wezterm zellij
+
 tasks:
-  deploy:
+  clean:
+    desc: Clean dotfiles.
     vars:
-      config_dir: $HOME/.config
-      target_dir: zellij,zsh,nvim,ghostty,wezterm,starship,mise,sheldon
-      hostname:
-        sh: hostname -s
+      target_file: .brewfile .gitconfig .tmux.conf .zshrc
     cmds:
-      - for: { var: target_dir, split: ','}
+      - for: { var: target_file }
+        cmd: unlink $HOME/{{.ITEM}}
+      - for: { var: target_dir }
+        cmd: unlink {{.config_dir}}/{{.ITEM}}
+      - unlink {{.config_dir}}/zsh
+
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  deploy:
+    desc: Deploy dotfiles.
+    cmds:
+      - for: { var: target_dir }
         cmd: ln -svi $(pwd)/{{.ITEM}} {{.config_dir}}
-      - ln -svi $(pwd)/zsh/.zshrc $HOME/.zshrc
-      - ln -svi $(pwd)/tmux/.tmux.conf $HOME/.tmux.conf
+      - task: internal:deploy:brew
+      - task: internal:deploy:git
+      - task: internal:deploy:tmux
+      - task: internal:deploy:zsh
+
+  internal:deploy:brew:
+    internal: true
+    cmds:
+      - ln -svi $(pwd)/brew/.brewfile $HOME/.brewfile
+      - brew bundle --file=$HOME/.brewfile
+
+  internal:deploy:git:
+    internal: true
+    cmds:
       - |
-        if [ {{.hostname}} -eq 'mami0tsu' ]; then
+        if [ $(hostname -s) -eq 'mami0tsu' ]; then
           ln -svi $(pwd)/git/.gitconfig $HOME/.gitconfig
         fi
-      - |
-        ln -svi $(pwd)/brew/.brewfile $HOME/.brewfile
-        brew bundle --file=$HOME/.brewfile
 
-  clean:
-    vars:
-      config_dir: $HOME/.config
-      target_dir: zellij,zsh,nvim,ghostty,wezterm,starship,mise,sheldon
-      target_file: .tmux.conf,.gitconfig,.zshrc,.brewfile
+  internal:deploy:tmux:
+    internal: true
     cmds:
-      - for: { var: target_dir, split: ',' }
-        cmd: unlink {{.config_dir}}/{{.ITEM}}
-      - for: { var: target_file, split: ',' }
-        cmd: unlink $HOME/{{.ITEM}}
+      - ln -svi $(pwd)/tmux/.tmux.conf $HOME/.tmux.conf
+
+  internal:deploy:zsh:
+    internal: true
+    cmds:
+      - ln -svi $(pwd)/zsh/.zshrc $HOME/.zshrc
+      - ln -svi $(pwd)/zsh $HOME/.config
