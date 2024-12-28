@@ -1,0 +1,16 @@
+version: '3'
+
+vars:
+  config_dir: $HOME/.config
+  target_dir: ghostty,wezterm
+
+tasks:
+  deploy:
+    cmds:
+      - for: { var: target_dir, split: ',' }
+        cmd: ln -siv $(pwd)/{{.ITEM}} {{.config_dir}}
+
+  clean:
+    cmds:
+      - for: { var: target_dir, split: ',' }
+        cmd: unlink {{.config_dir}}/{{.ITEM}}

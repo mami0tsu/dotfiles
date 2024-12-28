@@ -13,15 +13,12 @@ includes:
   tmux:
     taskfile: ./tmux
     dir: ./tmux
-  wezterm:
-    taskfile: ./wezterm
-    dir: ./wezterm
   zsh:
     taskfile: ./zsh
     dir: ./zsh
 
 vars:
-  TARGET: git nvim tmux wezterm zsh
+  TARGET: git nvim tmux zsh
 
 tasks:
   deploy:

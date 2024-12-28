@@ -1,0 +1,17 @@
+theme = catppuccin-mocha
+background = 000000
+background-blur-radius = 20
+background-opacity = 0.8
+cursor-style-blink = false
+cursor-color = ffffff
+cursor-opacity = 0.7
+font-family = "FirgeNerd Console"
+font-size = 16
+font-style = "Normal"
+
+macos-titlebar-style = tabs
+mouse-hide-while-typing = true
+window-padding-x = 20
+
+keybind = global:ctrl+t=toggle_visibility
+keybind = ctrl+shift+comma=reload_config
