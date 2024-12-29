@@ -13,8 +13,7 @@ format = '$symbol'
 success_symbol = "[>](bole green)"
 
 [directory]
-format = '[-\[](bold white)[$path]($style)[\]](bold white)'
-truncation_length = 100 
+format = '[$path]($style) '
 
 [git_status]
 ahead = "${count}↑"
@@ -28,8 +27,8 @@ staged = '[++\($count\)](green)'
 stashed = "${count}*"
 untracked = "${count}?"
 
-[username]
-format = '[\[](bold white)[$user]($style)[\]](bold white)'
-show_always = true
-style_user = "bold green"
-style_root = "bold red"
+# [username]
+# format = '[\[](bold white)[$user]($style)[\]](bold white)'
+# show_always = true
+# style_user = "bold green"
+# style_root = "bold red"
