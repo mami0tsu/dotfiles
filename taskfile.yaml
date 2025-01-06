@@ -8,7 +8,7 @@ tasks:
   clean:
     desc: Clean dotfiles.
     vars:
-      target_file: .brewfile .gitconfig .tmux.conf .zshenv
+      target_file: .brewfile .tmux.conf .zshenv
     cmds:
       - for: { var: target_file }
         cmd: unlink $HOME/{{.ITEM}}
@@ -40,7 +40,7 @@ tasks:
   internal:deploy:git:
     internal: true
     cmds:
-      - ln -svi $(pwd)/git/.gitconfig $HOME/.gitconfig
+      - ln -svi $(pwd)/git $HOME/.config
     preconditions:
       - sh: '[ $(hostname -s) = "mami0tsu" ]'
         msg: "Hostname doesn't equal mami0tsu"
