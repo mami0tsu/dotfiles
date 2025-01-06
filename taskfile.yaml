@@ -8,7 +8,7 @@ tasks:
   clean:
     desc: Clean dotfiles.
     vars:
-      target_file: .brewfile .gitconfig .tmux.conf .zshrc
+      target_file: .brewfile .gitconfig .tmux.conf .zshenv
     cmds:
       - for: { var: target_file }
         cmd: unlink $HOME/{{.ITEM}}
@@ -53,5 +53,5 @@ tasks:
   internal:deploy:zsh:
     internal: true
     cmds:
-      - ln -svi $(pwd)/zsh/.zshrc $HOME/.zshrc
+      - ln -svi $(pwd)/zsh/.zshenv $HOME/.zshenv
       - ln -svi $(pwd)/zsh $HOME/.config
