@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   config_dir: $HOME/.config
-  target_dir: ghostty mise nvim sheldon starship tmux wezterm zellij
+  target_dir: ghostty mise nvim sheldon starship tmux wezterm zellij zsh
 
 tasks:
   clean:
@@ -28,7 +28,7 @@ tasks:
         cmd: ln -svi $(pwd)/{{.ITEM}} {{.config_dir}}
       - task: internal:deploy:brew
       - task: internal:deploy:git
-      - task: internal:deploy:zsh
+      - ln -svi $(pwd)/zsh/.zshenv $HOME/.zshenv
 
   internal:deploy:brew:
     internal: true
@@ -43,9 +43,3 @@ tasks:
     preconditions:
       - sh: '[ $(hostname -s) = "mami0tsu" ]'
         msg: "Hostname doesn't equal mami0tsu"
-
-  internal:deploy:zsh:
-    internal: true
-    cmds:
-      - ln -svi $(pwd)/zsh/.zshenv $HOME/.zshenv
-      - ln -svi $(pwd)/zsh $HOME/.config
