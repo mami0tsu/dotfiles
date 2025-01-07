@@ -2,13 +2,13 @@ version: '3'
 
 vars:
   config_dir: $HOME/.config
-  target_dir: ghostty mise nvim sheldon starship wezterm zellij
+  target_dir: ghostty mise nvim sheldon starship tmux wezterm zellij
 
 tasks:
   clean:
     desc: Clean dotfiles.
     vars:
-      target_file: .brewfile .tmux.conf .zshenv
+      target_file: .brewfile .zshenv
     cmds:
       - for: { var: target_file }
         cmd: unlink $HOME/{{.ITEM}}
@@ -28,7 +28,6 @@ tasks:
         cmd: ln -svi $(pwd)/{{.ITEM}} {{.config_dir}}
       - task: internal:deploy:brew
       - task: internal:deploy:git
-      - task: internal:deploy:tmux
       - task: internal:deploy:zsh
 
   internal:deploy:brew:
@@ -44,11 +43,6 @@ tasks:
     preconditions:
       - sh: '[ $(hostname -s) = "mami0tsu" ]'
         msg: "Hostname doesn't equal mami0tsu"
-
-  internal:deploy:tmux:
-    internal: true
-    cmds:
-      - ln -svi $(pwd)/tmux/.tmux.conf $HOME/.tmux.conf
 
   internal:deploy:zsh:
     internal: true
