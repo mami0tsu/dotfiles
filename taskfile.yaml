@@ -12,6 +12,8 @@ tasks:
   deploy:
     desc: Deploy dotfiles.
     cmds:
+      # Template
+      # - task: deploy:{name}
       - task: deploy:brew
       - task: deploy:espanso
       - task: deploy:ghostty
@@ -28,6 +30,8 @@ tasks:
   clean:
     desc: Clean dotfiles.
     cmds:
+      # Template
+      # - task: clean:{name}
       - task: clean:brew
       - task: clean:espanso
       - task: clean:ghostty
@@ -40,6 +44,20 @@ tasks:
       - task: clean:wezterm
       - task: clean:zellij
       - task: clean:zsh
+
+# Template
+# # {name}
+#   deploy:{name}:
+#     desc: Deploy {name} config.
+#     cmds:
+#       - task: link
+#         vars: { target_dir: '{name}' }
+#
+#   clean:{name}:
+#     desc: Clean {name} config.
+#     cmds:
+#       - task: unlink
+#         vars: { target_dir: '{name}' }
 
 # brew
   deploy:brew:
@@ -202,7 +220,7 @@ tasks:
       - task: unlink
         vars: { target_dir: 'zsh' }
 
-# internal tasks
+# Internal tasks
   link:
     internal: true
     requires:
