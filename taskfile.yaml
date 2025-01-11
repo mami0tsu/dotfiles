@@ -13,6 +13,7 @@ tasks:
     desc: Deploy dotfiles.
     cmds:
       - task: deploy:brew
+      - task: deploy:espanso
       - task: deploy:ghostty
       - task: deploy:git
       - task: deploy:mise
@@ -28,6 +29,7 @@ tasks:
     desc: Clean dotfiles.
     cmds:
       - task: clean:brew
+      - task: clean:espanso
       - task: clean:ghostty
       - task: clean:git
       - task: clean:mise
@@ -54,6 +56,19 @@ tasks:
     desc: Install and upgrade all dependencies from the brew config.
     cmds:
       - brew bundle --file=$HOME/.brewfile
+
+# espanso
+  deploy:espanso:
+    desc: Deploy espanso config.
+    cmds:
+      - task: link
+        vars: { target_dir: 'espanso' }
+
+  clean:espanso:
+    desc: Clean espanso config.
+    cmds:
+      - task: unlink
+        vars: { target_dir: 'espanso' }
 
 # ghostty
   deploy:ghostty:
