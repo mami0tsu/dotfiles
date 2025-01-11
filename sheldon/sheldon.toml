@@ -1,15 +1,18 @@
 shell = 'zsh'
 
+[templates]
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"{% endfor %}{{ hooks?.post | nl }}"
+
 [plugins.zsh-defer]
 github = 'romkatv/zsh-defer'
 apply = ['source']
 
-[templates]
-defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"{% endfor %}{{ hooks?.post | nl }}"
-
 [plugins.git-open]
 github = 'paulirish/git-open'
 apply = ['defer']
+
+[plugins.zsh-compinit]
+inline = 'autoload -Uz compinit && compinit'
 
 [plugins.zsh-completions]
 github = 'zsh-users/zsh-completions'
@@ -26,6 +29,7 @@ apply = ['defer']
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
+hooks.pre = 'export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml'
 
 [plugins.sync]
 local = '~/.config/zsh/sync'
