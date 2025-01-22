@@ -14,7 +14,7 @@ zstyle ':completion:*:default' menu select=1 # 補完機能を有効化する
 
 # mise
 export MISE_ENV_FILE=.env
-eval "$(/opt/homebrew/bin/mise activate zsh)"
+eval "$(mise activate zsh)"
 
 # Sheldon
 eval "$(sheldon source)"

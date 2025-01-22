@@ -29,7 +29,6 @@ apply = ['defer']
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
-hooks.pre = 'export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml'
 
 [plugins.sync]
 local = '~/.config/zsh/sync'

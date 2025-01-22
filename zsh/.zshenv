@@ -16,6 +16,9 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 # Go
 export GOPATH="$XDG_DATA_HOME/go"
 
+# Starship
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+
 # Sheldon
 export SHELDON_CONFIG_DIR="$XDG_CONFIG_HOME/sheldon"
 export SHELDON_CONFIG_FILE="$SHELDON_CONFIG_DIR/sheldon.toml"
