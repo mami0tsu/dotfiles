@@ -18,3 +18,7 @@ eval "$(mise activate zsh)"
 
 # Sheldon
 eval "$(sheldon source)"
+
+# tenv
+export TENV_AUTO_INSTALL=true
+eval "$(tenv completion zsh)"
