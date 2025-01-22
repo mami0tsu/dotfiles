@@ -31,3 +31,5 @@ conditional_alias 'ls' 'eza' '-l -h --git --group-directories-first --time-style
 conditional_alias 'tf' 'tofu'
 conditional_alias 'v' 'nvim'
 conditional_alias 'vim' 'nvim'
+
+alias cdr='cd $(git rev-parse --show-toplevel)'
