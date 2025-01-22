@@ -2,4 +2,5 @@
     path = conf.d/alias.conf
     path = conf.d/base.conf
     path = conf.d/diff.conf
+    path = conf.d/ghq.conf
     path = conf.d/user.conf
