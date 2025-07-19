@@ -60,7 +60,7 @@ call ddc#custom#patch_global(#{
     \             minAutoCompleteLength: 1000,
     \             forceCompletionPattern: '\\S/\\S*',
     \         },
-    \         shell-native: #{
+    \         shell_native: #{
     \             mark: 'shell',
     \             isVolatile: v:true,
     \             forceCompletionPattern: '\\S/\\S*',
@@ -81,7 +81,7 @@ call ddc#custom#patch_global(#{
     \         file: #{
     \             filenameChars: '[:keyword:].',
     \         },
-    \         shell-native: #{
+    \         shell_native: #{
     \             shell: 'zsh',
     \         },
     \     },
@@ -104,7 +104,7 @@ call ddc#custom#patch_filetype(
     \         },
     \         sources: [
     \             'around',
-    \             'shell-native',
+    \             'shell_native',
     \         ],
     \     },
     \ )
@@ -118,7 +118,7 @@ call ddc#custom#patch_filetype('deol', #{
     \     },
     \     sources: [
     \         'around',
-    \         'shell-native',
+    \         'shell_native',
     \     ],
     \ })
 
