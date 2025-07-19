@@ -16,6 +16,7 @@ tasks:
       # - task: deploy:{name}
       - task: deploy:brew
       - task: deploy:espanso
+      - task: deploy:editorconfig
       - task: deploy:ghostty
       - task: deploy:git
       - task: deploy:mise
@@ -34,6 +35,7 @@ tasks:
       # - task: clean:{name}
       - task: clean:brew
       - task: clean:espanso
+      - task: clean:editorconfig
       - task: clean:ghostty
       - task: clean:git
       - task: clean:mise
@@ -51,13 +53,13 @@ tasks:
 #     desc: Deploy {name} config.
 #     cmds:
 #       - task: link
-#         vars: { target_dir: '{name}' }
+#         vars: { target: '{name}' }
 #
 #   clean:{name}:
 #     desc: Clean {name} config.
 #     cmds:
 #       - task: unlink
-#         vars: { target_dir: '{name}' }
+#         vars: { target: '{name}' }
 
 # brew
   deploy:brew:
@@ -80,130 +82,143 @@ tasks:
     desc: Deploy espanso config.
     cmds:
       - task: link
-        vars: { target_dir: 'espanso' }
+        vars: { target: 'espanso' }
 
   clean:espanso:
     desc: Clean espanso config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'espanso' }
+        vars: { target: 'espanso' }
+
+# editorconfig
+  deploy:editorconfig:
+    desc: Deploy editorconfig.
+    cmds:
+      - task: link
+        vars: { target: '.editorconfig' }
+
+  clean:editorconfig:
+    desc: Clean editorconfig.
+    cmds:
+      - task: unlink
+        vars: { target: '.editorconfig' }
 
 # ghostty
   deploy:ghostty:
     desc: Deploy ghostty config.
     cmds:
       - task: link
-        vars: { target_dir: 'ghostty' }
+        vars: { target: 'ghostty' }
 
   clean:ghostty:
     desc: Clean ghostty config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'ghostty' }
+        vars: { target: 'ghostty' }
 
 # git
   deploy:git:
     desc: Deploy git config.
     cmds:
       - task: link
-        vars: { target_dir: 'git' }
+        vars: { target: 'git' }
 
   clean:git:
     desc: Clean git config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'git' }
+        vars: { target: 'git' }
 
 # mise
   deploy:mise:
     desc: Deploy mise config.
     cmds:
       - task: link
-        vars: { target_dir: 'mise' }
+        vars: { target: 'mise' }
 
   clean:mise:
     desc: Clean mise config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'mise' }
+        vars: { target: 'mise' }
 
 # nvim
   deploy:nvim:
     desc: Deploy nvim config.
     cmds:
       - task: link
-        vars: { target_dir: 'nvim' }
+        vars: { target: 'nvim' }
 
   clean:nvim:
     desc: Clean nvim config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'nvim' }
+        vars: { target: 'nvim' }
 
 # sheldon
   deploy:sheldon:
     desc: Deploy sheldon config.
     cmds:
       - task: link
-        vars: { target_dir: 'sheldon' }
+        vars: { target: 'sheldon' }
 
   clean:sheldon:
     desc: Clean sheldon config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'sheldon' }
+        vars: { target: 'sheldon' }
 
 # starship
   deploy:starship:
     desc: Deploy starship config.
     cmds:
       - task: link
-        vars: { target_dir: 'starship' }
+        vars: { target: 'starship' }
 
   clean:starship:
     desc: Clean starship config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'starship' }
+        vars: { target: 'starship' }
 
 # tmux
   deploy:tmux:
     desc: Deploy tmux config.
     cmds:
       - task: link
-        vars: { target_dir: 'tmux' }
+        vars: { target: 'tmux' }
 
   clean:tmux:
     desc: Clean tmux config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'tmux' }
+        vars: { target: 'tmux' }
 
 # wezterm
   deploy:wezterm:
     desc: Deploy wezterm config.
     cmds:
       - task: link
-        vars: { target_dir: 'wezterm' }
+        vars: { target: 'wezterm' }
 
   clean:wezterm:
     desc: Clean wezterm config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'wezterm' }
+        vars: { target: 'wezterm' }
 
 # zellij
   deploy:zellij:
     desc: Deploy zellij config.
     cmds:
       - task: link
-        vars: { target_dir: 'zellij' }
+        vars: { target: 'zellij' }
 
   clean:zellij:
     desc: Clean zellij config.
     cmds:
       - task: unlink
-        vars: { target_dir: 'zellij' }
+        vars: { target: 'zellij' }
 
 # zsh
   deploy:zsh:
@@ -211,26 +226,26 @@ tasks:
     cmds:
       - ln -svi $(pwd)/zsh/.zshenv $HOME/.zshenv
       - task: link
-        vars: { target_dir: 'zsh' }
+        vars: { target: 'zsh' }
 
   clean:zsh:
     desc: Clean zsh config.
     cmds:
       - unlink $HOME/.zshenv
       - task: unlink
-        vars: { target_dir: 'zsh' }
+        vars: { target: 'zsh' }
 
 # Internal tasks
   link:
     internal: true
     requires:
-      vars: [target_dir]
+      vars: [target]
     cmds:
-      - ln -svi $(pwd)/{{.target_dir}} {{.config_dir}}
+      - ln -svi $(pwd)/{{.target}} {{.config_dir}}
 
   unlink:
     internal: true
     requires:
-      vars: [target_dir]
+      vars: [target]
     cmds:
-      - unlink {{.config_dir}}/{{.target_dir}}
+      - unlink {{.config_dir}}/{{.target}}

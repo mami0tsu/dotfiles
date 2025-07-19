@@ -9,6 +9,7 @@ au BufNewFile,BufRead *.yml set filetype=yaml
 au BufNewFile,BufRead *.yaml set filetype=yaml
 au BufNewFile,BufRead *.toml set filetype=toml
 au BufNewFile,BufRead *.vim set filetype=vim
+au BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 " }}}
 
 " Indentation settings {{{
