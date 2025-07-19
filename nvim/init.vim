@@ -22,7 +22,7 @@ let g:dein#install_check_remote_threshold = 24 * 60 * 60
 let g:dein#auto_remote_plugins = v:false
 let g:dein#install_copy_vim = v:true
 
-let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
+let $BASE_DIR = resolve(expand('<sfile>:p:h'))
 let s:path= $CACHE .. '/dein'
 if dein#min#load_state(s:path)
     let g:dein#inline_vimrcs = [
