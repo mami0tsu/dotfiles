@@ -23,7 +23,6 @@ tasks:
       - task: deploy:nvim
       - task: deploy:sheldon
       - task: deploy:starship
-      - task: deploy:tmux
       - task: deploy:zellij
       - task: deploy:zsh
 
@@ -41,7 +40,6 @@ tasks:
       - task: clean:nvim
       - task: clean:sheldon
       - task: clean:starship
-      - task: clean:tmux
       - task: clean:zellij
       - task: clean:zsh
 
@@ -178,19 +176,6 @@ tasks:
     cmds:
       - task: unlink
         vars: { target: 'starship' }
-
-# tmux
-  deploy:tmux:
-    desc: Deploy tmux config.
-    cmds:
-      - task: link
-        vars: { target: 'tmux' }
-
-  clean:tmux:
-    desc: Clean tmux config.
-    cmds:
-      - task: unlink
-        vars: { target: 'tmux' }
 
 # zellij
   deploy:zellij:
