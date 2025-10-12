@@ -24,7 +24,6 @@ tasks:
       - task: deploy:sheldon
       - task: deploy:starship
       - task: deploy:tmux
-      - task: deploy:wezterm
       - task: deploy:zellij
       - task: deploy:zsh
 
@@ -43,7 +42,6 @@ tasks:
       - task: clean:sheldon
       - task: clean:starship
       - task: clean:tmux
-      - task: clean:wezterm
       - task: clean:zellij
       - task: clean:zsh
 
@@ -193,19 +191,6 @@ tasks:
     cmds:
       - task: unlink
         vars: { target: 'tmux' }
-
-# wezterm
-  deploy:wezterm:
-    desc: Deploy wezterm config.
-    cmds:
-      - task: link
-        vars: { target: 'wezterm' }
-
-  clean:wezterm:
-    desc: Clean wezterm config.
-    cmds:
-      - task: unlink
-        vars: { target: 'wezterm' }
 
 # zellij
   deploy:zellij:
