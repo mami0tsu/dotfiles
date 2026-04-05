@@ -11,9 +11,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nix-darwin を FlakeHub から取得しバージョンを固定する
+    # nix-darwin を使用して macOS 本体のシステム設定を管理する
     darwin = {
-      url = "https://flakehub.com/f/LnL7/nix-darwin/0.2311.*";
+      url = "github:LnL7/nix-darwin/nix-darwin-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
