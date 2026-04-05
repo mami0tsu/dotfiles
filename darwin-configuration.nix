@@ -16,6 +16,9 @@
   # zsh をシステムレベルで有効化し /etc/zshrc を自動生成する
   programs.zsh.enable = true;
 
+  # macOS のシステムレベルでのプライマリユーザーを指定する
+  system.primaryUser = username;
+
   # macOS のシステム設定を変更しファイルの拡張子を常に表示する
   system.defaults.NSGlobalDomain.AppleShowAllExtensions = true;
 
