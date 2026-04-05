@@ -3,17 +3,17 @@
 
   inputs = {
     # FlakeHub から安定版の Nixpkgs を取得しサプライチェーンの安全性を確保する
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2311.*";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2511.*";
 
-    # Home Manager を FlakeHub から取得しバージョンを固定する
+    # Home Manager を GitHub の安定版リリースブランチから取得する
     home-manager = {
-      url = "https://flakehub.com/f/nix-community/home-manager/23.11.*";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nix-darwin を使用して macOS 本体のシステム設定を管理する
+    # nix-darwin を GitHub の安定版ブランチから取得する
     darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-23.11";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
