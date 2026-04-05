@@ -11,6 +11,7 @@
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
 
   outputs =
@@ -19,6 +20,7 @@
       nixpkgs,
       home-manager,
       nix-darwin,
+      nix-homebrew,
       ...
     }@inputs:
     let
@@ -45,12 +47,14 @@
           system = system;
           specialArgs = {
             inputs = inputs;
+            nix-homebrew = inputs.nix-homebrew;
             self = inputs.self;
             username = username;
           };
           modules = [
             ./nix/nix-darwin/configuration.nix
             home-manager.darwinModules.home-manager
+            nix-homebrew.darwinModules.nix-homebrew
           ];
         };
     in
