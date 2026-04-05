@@ -86,10 +86,7 @@
         { pkgs, system }:
         {
           default = pkgs.mkShellNoCC {
-            packages = with pkgs; [
-              self.formatter.${system}
-              ponysay
-            ];
+            packages = with pkgs; [ self.formatter.${system} ];
           };
         }
       );
