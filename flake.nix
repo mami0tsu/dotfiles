@@ -27,8 +27,21 @@
       ...
     }@inputs:
     let
-      # ユーザー名をここで一括管理する
-      username = "mami0tsu";
+      # local.nix が存在する場合は読み込み、存在しない場合は空のセットを返す
+      localConfig = if builtins.pathExists ./local.nix then import ./local.nix else { };
+
+      # ユーザー名が指定されていない場合にエラーを表示する
+      # CI 環境以外（ローカル環境）では local.nix による明示的な指定を求める
+      username =
+        localConfig.username
+          or (throw ''
+            Error: 'local.nix' is missing or 'username' is not defined.
+            Please create 'local.nix' with the following content:
+            {
+              username = "your-username";
+            }
+          '');
+
       system = "aarch64-darwin";
       # サポート対象とするシステムを定義する
       supportedSystems = [ "aarch64-darwin" ];
@@ -72,10 +85,11 @@
     in
     {
       # macOS システムの設定を定義する
-      # ローカル環境向けの設定を 'local' という名前で定義する
+      # local.nix での定義を強制し、未定義の場合はビルドエラーにする
       darwinConfigurations.local = mkDarwinConfig username system;
 
       # GitHub Actions などの CI 環境向けの構成を定義する
+      # CI 環境では特定のアカウント 'ci-user' でビルドを成功させる
       darwinConfigurations.ci = mkDarwinConfig "ci-user" system;
 
       # Nix ファイルに対して標準的なフォーマットを適用する
