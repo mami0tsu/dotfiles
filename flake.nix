@@ -12,7 +12,7 @@
     };
 
     # nix-darwin を GitHub の安定版ブランチから取得する
-    darwin = {
+    nix-darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -23,7 +23,7 @@
       self,
       nixpkgs,
       home-manager,
-      darwin,
+      nix-darwin,
       ...
     }@inputs:
     let
@@ -62,19 +62,19 @@
       # 共通の darwinSystem 構成を生成する関数を定義する
       mkDarwinConfig =
         user: sys:
-        darwin.lib.darwinSystem {
+        nix-darwin.lib.darwinSystem {
           system = sys;
           specialArgs = {
             inherit inputs;
             username = user;
           };
           modules = [
-            ./darwin-configuration.nix
+            ./nix/nix-darwin
             home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.${user} = import ./home.nix;
+              home-manager.users.${user} = import ./nix/home-manager;
               home-manager.extraSpecialArgs = {
                 inherit inputs;
                 username = user;
