@@ -1,19 +1,14 @@
 {
-  description = "FlakeHub と nix-darwin を活用した macOS 環境設定";
+  description = "";
 
   inputs = {
-    # FlakeHub から安定版の Nixpkgs を取得しサプライチェーンの安全性を確保する
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2511.*";
-
-    # Home Manager を GitHub の安定版リリースブランチから取得する
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # nix-darwin を GitHub の安定版ブランチから取得する
     nix-darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -31,7 +26,6 @@
       localConfig = if builtins.pathExists ./local.nix then import ./local.nix else { };
 
       # ユーザー名が指定されていない場合にエラーを表示する
-      # CI 環境以外（ローカル環境）では local.nix による明示的な指定を求める
       username =
         localConfig.username
           or (throw ''
@@ -43,66 +37,27 @@
           '');
 
       system = "aarch64-darwin";
-      # サポート対象とするシステムを定義する
-      supportedSystems = [ "aarch64-darwin" ];
-      # 各システムごとにパッケージや設定を生成するヘルパー関数として定義する
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            inherit system;
-            pkgs = import nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-            };
-          }
-        );
 
       # 共通の darwinSystem 構成を生成する関数を定義する
-      mkDarwinConfig =
-        user: sys:
+      getDarwinConfig =
+        username: system:
         nix-darwin.lib.darwinSystem {
-          system = sys;
+          system = system;
           specialArgs = {
-            inherit inputs;
-            username = user;
+            inputs = inputs;
+            self = inputs.self;
+            username = username;
           };
           modules = [
-            ./nix/nix-darwin
+            ./nix/nix-darwin/configuration.nix
             home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.${user} = import ./nix/home-manager;
-              home-manager.extraSpecialArgs = {
-                inherit inputs;
-                username = user;
-              };
-            }
           ];
         };
     in
     {
-      # macOS システムの設定を定義する
-      # local.nix での定義を強制し、未定義の場合はビルドエラーにする
-      darwinConfigurations.local = mkDarwinConfig username system;
+      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" system;
 
-      # GitHub Actions などの CI 環境向けの構成を定義する
-      # CI 環境では特定のアカウント 'ci-user' でビルドを成功させる
-      darwinConfigurations.ci = mkDarwinConfig "ci-user" system;
-
-      # Nix ファイルに対して標準的なフォーマットを適用する
-      formatter = forEachSupportedSystem ({ pkgs, ... }: pkgs.nixfmt-rfc-style);
-
-      # nix develop コマンドで使用する開発用シェル環境を定義する
-      devShells = forEachSupportedSystem (
-        { pkgs, system }:
-        {
-          default = pkgs.mkShellNoCC {
-            packages = with pkgs; [ self.formatter.${system} ];
-          };
-        }
-      );
+      # CI 環境の設定を定義する
+      darwinConfigurations.ci = getDarwinConfig "ci-user" system;
     };
 }

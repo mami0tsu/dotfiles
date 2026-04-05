@@ -1,5 +1,2 @@
 .DS_Store
 .zcompdump
-
-# Local configuration file
-local.nix
