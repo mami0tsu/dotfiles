@@ -1,3 +1,4 @@
+---
 name: Nix Config Test
 
 on:
@@ -6,10 +7,27 @@ on:
   push:
     branches: [main]
 
+# ワークフローレベルではパーミッションを設定しない
+permissions: {}
+
+# デフォルトシェルでパイプエラーを有効化する
+defaults:
+  run:
+    shell: bash
+
+# ワークフローが同じブランチで複数起動したらキャンセルする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build
     runs-on: macos-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
