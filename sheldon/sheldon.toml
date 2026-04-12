@@ -12,7 +12,7 @@ github = 'paulirish/git-open'
 apply = ['defer']
 
 [plugins.zsh-compinit]
-inline = 'autoload -Uz compinit && compinit'
+inline = 'autoload -Uz compinit && compinit -C'
 
 [plugins.zsh-completions]
 github = 'zsh-users/zsh-completions'

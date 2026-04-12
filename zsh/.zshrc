@@ -12,9 +12,8 @@ unsetopt correct # コマンド入力補正機能を無効化する
 
 zstyle ':completion:*:default' menu select=1 # 補完機能を有効化する
 
-# mise
-export MISE_ENV_FILE=.env
-eval "$(mise activate zsh)"
+# fnm
+eval "$(fnm env --use-on-cd)"
 
 # Sheldon
 eval "$(sheldon source)"
