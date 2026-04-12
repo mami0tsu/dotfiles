@@ -46,4 +46,36 @@
   ];
 
   programs.home-manager.enable = true;
+
+  # dotfiles のシンボリックリンク設定
+  xdg.configFile = {
+    # zsh
+    "zsh".source = ../../zsh;
+    # sheldon
+    "sheldon".source = ../../sheldon;
+    # starship
+    "starship/starship.toml".source = ../../starship/starship.toml;
+
+    # ghostty
+    "ghostty".source = ../../ghostty;
+    # git
+    "git".source = ../../git;
+    # mise
+    "mise".source = ../../mise;
+    # nvim
+    "nvim".source = ../../nvim;
+    # zellij
+    "zellij".source = ../../zellij;
+    # espanso
+    "espanso".source = ../../espanso;
+  };
+
+  home.file = {
+    # .zshenv (ZDOTDIR の設定に必要)
+    ".zshenv".source = ../../zsh/.zshenv;
+    # .brewfile
+    ".brewfile".source = ../../brew/.brewfile;
+    # .editorconfig
+    ".editorconfig".source = ../../.editorconfig;
+  };
 }
