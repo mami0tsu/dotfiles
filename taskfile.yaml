@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   config_dir: $HOME/.config
+  nix_target: '{{.TARGET | default (env "USER")}}'
 
 tasks:
   default:
@@ -14,6 +15,7 @@ tasks:
     cmds:
       # Template
       # - task: deploy:{name}
+      - task: deploy:nix
       - task: deploy:brew
       - task: deploy:espanso
       - task: deploy:editorconfig
@@ -31,6 +33,7 @@ tasks:
     cmds:
       # Template
       # - task: clean:{name}
+      - task: clean:nix
       - task: clean:brew
       - task: clean:espanso
       - task: clean:editorconfig
@@ -56,6 +59,17 @@ tasks:
 #     cmds:
 #       - task: unlink
 #         vars: { target: '{name}' }
+
+# nix
+  deploy:nix:
+    desc: Deploy nix-darwin config.
+    cmds:
+      - sudo darwin-rebuild switch --flake .#{{.nix_target}}
+
+  clean:nix:
+    internal: true
+    cmds:
+      - echo "Nix config doesn't need unlinking."
 
 # brew
   deploy:brew:
