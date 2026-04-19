@@ -2,16 +2,16 @@
   description = "";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs.url = "github:nixos/nixpkgs/9b8e6819224551756919099c1fce6e347f5a3803"; # nixpkgs-25.11-darwin
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/49ca96b2714c5931e17401eff87f3edd42d2b0f2"; # release-25.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+      url = "github:nix-darwin/nix-darwin/ebec37af18215214173c98cf6356d0aca24a2585"; # nix-darwin-25.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew/a7760a3a83f7609f742861afb5732210fdc437ed";
   };
 
   outputs =
