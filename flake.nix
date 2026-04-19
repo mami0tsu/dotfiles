@@ -11,7 +11,15 @@
       url = "github:nix-darwin/nix-darwin/ebec37af18215214173c98cf6356d0aca24a2585"; # nix-darwin-25.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-homebrew.url = "github:zhaofengli/nix-homebrew/a7760a3a83f7609f742861afb5732210fdc437ed";
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew/a7760a3a83f7609f742861afb5732210fdc437ed"; # main
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.brew-src.follows = "brew-src";
+    };
+    brew-src = {
+      url = "github:Homebrew/brew/894a3d23ac0c8aaf561b9874b528b9cb2e839201"; # 5.1.1
+      flake = false;
+    };
   };
 
   outputs =
