@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew/a7760a3a83f7609f742861afb5732210fdc437ed"; # main
+      url = "github:zhaofengli/nix-homebrew/99c7ead19cd22ce16cc550a9acf7d70de0142679"; # brew-5.1.1
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.brew-src.follows = "brew-src";
     };
