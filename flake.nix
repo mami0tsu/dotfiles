@@ -32,13 +32,10 @@
       ...
     }@inputs:
     let
-      system = "aarch64-darwin";
-
-      # 共通の darwinSystem 構成を生成する関数を定義する
       getDarwinConfig =
-        username: system:
+        username:
         nix-darwin.lib.darwinSystem {
-          system = system;
+          system = "aarch64-darwin";
           specialArgs = {
             inputs = inputs;
             nix-homebrew = inputs.nix-homebrew;
@@ -53,9 +50,7 @@
         };
     in
     {
-      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" system;
-
-      # CI 環境の設定を定義する
-      darwinConfigurations.ci = getDarwinConfig "ci-user" system;
+      darwinConfigurations.ci = getDarwinConfig "ci";
+      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu";
     };
 }
