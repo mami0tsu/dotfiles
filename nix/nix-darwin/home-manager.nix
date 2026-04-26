@@ -1,4 +1,5 @@
 {
+  self,
   username,
   ...
 }:
@@ -7,7 +8,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = {
-      inherit username;
+      inherit self username;
     };
     users.${username} = {
       imports = [
