@@ -23,7 +23,7 @@
       # cleanup = "uninstall"; # Homebrew からの移行完了後に設定
     };
 
-    brews = [];
+    brews = [ ];
     casks = [
       "discord"
       "ghostty"
