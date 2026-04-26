@@ -48,6 +48,7 @@
       EDITOR = "nvim";
       GOPATH = "${config.xdg.dataHome}/go";
       TENV_AUTO_INSTALL = "true";
+      FZF_DEFAULT_OPTS = "--bind 'ctrl-k:up,ctrl-j:down,ctrl-n:down,ctrl-p:up'";
     };
 
     shellAliases = {
