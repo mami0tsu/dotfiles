@@ -32,7 +32,7 @@
     }@inputs:
     let
       getDarwinConfig =
-        username:
+        username: useremail:
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = {
@@ -40,6 +40,7 @@
             nix-homebrew = inputs.nix-homebrew;
             self = inputs.self;
             username = username;
+            useremail = useremail;
           };
           modules = [
             ./nix/nix-darwin/configuration.nix
@@ -49,7 +50,7 @@
         };
     in
     {
-      darwinConfigurations.ci = getDarwinConfig "ci";
-      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu";
+      darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
+      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
     };
 }
