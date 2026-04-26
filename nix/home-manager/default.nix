@@ -2,6 +2,7 @@
   config,
   pkgs,
   username,
+  self,
   ...
 }:
 {
@@ -48,20 +49,20 @@
   programs.home-manager.enable = true;
 
   xdg.configFile = {
-    "espanso".source = ../../espanso;
-    "ghostty".source = ../../ghostty;
-    "git".source = ../../git;
-    "mise".source = ../../mise;
-    "nvim".source = ../../nvim;
-    "sheldon".source = ../../sheldon;
-    "starship".source = ../../starship;
-    "zellij".source = ../../zellij;
-    "zsh".source = ../../zsh;
+    "espanso".source = "${self}/espanso";
+    "ghostty".source = "${self}/ghostty";
+    "git".source = "${self}/git";
+    "mise".source = "${self}/mise";
+    "nvim".source = "${self}/nvim";
+    "sheldon".source = "${self}/sheldon";
+    "starship".source = "${self}/starship";
+    "zellij".source = "${self}/zellij";
+    "zsh".source = "${self}/zsh";
   };
 
   home.file = {
-    ".brewfile".source = ../../brew/.brewfile;
-    ".editorconfig".source = ../../.editorconfig;
-    ".zshenv".source = ../../zsh/.zshenv;
+    ".brewfile".source = "${self}/brew/.brewfile";
+    ".editorconfig".source = "${self}/.editorconfig";
+    ".zshenv".source = "${self}/zsh/.zshenv";
   };
 }
