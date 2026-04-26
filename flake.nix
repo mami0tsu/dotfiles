@@ -24,11 +24,11 @@
 
   outputs =
     {
-      self,
-      nixpkgs,
       home-manager,
       nix-darwin,
       nix-homebrew,
+      nixpkgs,
+      self,
       ...
     }@inputs:
     let
