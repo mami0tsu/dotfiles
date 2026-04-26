@@ -13,7 +13,6 @@
     };
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew/99c7ead19cd22ce16cc550a9acf7d70de0142679"; # brew-5.1.1
-      inputs.nixpkgs.follows = "nixpkgs";
       inputs.brew-src.follows = "brew-src";
     };
     brew-src = {
@@ -33,7 +32,7 @@
     }@inputs:
     let
       getDarwinConfig =
-        username:
+        username: useremail:
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = {
@@ -41,6 +40,7 @@
             nix-homebrew = inputs.nix-homebrew;
             self = inputs.self;
             username = username;
+            useremail = useremail;
           };
           modules = [
             ./nix/nix-darwin/configuration.nix
@@ -50,7 +50,7 @@
         };
     in
     {
-      darwinConfigurations.ci = getDarwinConfig "ci";
-      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu";
+      darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
+      darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
     };
 }
