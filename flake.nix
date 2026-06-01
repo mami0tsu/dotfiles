@@ -2,7 +2,7 @@
   description = "";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/9b8e6819224551756919099c1fce6e347f5a3803"; # nixpkgs-25.11-darwin
+    nixpkgs.url = "github:nixos/nixpkgs/8cbe20ad0f64f9f9619b871dfdf57022beccef65"; # nixpkgs-25.11-darwin
     home-manager = {
       url = "github:nix-community/home-manager/49ca96b2714c5931e17401eff87f3edd42d2b0f2"; # release-25.11
       inputs.nixpkgs.follows = "nixpkgs";

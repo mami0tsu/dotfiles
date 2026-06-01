@@ -1,6 +1,6 @@
 {
-  username,
   useremail,
+  username,
   ...
 }:
 {
@@ -15,6 +15,7 @@
     ./dotfiles.nix
     ./git.nix
     ./packages.nix
+    ./packages-go.nix
     ./starship.nix
     ./zsh.nix
   ];
