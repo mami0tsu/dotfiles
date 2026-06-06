@@ -4,7 +4,15 @@
     extraPlugins = with pkgs.vimPlugins; [
       auto-pairs
       tcomment_vim
+      vim-prettier
+      vim-terraform
     ];
+
+    extraConfigVim = ''
+      autocmd BufWritePre *.md PrettierAsync
+
+      let g:terraform_fmt_on_save = 1
+    '';
 
     colorschemes.catppuccin = {
       enable = true;
