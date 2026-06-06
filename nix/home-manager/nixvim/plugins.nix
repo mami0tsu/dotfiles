@@ -4,6 +4,8 @@
     extraPlugins = with pkgs.vimPlugins; [
       auto-pairs
       deol-nvim
+      denops-vim
+      pum-vim
       tcomment_vim
       vim-prettier
       vim-terraform
