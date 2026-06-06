@@ -1,6 +1,11 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 {
   programs.nixvim = {
+    extraPlugins = with pkgs.vimPlugins; [
+      auto-pairs
+      tcomment_vim
+    ];
+
     colorschemes.catppuccin = {
       enable = true;
       settings = {
