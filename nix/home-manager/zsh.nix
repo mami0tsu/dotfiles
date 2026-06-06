@@ -6,7 +6,7 @@
 {
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh";
+    dotDir = "${config.xdg.configHome}/zsh";
 
     initContent = ''
       # 補完関数の読み込み
@@ -22,15 +22,25 @@
 
       # ghq wrapper
       function ghq() {
-        if [ $# -eq 0 ]; then
-          local repo_path
-          repo_path=$(command ghq list | fzf --height 40% --reverse)
-          if [[ -n "$repo_path" ]]; then
-            cd "$(command ghq root)/$repo_path"
-          fi
-        else
+        if (( $# > 0 )); then
           command ghq "$@"
+          return
         fi
+
+        local ghq_root selected
+        ghq_root="$(command ghq root)"
+
+        selected="$(
+          command ghq list --full-path |
+            roots --root-file .git/config --root-file main.tf --depth 5 |
+            while IFS= read -r path; do
+              print -r -- "''${path#''${ghq_root}/}"$'\t'"''${path}"
+            done |
+            fzf --height 40% --reverse --delimiter=$'\t' --with-nth=1 |
+            cut -f2
+        )"
+
+        [[ -n "$selected" ]] && cd -- "$selected"
       }
     '';
 
@@ -66,8 +76,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "romkatv";
           repo = "zsh-defer";
-          rev = "master";
-          sha256 = "0m8xhzdqy2fbd1vj2vy95xjij4vz547i9lbdj6h794n2fc16yn9h";
+          rev = "53a26e287fbbe2dcebb3aa1801546c6de32416fa";
+          sha256 = "sha256-MFlvAnPCknSgkW3RFA8pfxMZZS/JbyF3aMsJj9uHHVU=";
         };
       }
       {
@@ -87,8 +97,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "paulirish";
           repo = "git-open";
-          rev = "master";
-          sha256 = "1z0kw0kwrfh2rh0znc17bkm7w4c5vi6ynvhxvsq7naqfwydfvjvg";
+          rev = "63c0e77aaf18b72c839b1113c1e2f9514413643b";
+          sha256 = "sha256-E93A/KBEGlPDm98p1ClvWxzjK2ylv3BrVaEvBcuD6c4=";
         };
       }
     ];

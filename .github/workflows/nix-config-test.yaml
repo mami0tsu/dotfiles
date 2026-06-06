@@ -3,9 +3,19 @@ name: Nix Config Test
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/nix-config-test.yaml
+      - flake.lock
+      - flake.nix
+      - nix/**
   push:
     branches: [main]
+    paths:
+      - .github/workflows/nix-config-test.yaml
+      - flake.lock
+      - flake.nix
+      - nix/**
 
 # ワークフローレベルではパーミッションを設定しない
 permissions: {}
@@ -17,14 +27,14 @@ defaults:
 
 # ワークフローが同じブランチで複数起動したらキャンセルする
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     name: Build
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -41,7 +51,7 @@ jobs:
         uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
 
       - name: Check Nix Flake
-        uses: DeterminateSystems/flake-checker-action@3164002371bc90729c68af0e24d5aacf20d7c9f6 #v12
+        run: nix flake check --no-build --no-update-lock-file
 
       - name: Build Nix Package for CI
-        run: nix build .#darwinConfigurations.ci.system
+        run: nix build --no-link --print-build-logs .#darwinConfigurations.ci.system
