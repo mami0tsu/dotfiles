@@ -25,7 +25,6 @@
     ghq # v1.9.4
     git-secrets # v1.3.0
     go-task # v3.48.0
-    neovim # v0.12.2
     starship # v1.25.1
     tree-sitter # v0.26.8
     zellij # v0.44.3

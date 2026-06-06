@@ -14,6 +14,7 @@
   imports = [
     ./dotfiles.nix
     ./git.nix
+    ./nixvim.nix
     ./packages.nix
     ./packages-go.nix
     ./starship.nix

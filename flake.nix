@@ -14,6 +14,10 @@
         "github:nix-darwin/nix-darwin/56c666e108467d87d13508936aade6d567f2a501"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew/99c7ead19cd22ce16cc550a9acf7d70de0142679"; # brew-5.1.1
       inputs.brew-src.follows = "brew-src";

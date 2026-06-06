@@ -1,4 +1,5 @@
 {
+  inputs,
   self,
   useremail,
   username,
@@ -10,6 +11,7 @@
     useUserPackages = true;
     extraSpecialArgs = {
       inherit
+        inputs
         self
         username
         useremail
@@ -17,6 +19,7 @@
     };
     users.${username} = {
       imports = [
+        inputs.nixvim.homeModules.nixvim
         ../home-manager/default.nix
       ];
     };
