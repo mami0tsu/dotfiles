@@ -5,6 +5,7 @@
 {
   imports = [
     ./nixvim/core.nix
+    ./nixvim/plugins.nix
   ];
 
   programs.nixvim = {
