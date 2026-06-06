@@ -6,7 +6,7 @@
 {
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh";
+    dotDir = "${config.xdg.configHome}/zsh";
 
     initContent = ''
       # 補完関数の読み込み
@@ -22,15 +22,25 @@
 
       # ghq wrapper
       function ghq() {
-        if [ $# -eq 0 ]; then
-          local repo_path
-          repo_path=$(command ghq list | fzf --height 40% --reverse)
-          if [[ -n "$repo_path" ]]; then
-            cd "$(command ghq root)/$repo_path"
-          fi
-        else
+        if (( $# > 0 )); then
           command ghq "$@"
+          return
         fi
+
+        local ghq_root selected
+        ghq_root="$(command ghq root)"
+
+        selected="$(
+          command ghq list --full-path |
+            roots --root-file .git/config --root-file main.tf --depth 5 |
+            while IFS= read -r path; do
+              print -r -- "''${path#''${ghq_root}/}"$'\t'"''${path}"
+            done |
+            fzf --height 40% --reverse --delimiter=$'\t' --with-nth=1 |
+            cut -f2
+        )"
+
+        [[ -n "$selected" ]] && cd -- "$selected"
       }
     '';
 

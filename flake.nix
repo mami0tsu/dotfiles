@@ -2,13 +2,16 @@
   description = "";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/8cbe20ad0f64f9f9619b871dfdf57022beccef65"; # nixpkgs-25.11-darwin
+    nixpkgs.url =
+      "github:nixos/nixpkgs/ffa10e26ae11d676b2db836259889f1f571cb14f"; # nixpkgs-unstable
     home-manager = {
-      url = "github:nix-community/home-manager/49ca96b2714c5931e17401eff87f3edd42d2b0f2"; # release-25.11
+      url =
+        "github:nix-community/home-manager/b2b7db486e06e098711dc291bb25db82850e1d16"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/ebec37af18215214173c98cf6356d0aca24a2585"; # nix-darwin-25.11
+      url =
+        "github:nix-darwin/nix-darwin/56c666e108467d87d13508936aade6d567f2a501"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew = {
@@ -31,16 +34,20 @@
       ...
     }@inputs:
     let
+      system = "aarch64-darwin";
+
       getDarwinConfig =
         username: useremail:
         nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
+          inherit system;
           specialArgs = {
-            inputs = inputs;
+            inherit
+              inputs
+              username
+              useremail
+              ;
             nix-homebrew = inputs.nix-homebrew;
             self = inputs.self;
-            username = username;
-            useremail = useremail;
           };
           modules = [
             ./nix/nix-darwin/configuration.nix
