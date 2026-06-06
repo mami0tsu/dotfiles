@@ -76,8 +76,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "romkatv";
           repo = "zsh-defer";
-          rev = "master";
-          sha256 = "0m8xhzdqy2fbd1vj2vy95xjij4vz547i9lbdj6h794n2fc16yn9h";
+          rev = "53a26e287fbbe2dcebb3aa1801546c6de32416fa";
+          sha256 = "sha256-MFlvAnPCknSgkW3RFA8pfxMZZS/JbyF3aMsJj9uHHVU=";
         };
       }
       {
@@ -97,8 +97,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "paulirish";
           repo = "git-open";
-          rev = "master";
-          sha256 = "1z0kw0kwrfh2rh0znc17bkm7w4c5vi6ynvhxvsq7naqfwydfvjvg";
+          rev = "63c0e77aaf18b72c839b1113c1e2f9514413643b";
+          sha256 = "sha256-E93A/KBEGlPDm98p1ClvWxzjK2ylv3BrVaEvBcuD6c4=";
         };
       }
     ];
