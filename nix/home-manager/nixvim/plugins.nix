@@ -18,6 +18,22 @@
       let g:terraform_fmt_on_save = 1
     '';
 
+    diagnostic.settings = {
+      update_in_insert = false;
+      virtual_text = {
+        format.__raw = ''
+          function(diagnostic)
+            return string.format(
+              '%s (%s: %s)',
+              diagnostic.message,
+              diagnostic.source,
+              diagnostic.code
+            )
+          end
+        '';
+      };
+    };
+
     colorschemes.catppuccin = {
       enable = true;
       settings = {
@@ -41,6 +57,53 @@
     };
 
     plugins = {
+      lsp = {
+        enable = true;
+        servers = {
+          bashls.enable = true;
+          gopls.enable = true;
+          html.enable = true;
+          jsonls = {
+            enable = true;
+            settings = {
+              json = {
+                format.enable = true;
+                validate.enable = true;
+              };
+            };
+          };
+          lua_ls = {
+            enable = true;
+            settings = {
+              Lua = {
+                diagnostics.globals = [
+                  "vim"
+                ];
+                telemetry.enable = false;
+                workspace.checkThirdParty = false;
+              };
+            };
+          };
+          cssls.enable = true;
+          terraformls.enable = true;
+          ts_ls.enable = true;
+          yamlls = {
+            enable = true;
+            settings = {
+              yaml = {
+                completion = true;
+                hover = true;
+                validate = true;
+                schemaStore = {
+                  enable = true;
+                  url = "https://www.schemastore.org/api/json/catalog.json";
+                };
+              };
+            };
+          };
+        };
+      };
+
       web-devicons.enable = true;
 
       gitsigns = {
