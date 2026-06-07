@@ -19,6 +19,7 @@
 
       # 外部ツール初期化
       eval "$(fnm env --use-on-cd)"
+      eval "$(git-wt --init zsh)"
 
       # ghq wrapper
       function ghq() {
