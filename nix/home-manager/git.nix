@@ -45,6 +45,11 @@
         side-by-side = true;
       };
       diff.colorMoved = "default";
+      wt = {
+        # git-wt resolves relative basedir from the repository root, not the current subdirectory.
+        basedir = "../{gitroot}-worktrees";
+        nocd = "create";
+      };
       ghq.root = "${config.home.homeDirectory}/src";
       secrets = {
         providers = "git secrets --aws-provider";
