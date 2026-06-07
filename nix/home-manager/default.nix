@@ -12,6 +12,7 @@
   programs.home-manager.enable = true;
 
   imports = [
+    ./agent-skills.nix
     ./dotfiles.nix
     ./git.nix
     ./nixvim.nix
