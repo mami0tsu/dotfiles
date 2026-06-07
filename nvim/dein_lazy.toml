@@ -1,35 +1,9 @@
 [[plugins]]
-repo = 'vim-denops/denops.vim'
-
-[[plugins]]
 repo = 'previm/previm'
 hook_add = '''
   let g:previm_open_cmd = 'open -a Google\ Chrome'
 '''
 
 [[plugins]]
-repo = 'prettier/vim-prettier'
-build = 'npm install'
-on_ft = ['markdown']
-hook_source = '''
-  autocmd BufWritePre *.md PrettierAsync
-'''
-
-[[plugins]]
-repo = 'hashivim/vim-terraform'
-on_ft = ['terraform']
-hook_source = '''
-  let g:terraform_fmt_on_save = 1
-'''
-
-[[plugins]]
 repo = 'mattn/vim-goimports'
 on_ft = ['go']
-
-[[plugins]]
-repo = 'Shougo/deol.nvim'
-on_source = ['ddu.vim']
-hook_source =  '''
-  let g:deol#external_history_path = '~/.zsh-history'
-  let g:deol#prompt_pattern = '\w*>'
-'''

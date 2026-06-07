@@ -1,8 +1,3 @@
--- Load core configuration
-require("options")
-require("keymaps")
-require("autocmds")
-
 -- Define standard paths
 local config_dir = vim.fn.stdpath("config")
 local cache_dir = vim.fn.stdpath("cache")

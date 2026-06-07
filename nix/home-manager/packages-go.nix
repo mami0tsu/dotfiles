@@ -47,6 +47,8 @@ let
 in
 {
   home.packages = [
+    # vim-goimports が呼ぶ goimports 本体を供給する
+    pkgs.gotools
     roots
     git-wt
   ];

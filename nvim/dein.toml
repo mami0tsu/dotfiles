@@ -3,30 +3,3 @@ repo = 'Shougo/dein.vim'
 
 # [[plugins]]
 # repo = 'vim-scripts/wombat256.vim'
-
-[[plugins]]
-repo = 'jiangmiao/auto-pairs'
-
-[[plugins]]
-repo = 'tomtom/tcomment_vim'
-
-[[plugins]]
-repo = 'reireias/vim-cheatsheet'
-hook_add = '''
-  nnoremap <Space>c <Cmd>Cheat<CR>
-
-  let g:cheatsheet#cheat_file = '~/.config/nvim/cheet/cheetsheet.md'
-  let g:cheatsheet#float_window = 1
-  let g:cheatsheet#float_window_width_ratio = 1
-  let g:cheatsheet#float_window_height_ratio = 1
-'''
-
-[[plugins]]
-repo = 'Shougo/pum.vim'
-hook_source = '''
-  call pum#set_option(#{
-    \   auto_confirm_time: 1500,
-    \   max_width: 80,
-    \   use_setline: v:true,
-    \ })
-'''

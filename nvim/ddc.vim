@@ -1,4 +1,10 @@
 " hook_source {{{
+call pum#set_option(#{
+    \   auto_confirm_time: 1500,
+    \   max_width: 80,
+    \   use_setline: v:true,
+    \ })
+
 call ddc#custom#patch_global(#{
     \     ui: 'pum',
     \     autoCompleteEvents: [
