@@ -1,11 +1,17 @@
 {
+  config,
+  ...
+}:
+{
+  xdg.stateFile."nvim/undo/.keep".text = "";
+
   programs.nixvim = {
     globals = {
       mapleader = " ";
     };
 
     opts = {
-      undodir = "~/.vim/undo";
+      undodir = "${config.xdg.stateHome}/nvim/undo";
       undofile = true;
       undolevels = 1000;
 

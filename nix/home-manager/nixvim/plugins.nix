@@ -14,7 +14,7 @@
     extraConfigVim = ''
       autocmd BufWritePre *.md PrettierAsync
 
-      let g:deol#external_history_path = '~/.zsh-history'
+      let g:deol#external_history_path = '${config.xdg.stateHome}/zsh_history'
       let g:deol#prompt_pattern = '\w*>'
 
       let g:terraform_fmt_on_save = 1

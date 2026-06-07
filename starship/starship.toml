@@ -10,7 +10,7 @@ show_milliseconds = true
 [character]
 error_symbol = "[>](bold red)"
 format = '$symbol'
-success_symbol = "[>](bole green)"
+success_symbol = "[>](bold green)"
 
 [directory]
 format = '[$path]($style) '
