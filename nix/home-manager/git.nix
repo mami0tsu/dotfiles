@@ -45,7 +45,7 @@
         side-by-side = true;
       };
       diff.colorMoved = "default";
-      ghq.root = "~/src";
+      ghq.root = "${config.home.homeDirectory}/src";
       secrets = {
         providers = "git secrets --aws-provider";
         patterns = [
