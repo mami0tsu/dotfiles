@@ -24,7 +24,6 @@
       "dein.toml".source = ../../nvim/dein.toml;
       "dein_lazy.toml".source = ../../nvim/dein_lazy.toml;
       "neovim.toml".source = ../../nvim/neovim.toml;
-      "neovim_lazy.toml".source = ../../nvim/neovim_lazy.toml;
     };
   };
 }
