@@ -1,6 +1,25 @@
 ---
 name: git-operator
 description: branch/worktree 作成、commit、rebase、push、wip 昇格など、定型化された Git 操作を行うときに使う。単純な status/log/diff の確認だけでは使わない。
+allowed-tools: >-
+  Bash(git add:*)
+  Bash(git branch:*)
+  Bash(git commit:*)
+  Bash(git config:*)
+  Bash(git fetch:*)
+  Bash(git log:*)
+  Bash(git merge-base:*)
+  Bash(git pull:*)
+  Bash(git push:*)
+  Bash(git rebase:*)
+  Bash(git rev-parse:*)
+  Bash(git show-ref:*)
+  Bash(git status:*)
+  Bash(git switch:*)
+  Bash(git symbolic-ref:*)
+  Bash(git worktree:*)
+  Bash(git wt:*)
+  Read
 ---
 
 # Git Operator
