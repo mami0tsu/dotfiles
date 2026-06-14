@@ -18,6 +18,7 @@
     ripgrep # v15.1.0
 
     awscli2 # v2.34.24
+    (pkgs.callPackage ../packages/apm.nix { }) # v0.20.0
     codex # 0.135.0
     docker_29 # v29.5.2
     fzf # v0.73.1

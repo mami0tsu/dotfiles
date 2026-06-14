@@ -1,0 +1,14 @@
+name: mami0tsu-dotfiles
+version: 0.1.0
+description: Global agent skill dependencies for mami0tsu dotfiles.
+
+targets:
+  - agent-skills
+
+dependencies:
+  apm:
+    - ryonakae/dotfiles/config/.agents/skills/dig#a6fe9681dce1c76053c772c284a360e478d1ae50
+  mcp: []
+
+includes: auto
+scripts: {}
