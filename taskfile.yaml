@@ -3,6 +3,14 @@ version: '3'
 vars:
   nix_target: '{{.TARGET | default (env "USER")}}'
 
+env:
+  SHELL: bash
+
+set:
+  - errexit
+  - nounset
+  - pipefail
+
 tasks:
   default:
     silent: true
@@ -19,3 +27,58 @@ tasks:
     cmds:
       - nix-collect-garbage -d
       - echo "Cleaned up old Nix generations. To fully free space, run with sudo."
+
+  agent-skills:install:
+    desc: Link APM-managed global agent skills, materializing from the lockfile if needed.
+    cmds:
+      - |
+        if [[ ! -d .agents/skills ]]; then
+          apm install --target agent-skills --only apm --frozen
+        fi
+      - task: agent-skills:link
+
+  agent-skills:refresh:
+    desc: Re-materialize APM-managed global agent skills from pinned apm.yml dependencies.
+    cmds:
+      - rm -rf .agents/skills
+      - apm install --target agent-skills --only apm
+      - task: agent-skills:link
+
+  agent-skills:link:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [[ ! -d .agents/skills ]]; then
+          echo "No APM skills were installed into .agents/skills" >&2
+          exit 1
+        fi
+
+        shopt -s nullglob
+
+        for skill_dir in .agents/skills/*/; do
+          skill_dir="${skill_dir%/}"
+          skill_name="$(basename "$skill_dir")"
+
+          if [[ -f "skills/${skill_name}/SKILL.md" ]]; then
+            echo "Skill name collision: ${skill_name} exists in local skills/ and APM output" >&2
+            exit 1
+          fi
+        done
+
+        for agent_dir in "$HOME/.codex" "$HOME/.claude"; do
+          mkdir -p "${agent_dir}/skills"
+
+          for skill_dir in .agents/skills/*/; do
+            skill_dir="${skill_dir%/}"
+            skill_name="$(basename "$skill_dir")"
+            target="${agent_dir}/skills/${skill_name}"
+
+            if [[ -e "$target" && ! -L "$target" ]]; then
+              echo "Skill target exists and is not a symlink: $target" >&2
+              exit 1
+            fi
+
+            ln -sfn "$PWD/$skill_dir" "$target"
+          done
+        done

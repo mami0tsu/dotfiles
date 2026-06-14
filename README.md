@@ -48,6 +48,14 @@ sudo nix --extra-experimental-features "nix-command flakes" run \
 
 この時点で Home Manager の設定、Nix パッケージ、Homebrew cask、各種 dotfiles のリンクが適用されます。
 
+### 3. APM 管理 skill のインストール
+
+外部由来の skill は APM で管理します。初回適用後に、lockfile に固定された skill を materialize して、Codex / Claude の global skill directory に symlink します。
+
+```sh
+task agent-skills:install
+```
+
 ## 環境の更新
 
 設定変更は次のコマンドで反映します。
@@ -68,6 +76,21 @@ TARGET=mami0tsu task deploy
 task clean
 ```
 
+## Agent Skills
+
+Agent Skills は、自作 skill と外部由来 skill で管理方法を分けています。
+
+- 自作 skill: `skills/<name>/SKILL.md` として管理し、Home Manager が `.codex/skills` と `.claude/skills` に symlink します。
+- 外部由来 skill: `apm.yml` と `apm.lock.yaml` で管理します。生成物は `.agents/skills` に置かれ、`task agent-skills:install` が `.codex/skills` と `.claude/skills` に symlink します。
+
+外部由来 skill は commit pin を厳守します。依存を追加・削除した場合や commit pin を変更した場合だけ、次のコマンドで APM 出力を作り直します。
+
+```sh
+task agent-skills:refresh
+```
+
+`.agents/` と `apm_modules/` は生成物なので Git 管理しません。
+
 ## 管理内容
 
 Nix 側で主に次の項目を管理しています。
@@ -80,6 +103,7 @@ Nix 側で主に次の項目を管理しています。
 - Starship
 - Neovim / nixvim
 - CLI packages
+- Agent Skills の symlink
 - dotfiles の XDG config リンク
 
 設定ファイル本体は、各ツールの標準形式のまま管理しています。
@@ -95,3 +119,4 @@ Nix 側で主に次の項目を管理しています。
 - nix-installer: https://github.com/NixOS/nix-installer
 - nix-darwin: https://github.com/nix-darwin/nix-darwin
 - Home Manager: https://github.com/nix-community/home-manager
+- APM: https://github.com/microsoft/apm

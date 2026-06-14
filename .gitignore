@@ -1,2 +1,4 @@
 .DS_Store
 .zcompdump
+.agents/
+apm_modules/
