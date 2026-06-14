@@ -1,5 +1,5 @@
 ---
-name: git-operator
+name: git-operation
 description: branch/worktree 作成、commit、rebase、push、wip 昇格など、定型化された Git 操作を行うときに使う。単純な status/log/diff の確認だけでは使わない。
 allowed-tools: >-
   Bash(git add:*)
@@ -22,7 +22,7 @@ allowed-tools: >-
   Read
 ---
 
-# Git Operator
+# Git Operation
 
 Git 操作を日本語の運用ルールに沿って定型化する。単純な `git status`、`git log`、`git diff` の確認では使わない。
 

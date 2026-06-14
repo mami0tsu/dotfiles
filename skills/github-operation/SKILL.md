@@ -1,5 +1,5 @@
 ---
-name: github-operator
+name: github-operation
 description: Draft PR 作成、PR の CI 実行結果分析、レビューコメント確認、Issues/Discussions の参照など、GitHub 上の定型操作と分析を行うときに使う。基本は GitHub CLI を優先し、GitHub CLI が認証済みでも取得失敗・機能不足・API 差分で進められない場合だけ GitHub MCP に fallback する。
 allowed-tools: >-
   Bash(gh api:*)
@@ -28,7 +28,7 @@ allowed-tools: >-
   mcp__codex_apps__github._search_issues
 ---
 
-# GitHub Operator
+# GitHub Operation
 
 GitHub 上の操作と分析を日本語の運用ルールに沿って定型化する。ローカル Git の branch 作成、commit、push は扱わない。
 
