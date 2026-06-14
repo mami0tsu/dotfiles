@@ -28,11 +28,11 @@ remote に push 済みか確認できない場合、または head branch が Gi
 
 ## default branch
 
-PR の base は、ユーザー指定がなければ GitHub repository の default branch を使う。local の `origin/HEAD` より GitHub 側の repository metadata を優先する。
+PR の base は、ユーザー指定がなければ GitHub repository の default branch を使う。正規経路は `gh repo view --json defaultBranchRef` とする。local の `origin/HEAD` より GitHub 側の repository metadata を優先する。
 
 ## PR
 
-PR URL または番号がある場合はそれを使う。ユーザーが「現在の PR」と言った場合だけ、local branch から `gh pr view --json number,url` で解決してよい。
+PR URL または番号がある場合はそれを使う。PR metadata は `gh pr view` で取得する。ユーザーが「現在の PR」と言った場合だけ、local branch から `gh pr view --json number,url` で解決してよい。
 
 ## Issue / Discussion
 

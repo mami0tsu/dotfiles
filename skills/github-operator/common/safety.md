@@ -25,9 +25,11 @@
 
 ## GitHub CLI
 
-`gh api` は read-only endpoint の取得に限定する。write 系 endpoint に対する `gh api` は使わない。
+`gh api` は read-only endpoint または read-only GraphQL query の取得に限定する。write 系 endpoint と GraphQL mutation は使わない。
 
-`gh` が未認証の場合は `gh auth status` の結果を伝え、ユーザーに認証を依頼する。認証操作はこの skill では実行しない。
+GitHub CLI を使う前に `gh auth status` を確認する。`gh` が未認証の場合は MCP fallback せずに中止し、`gh auth status` の結果を伝え、ユーザーに認証を依頼する。認証操作はこの skill では実行しない。
+
+GitHub への書き込みは `gh pr create --draft` に限定する。`gh api` の write endpoint、PR comment、review reply、thread resolve などは使わない。
 
 ## `wip/` Draft PR
 
