@@ -29,33 +29,25 @@ tasks:
       - echo "Cleaned up old Nix generations. To fully free space, run with sudo."
 
   agent-skills:install:
-    desc: Install global agent skills managed by APM.
+    desc: Link APM-managed global agent skills, materializing from the lockfile if needed.
     cmds:
-      - task: _agent-skills:install
-        vars:
-          APM_ARGS: ""
+      - |
+        if [[ ! -d .agents/skills ]]; then
+          apm install --target agent-skills --only apm --frozen
+        fi
+      - task: _agent-skills:link
 
-  agent-skills:install:frozen:
-    desc: Install global agent skills from the APM lockfile.
+  agent-skills:refresh:
+    desc: Re-materialize APM-managed global agent skills from pinned apm.yml dependencies.
     cmds:
-      - task: _agent-skills:install
-        vars:
-          APM_ARGS: "--frozen"
+      - rm -rf .agents/skills
+      - apm install --target agent-skills --only apm
+      - task: _agent-skills:link
 
-  agent-skills:update:
-    desc: Update APM-managed global agent skills.
-    cmds:
-      - apm update --yes --target agent-skills
-      - task: _agent-skills:install
-        vars:
-          APM_ARGS: ""
-
-  _agent-skills:install:
+  _agent-skills:link:
     internal: true
     silent: true
     cmds:
-      - rm -rf .agents/skills
-      - apm install --target agent-skills --only apm {{.APM_ARGS}}
       - |
         if [[ ! -d .agents/skills ]]; then
           echo "No APM skills were installed into .agents/skills" >&2
@@ -82,7 +74,11 @@ tasks:
             skill_name="$(basename "$skill_dir")"
             target="${agent_dir}/skills/${skill_name}"
 
-            rm -rf "$target"
-            cp -R "$skill_dir" "$target"
+            if [[ -e "$target" && ! -L "$target" ]]; then
+              echo "Skill target exists and is not a symlink: $target" >&2
+              exit 1
+            fi
+
+            ln -sfn "$PWD/$skill_dir" "$target"
           done
         done
