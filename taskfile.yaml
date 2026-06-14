@@ -35,16 +35,16 @@ tasks:
         if [[ ! -d .agents/skills ]]; then
           apm install --target agent-skills --only apm --frozen
         fi
-      - task: _agent-skills:link
+      - task: agent-skills:link
 
   agent-skills:refresh:
     desc: Re-materialize APM-managed global agent skills from pinned apm.yml dependencies.
     cmds:
       - rm -rf .agents/skills
       - apm install --target agent-skills --only apm
-      - task: _agent-skills:link
+      - task: agent-skills:link
 
-  _agent-skills:link:
+  agent-skills:link:
     internal: true
     silent: true
     cmds:
