@@ -13,9 +13,9 @@ PR の現在失敗している CI checks を分析する。待機はしない。
 ## 手順
 
 1. `common/context.md`、`common/safety.md`、`common/mcp-cli-policy.md` を読む。
-2. PR を解決する。
-3. PR metadata は MCP で取得する。
-4. `gh auth status` を確認する。
+2. `gh auth status` を確認する。失敗した場合は中止し、認証を依頼する。
+3. PR を解決する。
+4. PR metadata は `gh pr view` で取得する。
 5. `gh pr checks` で checks を取得する。
 6. 失敗中の GitHub Actions check だけ logs を取得する。
 7. in progress、skipped、success、外部 CI は分類して報告する。
@@ -25,6 +25,7 @@ PR の現在失敗している CI checks を分析する。待機はしない。
 
 ```sh
 gh pr checks <pr> --json name,state,bucket,link,startedAt,completedAt,workflow
+gh pr view <pr> --json number,title,url,headRefName,baseRefName,headRepository
 gh run view <run-id> --json name,workflowName,conclusion,status,url,event,headBranch,headSha
 gh run view <run-id> --log
 ```
