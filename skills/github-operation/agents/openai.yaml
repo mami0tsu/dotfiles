@@ -1,0 +1,6 @@
+interface:
+  display_name: "GitHub Operation"
+  short_description: "GitHub PR・CI・レビュー確認を定型化"
+  default_prompt: "Use $github-operation to create a draft PR or analyze GitHub PR context."
+policy:
+  allow_implicit_invocation: true
