@@ -8,6 +8,8 @@ targets:
 dependencies:
   apm:
     - ryonakae/dotfiles/config/.agents/skills/dig#a6fe9681dce1c76053c772c284a360e478d1ae50
+    - yoshiko-pg/difit/skills/difit#1172e5cd92bc29ff8b6665632cd2982bcbce7d38
+    - yoshiko-pg/difit/skills/difit-review#1172e5cd92bc29ff8b6665632cd2982bcbce7d38
   mcp: []
 
 includes: auto

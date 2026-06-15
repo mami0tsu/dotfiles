@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-06-14T06:58:48.902318+00:00'
+generated_at: '2026-06-15T00:16:57.120121+00:00'
 apm_version: 0.20.0
 dependencies:
 - repo_url: ryonakae/dotfiles
@@ -15,3 +15,33 @@ dependencies:
   deployed_file_hashes:
     .agents/skills/dig/SKILL.md: sha256:080c071f9ad9b0edfd678e15655e5f541ec149f99cc80f9c35906dafabc43db9
   content_hash: sha256:51228b47ea567d02821896216284da39ebd61c657a590846410c97cdece82172
+- repo_url: yoshiko-pg/difit
+  host: github.com
+  resolved_commit: 1172e5cd92bc29ff8b6665632cd2982bcbce7d38
+  resolved_ref: 1172e5cd92bc29ff8b6665632cd2982bcbce7d38
+  virtual_path: skills/difit
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/difit
+  - .agents/skills/difit/SKILL.md
+  - .agents/skills/difit/agents/openai.yaml
+  deployed_file_hashes:
+    .agents/skills/difit/SKILL.md: sha256:8171ee2b19d85ba4702e4a0d190e63803ec9d5e91416530c78a63ba86808c97b
+    .agents/skills/difit/agents/openai.yaml: sha256:305d35f2ee4dda20d4c7fbe1eb18fda366f3e84d9ff84b2111d4faa3a608007f
+  content_hash: sha256:d7183ec34bc1b776e8e54cf34efd1bf8be8b04bdb424e5efcfbb3faa5f095db7
+- repo_url: yoshiko-pg/difit
+  host: github.com
+  resolved_commit: 1172e5cd92bc29ff8b6665632cd2982bcbce7d38
+  resolved_ref: 1172e5cd92bc29ff8b6665632cd2982bcbce7d38
+  virtual_path: skills/difit-review
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/difit-review
+  - .agents/skills/difit-review/SKILL.md
+  - .agents/skills/difit-review/agents/openai.yaml
+  deployed_file_hashes:
+    .agents/skills/difit-review/SKILL.md: sha256:778555921c3d63e932d987a2b2181442b2f4a21767692a621d94a1b536cddfe8
+    .agents/skills/difit-review/agents/openai.yaml: sha256:8436c3a9d6f88c3c2852856f4a1cf4be19ca2f3f44bc5d629d43612ba57ab70b
+  content_hash: sha256:4f95a432d8a359a2c3a8d320b98c871dda13d03b8583fe202528890e767e8c30
