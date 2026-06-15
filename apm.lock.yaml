@@ -1,7 +1,226 @@
 lockfile_version: '1'
-generated_at: '2026-06-15T00:16:57.120121+00:00'
+generated_at: '2026-06-15T13:01:44.906301+00:00'
 apm_version: 0.20.0
 dependencies:
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/amazon-bedrock
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/amazon-bedrock
+  - .agents/skills/amazon-bedrock/SKILL.md
+  - .agents/skills/amazon-bedrock/references/agentcore-credentials-and-security.md
+  - .agents/skills/amazon-bedrock/references/agentcore-gateway.md
+  - .agents/skills/amazon-bedrock/references/agentcore-memory-observability.md
+  - .agents/skills/amazon-bedrock/references/agentcore-registry-evaluations.md
+  - .agents/skills/amazon-bedrock/references/agentcore-runtime-container-build.md
+  - .agents/skills/amazon-bedrock/references/agentcore-runtime.md
+  - .agents/skills/amazon-bedrock/references/agents-and-action-groups.md
+  - .agents/skills/amazon-bedrock/references/cost-tracking.md
+  - .agents/skills/amazon-bedrock/references/guardrails.md
+  - .agents/skills/amazon-bedrock/references/knowledge-bases-retrieval.md
+  - .agents/skills/amazon-bedrock/references/knowledge-bases-setup.md
+  - .agents/skills/amazon-bedrock/references/model-invocation.md
+  - .agents/skills/amazon-bedrock/references/model-migration.md
+  - .agents/skills/amazon-bedrock/references/model-selection-guide.md
+  - .agents/skills/amazon-bedrock/references/prompt-caching.md
+  - .agents/skills/amazon-bedrock/references/prompt-engineering-by-model.md
+  - .agents/skills/amazon-bedrock/references/quota-health.md
+  - .agents/skills/amazon-bedrock/references/sdk-converse-api-python.md
+  - .agents/skills/amazon-bedrock/references/sdk-converse-api-typescript.md
+  deployed_file_hashes:
+    .agents/skills/amazon-bedrock/SKILL.md: sha256:3f0aff8402d59009710315c154e4a66b2a2290863a0adea7952da775555ae306
+    .agents/skills/amazon-bedrock/references/agentcore-credentials-and-security.md: sha256:f392084b05f40bfc558a74e1964bd6df46af9ed5029c88d6e63a31f5fcdf906f
+    .agents/skills/amazon-bedrock/references/agentcore-gateway.md: sha256:ae76ccfb36483817146dcafad235b24d009a2e31e240533186cb2e7a1f5d294a
+    .agents/skills/amazon-bedrock/references/agentcore-memory-observability.md: sha256:552c5157b8fbfa1baf39158593dcea1c8b1ade4dd7fd117b696885c01f0e86e4
+    .agents/skills/amazon-bedrock/references/agentcore-registry-evaluations.md: sha256:e8bf1964d09b94df9e2590e12597eed4eebf4bbfecc33cbd1ccd4dea481199cc
+    .agents/skills/amazon-bedrock/references/agentcore-runtime-container-build.md: sha256:1b782c4b4f1bd7973e31df5465f3503e53d62b5034820e488f91c988b0442922
+    .agents/skills/amazon-bedrock/references/agentcore-runtime.md: sha256:eef148faa38245dc23becd21369aa2dc05699c2b67be35f767a5900335cbe910
+    .agents/skills/amazon-bedrock/references/agents-and-action-groups.md: sha256:c1d60973231e1a496b8b0db94f8d183695f399afad981d352d7ec74d82a92f25
+    .agents/skills/amazon-bedrock/references/cost-tracking.md: sha256:54a44ff324b1e331a8b77f50ef5026cc59799d573f5b15b0528b076f12a6fb51
+    .agents/skills/amazon-bedrock/references/guardrails.md: sha256:4f860fe86892f940c8054b2b6dd734d6b35295c6e8264de5498a922ffefc3b26
+    .agents/skills/amazon-bedrock/references/knowledge-bases-retrieval.md: sha256:1be91ee485ba5ff1fd345778e49d09f50d0b871076e3f49d28bcba75c20776a2
+    .agents/skills/amazon-bedrock/references/knowledge-bases-setup.md: sha256:5e4a306f351309fd3bba4263b388ec5a787ec84e658514716f1881cea70119e0
+    .agents/skills/amazon-bedrock/references/model-invocation.md: sha256:e137ca48c64a483b962bffd07b9192947cd008c26bf6dbf50e580009aa382097
+    .agents/skills/amazon-bedrock/references/model-migration.md: sha256:4c96e74626a7f76012529eab1effaa5a8743d6b57af9c6d0b5105bdab08cc5f0
+    .agents/skills/amazon-bedrock/references/model-selection-guide.md: sha256:4a2f452df530e43cc284e82a1673b32c1c752f00e0415bd3e2b9231f35995624
+    .agents/skills/amazon-bedrock/references/prompt-caching.md: sha256:4362f875cbd1c6e01b2cb896f045b5a28eb6a86375ace2280ba882c45044142e
+    .agents/skills/amazon-bedrock/references/prompt-engineering-by-model.md: sha256:cb901d9162e4444aab9c0beca0d8b9bb4b7b4d3c1ee46fdbe28eac638fb04be8
+    .agents/skills/amazon-bedrock/references/quota-health.md: sha256:f30d99715f25f65076768569e780a14b36f1f650143746b2ad4b85be7df70087
+    .agents/skills/amazon-bedrock/references/sdk-converse-api-python.md: sha256:ea894c41ff2b16045662c6939b77cd86f199dce0edac026c543bf30dfec11d16
+    .agents/skills/amazon-bedrock/references/sdk-converse-api-typescript.md: sha256:50e5dcdc13f0dd0c20db3f859b9de2e5cab467653fde63bb4b391f6f88e4a277
+  content_hash: sha256:f372eef22be321624c96e1c9f97dab4cd19a3079eda8d83e1d8a22e2ec9b720e
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-billing-and-cost-management
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-billing-and-cost-management
+  - .agents/skills/aws-billing-and-cost-management/SKILL.md
+  - .agents/skills/aws-billing-and-cost-management/references/budgets.md
+  - .agents/skills/aws-billing-and-cost-management/references/cost-audit.md
+  - .agents/skills/aws-billing-and-cost-management/references/cost-explorer.md
+  - .agents/skills/aws-billing-and-cost-management/references/cost-optimization-hub.md
+  - .agents/skills/aws-billing-and-cost-management/references/cur-athena.md
+  - .agents/skills/aws-billing-and-cost-management/references/deterministic-calculations.md
+  - .agents/skills/aws-billing-and-cost-management/references/ebs-optimization.md
+  - .agents/skills/aws-billing-and-cost-management/references/ec2-rightsizing.md
+  - .agents/skills/aws-billing-and-cost-management/references/free-tier.md
+  - .agents/skills/aws-billing-and-cost-management/references/lambda-optimization.md
+  - .agents/skills/aws-billing-and-cost-management/references/pricing-lookup.md
+  - .agents/skills/aws-billing-and-cost-management/references/rds-optimization.md
+  - .agents/skills/aws-billing-and-cost-management/references/reserved-instances.md
+  - .agents/skills/aws-billing-and-cost-management/references/savings-plans.md
+  - .agents/skills/aws-billing-and-cost-management/references/service-optimization.md
+  deployed_file_hashes:
+    .agents/skills/aws-billing-and-cost-management/SKILL.md: sha256:c28461f10fd791fdbc044acc0036eaace52815ad13945dd671987b8cb30df95d
+    .agents/skills/aws-billing-and-cost-management/references/budgets.md: sha256:357d1ffc4bdbc3815b411d430e1dee80b724b921d4fc9b083be99e23074acee3
+    .agents/skills/aws-billing-and-cost-management/references/cost-audit.md: sha256:43f4114a18fb8770d66827369452d335e8eea88bbcf8b1898655d0e4dc926077
+    .agents/skills/aws-billing-and-cost-management/references/cost-explorer.md: sha256:b6439c6f3e2d68c0cd6829dfb236584a496ed2fd4f62adc4a0d0f830a173021f
+    .agents/skills/aws-billing-and-cost-management/references/cost-optimization-hub.md: sha256:e48cd5e0d70d33d7b3719609df8c5a903d4b92a669080c35aa321d0dcfb642e2
+    .agents/skills/aws-billing-and-cost-management/references/cur-athena.md: sha256:2dfd047bb3d1c3c5f74b3eb5f4e4957a9caf7fad006f6fa4de396039a5c20aac
+    .agents/skills/aws-billing-and-cost-management/references/deterministic-calculations.md: sha256:bb8d3df2c7beed78bd850f0d36bbe8ac34b66acd7e2d0e99d994932fd8e01c29
+    .agents/skills/aws-billing-and-cost-management/references/ebs-optimization.md: sha256:38f2fce216ac3a6ee1801b6a5ffc4f3bdb433cc2df713ede6086a53903cc1ec3
+    .agents/skills/aws-billing-and-cost-management/references/ec2-rightsizing.md: sha256:e858689e8a4b483bc10980d3c9b1c2b258b949de1923f526d06b23ce2283c41f
+    .agents/skills/aws-billing-and-cost-management/references/free-tier.md: sha256:c68cec87943b9833f42903337f99873213ef866beb959defdd87fbbdcf7dad94
+    .agents/skills/aws-billing-and-cost-management/references/lambda-optimization.md: sha256:374eaef74afc14913b96cf367860fdd70bc6fb0d4710dcd23ae7e380f3a9085a
+    .agents/skills/aws-billing-and-cost-management/references/pricing-lookup.md: sha256:458b83abd58b4bd33836905c59ffe1f7dd606cb3f050c112d915006faeadc350
+    .agents/skills/aws-billing-and-cost-management/references/rds-optimization.md: sha256:cd2f6fddcea40562b23898d1b7219543d728366f52bf977fe3ec8b88779c1450
+    .agents/skills/aws-billing-and-cost-management/references/reserved-instances.md: sha256:c4fbb1eabc7e1b763e73a14cc776e8238d7e946e1055c9568be7a45e2637d909
+    .agents/skills/aws-billing-and-cost-management/references/savings-plans.md: sha256:2b2f6569bf48a7896f41cbd09db94b2cdf5d38882bb2099e490ed061129ec9e6
+    .agents/skills/aws-billing-and-cost-management/references/service-optimization.md: sha256:b21784bd033fe670724eaf35efecc3c5717ca79d463aa24e86d9b2f1af2246fd
+  content_hash: sha256:5442a52ac24d79f99c8ce010c594ca84170f8384bb9cdfc106868df0c206730d
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-containers
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-containers
+  - .agents/skills/aws-containers/SKILL.md
+  - .agents/skills/aws-containers/references/app-runner-guide.md
+  - .agents/skills/aws-containers/references/ecr-repository-management.md
+  - .agents/skills/aws-containers/references/ecs-exec-debugging.md
+  - .agents/skills/aws-containers/references/ecs-infrastructure-patterns.md
+  - .agents/skills/aws-containers/references/ecs-logging-and-firelens.md
+  - .agents/skills/aws-containers/references/ecs-troubleshooting-guide.md
+  - .agents/skills/aws-containers/references/fargate-service-deployment.md
+  - .agents/skills/aws-containers/references/fargate-spot.md
+  - .agents/skills/aws-containers/references/service-scaling-and-updates.md
+  - .agents/skills/aws-containers/references/task-definition-authoring.md
+  deployed_file_hashes:
+    .agents/skills/aws-containers/SKILL.md: sha256:976aed71624bf62f0405ada4640247d938c019cc9794fa1f956729d74e9e3e32
+    .agents/skills/aws-containers/references/app-runner-guide.md: sha256:e9d4ea08481f552bb74fae67e025c1a1b3ffedb76a667e41ae1c11bcad88249b
+    .agents/skills/aws-containers/references/ecr-repository-management.md: sha256:024900411553725a1d8162e501d9ca711379fc1836c9a693c284a40471f25723
+    .agents/skills/aws-containers/references/ecs-exec-debugging.md: sha256:694baf88d82ab76b808b0889a59567ed277771d71f1e57acf664cc5ffc0af792
+    .agents/skills/aws-containers/references/ecs-infrastructure-patterns.md: sha256:f0b525cb3484dbe36ffefba60ad1a6cceead411e9c667371baef79027a6d1153
+    .agents/skills/aws-containers/references/ecs-logging-and-firelens.md: sha256:cad5e8e26a4da712697c192364077e4df5233dce7cb94ec509e7d7cb3c731d81
+    .agents/skills/aws-containers/references/ecs-troubleshooting-guide.md: sha256:a118e6692b4c6d4e97d20cc1d1142ac0fd9ec909b1806c6c8502f220a264a3ed
+    .agents/skills/aws-containers/references/fargate-service-deployment.md: sha256:4d5ff4ea6eaba724f2185f4e3195b6b4ec97cc606da636edc8c4cf5eeae84c05
+    .agents/skills/aws-containers/references/fargate-spot.md: sha256:68a3acbfece9183f7986812bdb32e1d9cc5459db9358cb92e9f7087e0643eb40
+    .agents/skills/aws-containers/references/service-scaling-and-updates.md: sha256:0739b30cb7fdd62b959e937ae1c76caf1199c6bbeed2045e825f9a2230caab16
+    .agents/skills/aws-containers/references/task-definition-authoring.md: sha256:b0232c293ddda77abb3cb4747ec6ad952600e2fbb84ac35a934a99f03f39ca53
+  content_hash: sha256:dfca09188df37bb98a14f9abbaef0d0749bb65a7677ee4eeffdb65df5bb0cfde
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-iam
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-iam
+  - .agents/skills/aws-iam/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/aws-iam/SKILL.md: sha256:c482f7de850f5a8a47886bd19b9db76ee3ed92bb551c5567dea67b21a76b443c
+  content_hash: sha256:e6b01570731dc3a67e26ecaaa5ce0d1d7b54f39f5e041a057f23f3b22c57cd9c
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-messaging-and-streaming
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-messaging-and-streaming
+  - .agents/skills/aws-messaging-and-streaming/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/aws-messaging-and-streaming/SKILL.md: sha256:d60f6acf6bae649fbfcd4aa113b7909596326867bd9ea4ff121707e1a95aac69
+  content_hash: sha256:5f67e1a255f200cf4dadbd7f268aad51e7fcfd882fd0ea9182518c207e8371cb
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-observability
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-observability
+  - .agents/skills/aws-observability/SKILL.md
+  - .agents/skills/aws-observability/assets/alarm-template.ts
+  - .agents/skills/aws-observability/assets/otel-config.yaml
+  - .agents/skills/aws-observability/references/alarms.md
+  - .agents/skills/aws-observability/references/cloudtrail.md
+  - .agents/skills/aws-observability/references/dashboards.md
+  - .agents/skills/aws-observability/references/log-insights.md
+  - .agents/skills/aws-observability/references/metrics.md
+  - .agents/skills/aws-observability/references/synthetics.md
+  - .agents/skills/aws-observability/references/tracing.md
+  - .agents/skills/aws-observability/references/troubleshooting.md
+  deployed_file_hashes:
+    .agents/skills/aws-observability/SKILL.md: sha256:c7f7d16ebcc810de37d6363a1edc0f8da87a4ea23642695eeab5252677970e60
+    .agents/skills/aws-observability/assets/alarm-template.ts: sha256:b242e56ac6a51788da30cc2ed9a957a49891c0e363ec865c925041074d43a7b8
+    .agents/skills/aws-observability/assets/otel-config.yaml: sha256:7e1412c0a286f0dfda4d113a0f954ff1b4bbd619a942a0eaf6d4c3c835d99063
+    .agents/skills/aws-observability/references/alarms.md: sha256:bdd5f0787c625e01d3a35a7b428a26963b057ab662665eb3b7ec8cece46840f9
+    .agents/skills/aws-observability/references/cloudtrail.md: sha256:9c7f323f05d1882b42d0e01cb5676f6abd6e7136970671c3b2e3683d29be78bf
+    .agents/skills/aws-observability/references/dashboards.md: sha256:323cb457287287c3fa25ea719c582df9f3589932ecaac79ce4109d81e17347e7
+    .agents/skills/aws-observability/references/log-insights.md: sha256:2ae72120f4f34ab6fddf0726e9e6a8dfc3066a6889493b16cc174ac069d5aa87
+    .agents/skills/aws-observability/references/metrics.md: sha256:7260fe26d2473fe9614b264ac461d45363fa1d4b743bc3bcd5bba959bce30ae8
+    .agents/skills/aws-observability/references/synthetics.md: sha256:b767b7ea045491e835ab481ac3e568435a61efa0155ed02284d8ab701552f371
+    .agents/skills/aws-observability/references/tracing.md: sha256:f5e9578850f9a8ae4a933016af8d2ed5a0ea10fef14d152754ebf8f0fec5561d
+    .agents/skills/aws-observability/references/troubleshooting.md: sha256:c7a3b3e6eaf8427dd227184822b8d019669d6d78364bf3aa47bbfd632e66bffe
+  content_hash: sha256:016bd8dae36b0862684adb9fdb550a645ecd69dc1a059724f04a183d1addd84d
+- repo_url: aws/agent-toolkit-for-aws
+  host: github.com
+  resolved_commit: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  resolved_ref: a9d1c70fe7442a97678e82b62c7c61bcb0deeaea
+  virtual_path: skills/core-skills/aws-serverless
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/aws-serverless
+  - .agents/skills/aws-serverless/SKILL.md
+  - .agents/skills/aws-serverless/assets/powertools-handler.py
+  - .agents/skills/aws-serverless/references/api-gateway.md
+  - .agents/skills/aws-serverless/references/architecture.md
+  - .agents/skills/aws-serverless/references/concurrency.md
+  - .agents/skills/aws-serverless/references/deployment.md
+  - .agents/skills/aws-serverless/references/event-sources.md
+  - .agents/skills/aws-serverless/references/lambda.md
+  - .agents/skills/aws-serverless/references/orchestration.md
+  - .agents/skills/aws-serverless/references/production.md
+  - .agents/skills/aws-serverless/references/troubleshooting.md
+  deployed_file_hashes:
+    .agents/skills/aws-serverless/SKILL.md: sha256:cdda12489f997aeccad349657ba8c66b061edb5e0275468ecb46011cd28824bf
+    .agents/skills/aws-serverless/assets/powertools-handler.py: sha256:9573a3359a8cf14be03b582c0592c978b22d97123141b63453f17eabb111b40a
+    .agents/skills/aws-serverless/references/api-gateway.md: sha256:3fa6ca7f41ed97d6f3c995b0b8cee078c01435efe37a07c3d7eefb1607e0d58b
+    .agents/skills/aws-serverless/references/architecture.md: sha256:23f3eb020cac0c852833e0b058d080a8e8e3f44682ffd906ff28d79924399079
+    .agents/skills/aws-serverless/references/concurrency.md: sha256:c508ae0bf0427c60765e427f246db3ae397f2f5e05fb17b599c1c20e7436322d
+    .agents/skills/aws-serverless/references/deployment.md: sha256:cb8b8c6e58cbb40fe240c420ec529b730069d7151b24bc4962722b9b307bcf35
+    .agents/skills/aws-serverless/references/event-sources.md: sha256:eaae0b7800176d76ab06d0f28cb31ae4dd7976289f6022863887ab1eb5afddad
+    .agents/skills/aws-serverless/references/lambda.md: sha256:f3e1425538cd0d869312dc48dce633dbb2ac48926b46926bec53bd736107dbe7
+    .agents/skills/aws-serverless/references/orchestration.md: sha256:e18c71fbe13dfc63a2993a93388a26c8629a4dcf5144d6aff9dc25ecb2eb223d
+    .agents/skills/aws-serverless/references/production.md: sha256:d4f4973c1b24aa1c85431d53f39e15bc0f3ed1ec56ae5cfb719e69b2954b1cc9
+    .agents/skills/aws-serverless/references/troubleshooting.md: sha256:4689eb233d8be8c5a5d1c8749fdaf38b910518ed5e47a5aedb3827f17a65f210
+  content_hash: sha256:d194802edacf6adf02c993b31ff3062c57fa7dd9383d68ac0a3ea9bb4a78f361
 - repo_url: ryonakae/dotfiles
   host: github.com
   resolved_commit: a6fe9681dce1c76053c772c284a360e478d1ae50
