@@ -12,6 +12,7 @@
   programs.home-manager.enable = true;
 
   imports = [
+    ./agent-mcp.nix
     ./agent-skills.nix
     ./dotfiles.nix
     ./git.nix

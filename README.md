@@ -91,6 +91,29 @@ task agent-skills:refresh
 
 `.agents/` と `apm_modules/` は生成物なので Git 管理しません。
 
+## Agent MCP Servers
+
+MCP server のランタイム設定は Home Manager で管理します。APM は現時点では MCP 依存を
+`apm.lock.yaml` に固定しないため、APM 管理対象は外部由来 skill に限定しています。
+
+管理対象は次の通りです。
+
+- Codex: `~/.codex/config.toml`
+- Claude Code: `~/.claude/mcp.json` と `claude-with-mcp` wrapper
+
+Claude Code を MCP 設定込みで起動する場合は、通常の shell では `claude` alias が
+`claude-with-mcp` を指します。script など alias が効かない場所では明示的に
+`claude-with-mcp` を使います。この wrapper は `--strict-mcp-config` を付けて起動し、
+Home Manager 管理の MCP server だけを読み込みます。
+
+設定している MCP server は次の通りです。
+
+- AWS MCP: `uvx mcp-proxy-for-aws@1.6.0 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
+- Terraform MCP: `docker run -i --rm hashicorp/terraform-mcp-server:1.0.0`
+
+秘密値は dotfiles では管理しません。`TFE_TOKEN` などが必要になった場合は、将来
+`sops-nix` などの secrets 基盤を導入してから扱います。
+
 ## 管理内容
 
 Nix 側で主に次の項目を管理しています。
@@ -104,6 +127,7 @@ Nix 側で主に次の項目を管理しています。
 - Neovim / nixvim
 - CLI packages
 - Agent Skills の symlink
+- Agent MCP server 設定
 - dotfiles の XDG config リンク
 
 設定ファイル本体は、各ツールの標準形式のまま管理しています。
