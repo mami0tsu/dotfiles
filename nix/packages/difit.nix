@@ -6,7 +6,6 @@
   makeWrapper,
   nodejs,
   pnpm_10,
-  pnpmBuildHook,
   pnpmConfigHook,
 }:
 
@@ -26,7 +25,6 @@ stdenvNoCC.mkDerivation rec {
     nodejs
     pnpm_10
     pnpmConfigHook
-    pnpmBuildHook
   ];
 
   pnpmDeps = fetchPnpmDeps {
@@ -35,6 +33,14 @@ stdenvNoCC.mkDerivation rec {
     pnpm = pnpm_10;
     hash = "sha256-fh7YhyOIZvaFoWxgazn464bZ7VeWBlFs1Iow/6TSkpg=";
   };
+
+  buildPhase = ''
+    runHook preBuild
+
+    pnpm run build
+
+    runHook postBuild
+  '';
 
   installPhase = ''
     runHook preInstall
