@@ -28,6 +28,20 @@ tasks:
       - nix-collect-garbage -d
       - echo "Cleaned up old Nix generations. To fully free space, run with sudo."
 
+  agent-plugins:install:
+    desc: Codex CLI と Claude Code に共通 agent plugin marketplace を install する。
+    cmds:
+      - codex plugin marketplace add ./agent-plugins
+      - codex plugin add development@dotfiles
+      - claude plugin marketplace add ./agent-plugins
+      - claude plugin install development@dotfiles
+
+  agent-plugins:validate:
+    desc: Claude Code のネイティブ validate で共通 agent plugin manifest を検証する。
+    cmds:
+      - claude plugin validate agent-plugins/development --strict
+      - claude plugin validate agent-plugins --strict
+
   agent-skills:install:
     desc: Link APM-managed global agent skills, materializing from the lockfile if needed.
     cmds:

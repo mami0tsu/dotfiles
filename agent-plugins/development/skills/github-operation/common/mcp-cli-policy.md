@@ -2,6 +2,8 @@
 
 基本は GitHub CLI を優先する。MCP は、`gh auth status` が成功しているにもかかわらず、GitHub CLI の取得失敗、機能不足、API 差分などで進められない場合だけ fallback として使う。
 
+MCP fallback は `development` plugin の GitHub MCP server を使う。Codex 固有の GitHub app connector は、この skill の fallback 前提にしない。
+
 `gh auth status` が失敗した場合は MCP fallback せずに中止する。`gh auth status` の結果を伝え、ユーザーに `gh auth login` などで認証してもらう。
 
 ## GitHub CLI を優先する操作

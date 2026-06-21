@@ -15,22 +15,13 @@ allowed-tools: >-
   Bash(git rev-parse:*)
   Bash(git status:*)
   Read
-  mcp__codex_apps__github._create_pull_request
-  mcp__codex_apps__github._fetch_file
-  mcp__codex_apps__github._fetch_issue
-  mcp__codex_apps__github._fetch_issue_comments
-  mcp__codex_apps__github._fetch_pr
-  mcp__codex_apps__github._fetch_pr_comments
-  mcp__codex_apps__github._get_pr_info
-  mcp__codex_apps__github._get_repo
-  mcp__codex_apps__github._list_pull_request_review_threads
-  mcp__codex_apps__github._search
-  mcp__codex_apps__github._search_issues
 ---
 
 # GitHub Operation
 
 GitHub 上の操作と分析を日本語の運用ルールに沿って定型化する。ローカル Git の branch 作成、commit、push は扱わない。
+
+GitHub MCP fallback は `development` plugin が提供する GitHub MCP server を使う。Codex 固有の GitHub app connector は fallback 前提にしない。
 
 ## 使う場面
 

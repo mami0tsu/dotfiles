@@ -91,28 +91,30 @@ task agent-skills:refresh
 
 `.agents/` と `apm_modules/` は生成物なので Git 管理しません。
 
-## Agent MCP Servers
+## Agent Plugin と MCP Server
 
-MCP server のランタイム設定は Home Manager で管理します。APM は現時点では MCP 依存を
-`apm.lock.yaml` に固定しないため、APM 管理対象は外部由来 skill に限定しています。
+Agent MCP server のランタイム設定は、Codex CLI と Claude Code のネイティブな
+plugin install/update に寄せます。Home Manager は MCP 設定ファイルを生成しません。
 
-管理対象は次の通りです。
+共通 plugin は `agent-plugins/development` で管理します。
 
-- Codex: `~/.codex/config.toml`
-- Claude Code: `~/.claude/mcp.json` と `claude-with-mcp` wrapper
+- Codex marketplace: `agent-plugins/.agents/plugins/marketplace.json`
+- Claude Code marketplace: `agent-plugins/.claude-plugin/marketplace.json`
+- Plugin package: `agent-plugins/development`
 
-Claude Code を MCP 設定込みで起動する場合は、通常の shell では `claude` alias が
-`claude-with-mcp` を指します。script など alias が効かない場所では明示的に
-`claude-with-mcp` を使います。この wrapper は `--strict-mcp-config` を付けて起動し、
-Home Manager 管理の MCP server だけを読み込みます。
+含めている skill は次の通りです。
 
-設定している MCP server は次の通りです。
+- `git-operation`: branch/worktree 作成、commit、rebase、push などの Git 操作
+- `github-operation`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などの GitHub 操作
+
+初期 MCP server は次の通りです。
 
 - AWS MCP: `uvx mcp-proxy-for-aws@1.6.0 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
 - Terraform MCP: `docker run -i --rm hashicorp/terraform-mcp-server:1.0.0`
+- GitHub MCP: `https://api.githubcopilot.com/mcp/`
 
-秘密値は dotfiles では管理しません。`TFE_TOKEN` などが必要になった場合は、将来
-`sops-nix` などの secrets 基盤を導入してから扱います。
+GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
+`GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
 
 ## 管理内容
 
@@ -127,7 +129,7 @@ Nix 側で主に次の項目を管理しています。
 - Neovim / nixvim
 - CLI packages
 - Agent Skills の symlink
-- Agent MCP server 設定
+- Agent plugin marketplace
 - dotfiles の XDG config リンク
 
 設定ファイル本体は、各ツールの標準形式のまま管理しています。
