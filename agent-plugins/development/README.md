@@ -2,6 +2,10 @@
 
 Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
+## Skills
+
+- `git-operation`: branch/worktree 作成、commit、rebase、push などの Git 操作を定型化する skill
+
 ## MCP Server
 
 - `aws`: `uvx mcp-proxy-for-aws@1.6.0 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`

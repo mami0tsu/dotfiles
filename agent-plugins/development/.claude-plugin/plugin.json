@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "development",
-  "version": "0.1.0",
-  "description": "Codex CLI と Claude Code で共通利用する開発用 tools と MCP servers。",
+  "version": "0.2.0",
+  "description": "Codex CLI と Claude Code で共通利用する開発用 skills、tools、MCP servers。",
   "author": {
     "name": "mami0tsu"
   }
