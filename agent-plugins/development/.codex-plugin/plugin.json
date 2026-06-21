@@ -1,6 +1,6 @@
 {
   "name": "development",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Codex CLI と Claude Code で共通利用する開発用 skills、tools、MCP servers。",
   "author": {
     "name": "mami0tsu"
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Development",
     "shortDescription": "共通開発 skill と MCP server",
-    "longDescription": "Codex CLI と Claude Code で Git 操作 skill と AWS、Terraform、GitHub の共通 MCP server を使うための開発用 plugin。",
+    "longDescription": "Codex CLI と Claude Code で Git/GitHub 操作 skill と AWS、Terraform、GitHub の共通 MCP server を使うための開発用 plugin。",
     "developerName": "mami0tsu",
     "category": "Developer Tools",
     "capabilities": [
