@@ -1,4 +1,5 @@
 .DS_Store
 .zcompdump
-.agents/
+/.agents/
+/.claude-plugin/
 apm_modules/

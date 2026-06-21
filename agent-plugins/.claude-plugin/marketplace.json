@@ -1,0 +1,13 @@
+{
+  "name": "dotfiles",
+  "description": "dotfiles で管理する Claude Code plugins。",
+  "owner": {
+    "name": "mami0tsu"
+  },
+  "plugins": [
+    {
+      "name": "development",
+      "source": "./development"
+    }
+  ]
+}
