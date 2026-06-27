@@ -4,7 +4,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 ## Skills
 
-- `git-operation`: branch/worktree 作成、commit、rebase、push などの Git 操作を定型化する skill
+- `git`: worktree と branch の作成、commit、rebase、push を扱う Git 実行手順
 - `github-operation`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などの GitHub 操作を定型化する skill
 
 ## MCP Server
