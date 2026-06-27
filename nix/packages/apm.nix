@@ -7,13 +7,18 @@
 stdenvNoCC.mkDerivation rec {
   pname = "apm";
   version = "0.20.0";
+  assetName = "apm-darwin-arm64";
+  archiveName = "${assetName}.tar.gz";
 
   src = fetchurl {
-    url = "https://github.com/microsoft/apm/releases/download/v${version}/apm-darwin-arm64.tar.gz";
+    url = "https://github.com/microsoft/apm/releases/download/v${version}/${archiveName}";
     sha256 = "1zdy26r2h9r95hdr2d4f37z6r8lwahb01n6kgkp429gkszrrzpcr";
   };
 
-  sourceRoot = "apm-darwin-arm64";
+  sourceRoot = assetName;
+
+  dontConfigure = true;
+  dontBuild = true;
 
   installPhase = ''
     runHook preInstall

@@ -17,7 +17,7 @@ stdenvNoCC.mkDerivation rec {
     owner = "yoshiko-pg";
     repo = "difit";
     tag = "v${version}";
-    sha256 = "1xr4k0c6y1bdv6z630amg7xh95j9sksgkl0a370hx0jdyc4p8p6k";
+    hash = "sha256-01x0CfNNgg7BGQrQ+fTUSZYE+3lVgWG+2W0FbxiYJPc=";
   };
 
   nativeBuildInputs = [
@@ -45,7 +45,7 @@ stdenvNoCC.mkDerivation rec {
   installPhase = ''
     runHook preInstall
 
-    package_dir="$out/lib/node_modules/difit"
+    package_dir="$out/lib/node_modules/${pname}"
     mkdir -p "$package_dir" "$out/bin"
     cp -R dist node_modules package.json README.md "$package_dir/"
     find "$package_dir/node_modules" -xtype l -delete
