@@ -35,6 +35,10 @@ codex plugin marketplace add ./agent-plugins
 codex plugin add development@dotfiles
 ```
 
+Codex 用 MCP 設定は `.codex-plugin/plugin.json` に直接書きます。
+Claude Code 用 MCP 設定は `.mcp.json` に置きます。
+`bearer_token_env_var` は Codex 用の設定なので、Claude Code 用 `.mcp.json` には書きません。
+
 Codex が plugin manifest からリモート GitHub MCP の認証設定を取り込めない場合は、GitHub MCP server を明示的に追加します。
 
 ```sh

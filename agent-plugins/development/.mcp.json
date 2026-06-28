@@ -21,7 +21,6 @@
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp/",
-      "bearer_token_env_var": "GITHUB_MCP_TOKEN",
       "headers": {
         "Authorization": "Bearer ${GITHUB_MCP_TOKEN}"
       }

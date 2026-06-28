@@ -18,7 +18,31 @@
     "workflow"
   ],
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
+  "mcpServers": {
+    "aws": {
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@1.6.0",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--metadata",
+        "AWS_REGION=ap-northeast-1"
+      ]
+    },
+    "terraform": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "hashicorp/terraform-mcp-server:1.0.0"
+      ]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "bearer_token_env_var": "GITHUB_MCP_TOKEN"
+    }
+  },
   "interface": {
     "displayName": "Development",
     "shortDescription": "共通開発 flow、skill、MCP server",
