@@ -7,6 +7,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 - `git`: worktree と branch の作成、commit、rebase、push を扱う Git 実行手順
 - `github-operation`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などの GitHub 操作を定型化する skill
 - `development-flow`: 設計、チケット化、実装、レビューまでの上位フロー。設計時は `dig` skill、設計成果物作成後と実装後は `difit-review` skill を必須にする
+- `japanese-tech-writing`: 日本語の技術文書・書籍原稿の文章規範。章、草稿、記事、解説文の執筆・推敲・リライトに使う
 
 ## MCP Server
 
@@ -33,6 +34,10 @@ plugin には同梱しません。
 codex plugin marketplace add ./agent-plugins
 codex plugin add development@dotfiles
 ```
+
+Codex 用 MCP 設定は `.codex-plugin/plugin.json` に直接書きます。
+Claude Code 用 MCP 設定は `.mcp.json` に置きます。
+`bearer_token_env_var` は Codex 用の設定なので、Claude Code 用 `.mcp.json` には書きません。
 
 Codex が plugin manifest からリモート GitHub MCP の認証設定を取り込めない場合は、GitHub MCP server を明示的に追加します。
 
