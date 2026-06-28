@@ -1,0 +1,6 @@
+interface:
+  display_name: "Development Flow"
+  short_description: "設計、実装、difit-review レビューの上位フロー"
+  default_prompt: "Use $development-flow to run the design-to-implementation workflow. Require the dig skill for design and the difit-review skill for design and implementation review gates."
+policy:
+  allow_implicit_invocation: true
