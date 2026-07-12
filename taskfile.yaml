@@ -1,18 +1,12 @@
 version: '3'
 
-vars:
-  agent_plugin_marketplace: dotfiles
-  agent_plugin_name: development
-  agent_plugin_ref: '{{.agent_plugin_name}}@{{.agent_plugin_marketplace}}'
-  agent_plugins_dir: ./agent-plugins
-  agent_skills_dirs:
-    - $HOME/.codex/skills
-    - $HOME/.claude/skills
-  apm_skills_install_args: --target agent-skills --only apm
-  apm_skills_dir: '{{.APM_SKILLS_DIR | default ".agents/skills"}}'
-  nix_target: '{{.TARGET | default (env "USER")}}'
+includes:
+  agent-plugins: ./taskfiles/agent-plugins.yaml
+  agent-skills: ./taskfiles/agent-skills.yaml
+  nix: ./taskfiles/nix.yaml
 
 env:
+  REPO_ROOT: '{{.ROOT_DIR}}'
   SHELL: bash
 
 set:
@@ -21,6 +15,13 @@ set:
   - pipefail
 
 tasks:
+  clean:
+    desc: Clean Nix generations, agent plugins, and agent skills.
+    cmds:
+      - task: nix:clean
+      - task: agent-plugins:clean
+      - task: agent-skills:clean
+
   default:
     silent: true
     cmds:
@@ -32,164 +33,3 @@ tasks:
       - task: nix:deploy
       - task: agent-plugins:deploy
       - task: agent-skills:deploy
-
-  clean:
-    desc: Clean Nix generations, agent plugins, and agent skills.
-    cmds:
-      - task: nix:clean
-      - task: agent-plugins:clean
-      - task: agent-skills:clean
-
-  agent-plugins:deploy:
-    desc: Register the shared agent plugin marketplace in Codex CLI and Claude Code.
-    cmds:
-      - task: agent-plugins:codex:deploy
-      - task: agent-plugins:claude:deploy
-
-  agent-plugins:codex:deploy:
-    internal: true
-    silent: true
-    cmds:
-      - codex plugin marketplace add {{.agent_plugins_dir}}
-      - codex plugin add {{.agent_plugin_ref}}
-
-  agent-plugins:claude:deploy:
-    internal: true
-    silent: true
-    cmds:
-      - claude plugin marketplace add {{.agent_plugins_dir}}
-      - claude plugin install {{.agent_plugin_ref}}
-
-  agent-plugins:clean:
-    desc: Unregister the shared agent plugin marketplace from Codex CLI and Claude Code.
-    cmds:
-      - task: agent-plugins:codex:clean
-      - task: agent-plugins:claude:clean
-
-  agent-plugins:codex:clean:
-    internal: true
-    silent: true
-    cmds:
-      - codex plugin remove {{.agent_plugin_ref}} || true
-      - codex plugin marketplace remove {{.agent_plugin_marketplace}} || true
-
-  agent-plugins:claude:clean:
-    internal: true
-    silent: true
-    cmds:
-      - claude plugin uninstall {{.agent_plugin_ref}} --yes || true
-      - claude plugin marketplace remove {{.agent_plugin_marketplace}} || true
-
-  agent-plugins:validate:
-    desc: Validate the shared agent plugin manifests with Claude Code.
-    cmds:
-      - task: agent-plugins:claude:validate
-
-  agent-plugins:claude:validate:
-    internal: true
-    silent: true
-    cmds:
-      - claude plugin validate {{.agent_plugins_dir}}/{{.agent_plugin_name}} --strict
-      - claude plugin validate {{.agent_plugins_dir}} --strict
-
-  agent-skills:deploy:
-    desc: Materialize locked APM skills and link them into agent skill directories.
-    cmds:
-      - apm install {{.apm_skills_install_args}} --frozen
-      - task: agent-skills:link
-
-  agent-skills:clean:
-    desc: Unlink APM-managed skills and remove their materialized files.
-    cmds:
-      - task: agent-skills:unlink
-      - |
-        apm_skills_dir="$PWD/{{.apm_skills_dir}}"
-
-        if [[ -d "$apm_skills_dir" ]]; then
-          rm -r "$apm_skills_dir"
-        fi
-
-  agent-skills:unlink:
-    internal: true
-    silent: true
-    cmds:
-      - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
-        task: agent-skills:unlink-from-agent-skills-dir
-        vars:
-          AGENT_SKILLS_DIR: '{{.AGENT_SKILLS_DIR}}'
-
-  agent-skills:unlink-from-agent-skills-dir:
-    internal: true
-    silent: true
-    cmds:
-      - |
-        apm_skills_dir="$PWD/{{.apm_skills_dir}}"
-        agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
-
-        if [[ ! -d "$apm_skills_dir" ]]; then
-          exit 0
-        fi
-
-        shopt -s nullglob
-
-        for apm_skill_dir in "$apm_skills_dir"/*/; do
-          apm_skill_dir="${apm_skill_dir%/}"
-          skill_name="$(basename "$apm_skill_dir")"
-          agent_skill_dir="${agent_skills_dir}/${skill_name}"
-
-          if [[ -L "$agent_skill_dir" && "$(readlink "$agent_skill_dir")" == "$apm_skill_dir" ]]; then
-            unlink "$agent_skill_dir"
-          fi
-        done
-
-  agent-skills:link:
-    internal: true
-    silent: true
-    cmds:
-      - |
-        apm_skills_dir="$PWD/{{.apm_skills_dir}}"
-
-        if [[ ! -d "$apm_skills_dir" ]]; then
-          echo "No APM skills were installed into $apm_skills_dir" >&2
-          exit 1
-        fi
-      - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
-        task: agent-skills:link-into-agent-skills-dir
-        vars:
-          AGENT_SKILLS_DIR: '{{.AGENT_SKILLS_DIR}}'
-
-  agent-skills:link-into-agent-skills-dir:
-    internal: true
-    silent: true
-    cmds:
-      - |
-        apm_skills_dir="$PWD/{{.apm_skills_dir}}"
-        agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
-
-        mkdir -p "$agent_skills_dir"
-
-        shopt -s nullglob
-
-        for apm_skill_dir in "$apm_skills_dir"/*/; do
-          apm_skill_dir="${apm_skill_dir%/}"
-          skill_name="$(basename "$apm_skill_dir")"
-          agent_skill_dir="${agent_skills_dir}/${skill_name}"
-
-          if [[ -e "$agent_skill_dir" && ! -L "$agent_skill_dir" ]]; then
-            echo "Skill target exists and is not a symlink: $agent_skill_dir" >&2
-            exit 1
-          fi
-
-          ln -sfn "$apm_skill_dir" "$agent_skill_dir"
-        done
-
-  nix:clean:
-    desc: Cleanup old Nix generations.
-    cmds:
-      - nix-collect-garbage -d
-      - echo "Cleaned up old Nix generations. To fully free space, run with sudo."
-
-  nix:deploy:
-    desc: Deploy dotfiles using nix-darwin.
-    cmds:
-      - sudo darwin-rebuild switch --flake .#{{.nix_target}}

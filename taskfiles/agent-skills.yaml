@@ -1,0 +1,100 @@
+version: '3'
+
+vars:
+  agent_skills_dirs:
+    - $HOME/.codex/skills
+    - $HOME/.claude/skills
+  apm_skills_dir: '{{.APM_SKILLS_DIR | default ".agents/skills"}}'
+  apm_skills_install_args: --target agent-skills --only apm
+
+tasks:
+  clean:
+    desc: Unlink APM-managed skills and remove their materialized files.
+    cmds:
+      - task: unlink
+      - |
+        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+
+        if [[ -d "$apm_skills_dir" ]]; then
+          rm -r "$apm_skills_dir"
+        fi
+
+  deploy:
+    desc: Materialize locked APM skills and link them into agent skill directories.
+    cmds:
+      - apm install {{.apm_skills_install_args}} --frozen
+      - task: link
+
+  link:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+
+        if [[ ! -d "$apm_skills_dir" ]]; then
+          echo "No APM skills were installed into $apm_skills_dir" >&2
+          exit 1
+        fi
+      - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
+        task: link-into-agent-skills-dir
+        vars:
+          AGENT_SKILLS_DIR: '{{.AGENT_SKILLS_DIR}}'
+
+  link-into-agent-skills-dir:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
+
+        mkdir -p "$agent_skills_dir"
+
+        shopt -s nullglob
+
+        for apm_skill_dir in "$apm_skills_dir"/*/; do
+          apm_skill_dir="${apm_skill_dir%/}"
+          skill_name="$(basename "$apm_skill_dir")"
+          agent_skill_dir="${agent_skills_dir}/${skill_name}"
+
+          if [[ -e "$agent_skill_dir" && ! -L "$agent_skill_dir" ]]; then
+            echo "Skill target exists and is not a symlink: $agent_skill_dir" >&2
+            exit 1
+          fi
+
+          ln -sfn "$apm_skill_dir" "$agent_skill_dir"
+        done
+
+  unlink:
+    internal: true
+    silent: true
+    cmds:
+      - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
+        task: unlink-from-agent-skills-dir
+        vars:
+          AGENT_SKILLS_DIR: '{{.AGENT_SKILLS_DIR}}'
+
+  unlink-from-agent-skills-dir:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
+
+        if [[ ! -d "$apm_skills_dir" ]]; then
+          exit 0
+        fi
+
+        shopt -s nullglob
+
+        for apm_skill_dir in "$apm_skills_dir"/*/; do
+          apm_skill_dir="${apm_skill_dir%/}"
+          skill_name="$(basename "$apm_skill_dir")"
+          agent_skill_dir="${agent_skills_dir}/${skill_name}"
+
+          if [[ -L "$agent_skill_dir" && "$(readlink "$agent_skill_dir")" == "$apm_skill_dir" ]]; then
+            unlink "$agent_skill_dir"
+          fi
+        done
