@@ -1,0 +1,16 @@
+version: '3'
+
+vars:
+  nix_target: '{{.TARGET | default (env "USER")}}'
+
+tasks:
+  clean:
+    desc: Cleanup old Nix generations.
+    cmds:
+      - nix-collect-garbage -d
+      - echo "Cleaned up old Nix generations. To fully free space, run with sudo."
+
+  deploy:
+    desc: Deploy dotfiles using nix-darwin.
+    cmds:
+      - sudo darwin-rebuild switch --flake {{.REPO_ROOT}}#{{.nix_target}}
