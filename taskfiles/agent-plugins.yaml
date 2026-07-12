@@ -1,10 +1,13 @@
 version: '3'
 
 vars:
-  agent_plugin_marketplace: dotfiles
+  agent_plugin_marketplace_name: mami0tsu
+  agent_plugin_legacy_marketplace_name: dotfiles
   agent_plugin_name: development
-  agent_plugin_ref: '{{.agent_plugin_name}}@{{.agent_plugin_marketplace}}'
-  agent_plugins_dir: '{{.REPO_ROOT}}/agent-plugins'
+  agent_plugin_ref: '{{.agent_plugin_name}}@{{.agent_plugin_marketplace_name}}'
+  agent_plugin_legacy_ref: '{{.agent_plugin_name}}@{{.agent_plugin_legacy_marketplace_name}}'
+  agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agent-plugin-marketplace'
+  agent_plugin_package_dir: '{{.agent_plugin_marketplace_dir}}/plugins/{{.agent_plugin_name}}'
 
 tasks:
   clean:
@@ -24,37 +27,57 @@ tasks:
     cmds:
       - task: claude:validate
 
+  migrate:
+    desc: Remove the legacy dotfiles agent plugin marketplace from Codex CLI and Claude Code.
+    cmds:
+      - task: codex:migrate
+      - task: claude:migrate
+
   claude:clean:
     internal: true
     silent: true
     cmds:
       - claude plugin uninstall {{.agent_plugin_ref}} --yes || true
-      - claude plugin marketplace remove {{.agent_plugin_marketplace}} || true
+      - claude plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
 
   claude:deploy:
     internal: true
     silent: true
     cmds:
-      - claude plugin marketplace add {{.agent_plugins_dir}}
+      - claude plugin marketplace add {{.agent_plugin_marketplace_dir}}
       - claude plugin install {{.agent_plugin_ref}}
 
   claude:validate:
     internal: true
     silent: true
     cmds:
-      - claude plugin validate {{.agent_plugins_dir}}/{{.agent_plugin_name}} --strict
-      - claude plugin validate {{.agent_plugins_dir}} --strict
+      - claude plugin validate {{.agent_plugin_package_dir}} --strict
+      - claude plugin validate {{.agent_plugin_marketplace_dir}} --strict
+
+  claude:migrate:
+    internal: true
+    silent: true
+    cmds:
+      - claude plugin uninstall {{.agent_plugin_legacy_ref}} --yes || true
+      - claude plugin marketplace remove {{.agent_plugin_legacy_marketplace_name}} || true
 
   codex:clean:
     internal: true
     silent: true
     cmds:
       - codex plugin remove {{.agent_plugin_ref}} || true
-      - codex plugin marketplace remove {{.agent_plugin_marketplace}} || true
+      - codex plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
 
   codex:deploy:
     internal: true
     silent: true
     cmds:
-      - codex plugin marketplace add {{.agent_plugins_dir}}
+      - codex plugin marketplace add {{.agent_plugin_marketplace_dir}}
       - codex plugin add {{.agent_plugin_ref}}
+
+  codex:migrate:
+    internal: true
+    silent: true
+    cmds:
+      - codex plugin remove {{.agent_plugin_legacy_ref}} || true
+      - codex plugin marketplace remove {{.agent_plugin_legacy_marketplace_name}} || true

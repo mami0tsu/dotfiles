@@ -1,0 +1,13 @@
+{
+  "name": "mami0tsu",
+  "description": "Claude Code plugins managed by mami0tsu.",
+  "owner": {
+    "name": "mami0tsu"
+  },
+  "plugins": [
+    {
+      "name": "development",
+      "source": "./plugins/development"
+    }
+  ]
+}
