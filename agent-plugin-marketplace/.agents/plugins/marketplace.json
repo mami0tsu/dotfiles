@@ -1,14 +1,14 @@
 {
-  "name": "dotfiles",
+  "name": "mami0tsu",
   "interface": {
-    "displayName": "Dotfiles"
+    "displayName": "mami0tsu"
   },
   "plugins": [
     {
       "name": "development",
       "source": {
         "source": "local",
-        "path": "./development"
+        "path": "./plugins/development"
       },
       "policy": {
         "installation": "AVAILABLE",

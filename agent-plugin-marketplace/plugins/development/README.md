@@ -31,8 +31,8 @@ plugin には同梱しません。
 このリポジトリの marketplace を追加してから plugin を install します。
 
 ```sh
-codex plugin marketplace add ./agent-plugins
-codex plugin add development@dotfiles
+codex plugin marketplace add ./agent-plugin-marketplace
+codex plugin add development@mami0tsu
 ```
 
 Codex 用 MCP 設定は `.codex-plugin/plugin.json` に直接書きます。
@@ -50,8 +50,8 @@ codex mcp add github --url https://api.githubcopilot.com/mcp/ --bearer-token-env
 このリポジトリの marketplace を追加してから plugin を install します。
 
 ```sh
-claude plugin marketplace add ./agent-plugins
-claude plugin install development@dotfiles
+claude plugin marketplace add ./agent-plugin-marketplace
+claude plugin install development@mami0tsu
 ```
 
 Claude Code が plugin MCP header 内の `GITHUB_MCP_TOKEN` を展開できない場合は、GitHub MCP server を明示的に追加します。

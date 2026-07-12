@@ -2,9 +2,6 @@
   self,
   ...
 }:
-let
-  agentInstructions = builtins.readFile "${self}/agents/AGENTS.md";
-in
 {
   xdg.enable = true;
 
@@ -17,7 +14,7 @@ in
 
   home.file = {
     ".editorconfig".source = "${self}/.editorconfig";
-    ".codex/AGENTS.md".source = "${self}/agents/AGENTS.md";
-    ".claude/CLAUDE.md".text = agentInstructions;
+    ".codex/AGENTS.md".source = "${self}/AGENTS.md";
+    ".claude/CLAUDE.md".source = "${self}/CLAUDE.md";
   };
 }
