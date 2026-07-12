@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-06-15T13:01:44.906301+00:00'
+generated_at: '2026-07-12T06:07:30.200173+00:00'
 apm_version: 0.20.0
 dependencies:
 - repo_url: aws/agent-toolkit-for-aws
@@ -264,3 +264,14 @@ dependencies:
     .agents/skills/difit-review/SKILL.md: sha256:778555921c3d63e932d987a2b2181442b2f4a21767692a621d94a1b536cddfe8
     .agents/skills/difit-review/agents/openai.yaml: sha256:8436c3a9d6f88c3c2852856f4a1cf4be19ca2f3f44bc5d629d43612ba57ab70b
   content_hash: sha256:4f95a432d8a359a2c3a8d320b98c871dda13d03b8583fe202528890e767e8c30
+- repo_url: yusukebe/ax
+  host: github.com
+  resolved_commit: 4b876aa8072b37b5278801bc8d8534dfd291a69f
+  resolved_ref: 4b876aa8072b37b5278801bc8d8534dfd291a69f
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/ax
+  - .agents/skills/ax/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/ax/SKILL.md: sha256:5260ca0152141ca4b71c02c1506092bd46da1915e69cd811c7db44e0ba97cc2e
+  content_hash: sha256:c6e8abe74b2bba0714cb9820699ff5dd9bab0786f1cf90609560b0d6d46edf75
