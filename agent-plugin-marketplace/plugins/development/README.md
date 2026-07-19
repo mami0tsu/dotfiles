@@ -12,8 +12,8 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 ## MCP Server
 
-- `aws`: `uvx mcp-proxy-for-aws@1.6.0 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
-- `terraform`: `docker run -i --rm hashicorp/terraform-mcp-server:1.0.0`
+- `aws`: `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --region ap-northeast-1`
+- `terraform`: `docker run -i --rm hashicorp/terraform-mcp-server:1.1.0 --toolsets=registry`
 - `github`: リモート GitHub MCP server `https://api.githubcopilot.com/mcp/`
 
 GitHub MCP server を使う前に、`GITHUB_MCP_TOKEN` に最小権限の GitHub PAT を設定します。
