@@ -1,6 +1,6 @@
 {
   "name": "development",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Codex CLI と Claude Code で共通利用する開発用 skills、tools、MCP servers。",
   "author": {
     "name": "mami0tsu"
