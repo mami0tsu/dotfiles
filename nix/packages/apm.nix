@@ -6,6 +6,7 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "apm";
+  # renovate: datasource=github-releases depName=microsoft/apm extractVersion=^v(?<version>.+)$
   version = "0.20.0";
   assetName = "apm-darwin-arm64";
   archiveName = "${assetName}.tar.gz";

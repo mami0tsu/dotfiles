@@ -1,8 +1,12 @@
 {
   config,
   pkgs,
+  self,
   ...
 }:
+let
+  localPackages = self.packages.${pkgs.system};
+in
 {
   programs.zsh = {
     enable = true;
@@ -74,12 +78,7 @@
     plugins = [
       {
         name = "zsh-defer";
-        src = pkgs.fetchFromGitHub {
-          owner = "romkatv";
-          repo = "zsh-defer";
-          rev = "53a26e287fbbe2dcebb3aa1801546c6de32416fa";
-          sha256 = "sha256-MFlvAnPCknSgkW3RFA8pfxMZZS/JbyF3aMsJj9uHHVU=";
-        };
+        src = localPackages.zsh-defer-src;
       }
       {
         name = "zsh-autosuggestions";
@@ -95,12 +94,7 @@
       }
       {
         name = "git-open";
-        src = pkgs.fetchFromGitHub {
-          owner = "paulirish";
-          repo = "git-open";
-          rev = "63c0e77aaf18b72c839b1113c1e2f9514413643b";
-          sha256 = "sha256-E93A/KBEGlPDm98p1ClvWxzjK2ylv3BrVaEvBcuD6c4=";
-        };
+        src = localPackages.git-open-src;
       }
     ];
   };

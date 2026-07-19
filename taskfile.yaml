@@ -4,6 +4,7 @@ includes:
   agent-plugins: ./taskfiles/agent-plugins.yaml
   agent-skills: ./taskfiles/agent-skills.yaml
   nix: ./taskfiles/nix.yaml
+  renovate: ./taskfiles/renovate.yaml
 
 env:
   REPO_ROOT: '{{.ROOT_DIR}}'
