@@ -6,6 +6,7 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "codex";
+  # renovate: datasource=github-releases depName=openai/codex extractVersion=^rust-v(?<version>.+)$
   version = "0.142.3";
   assetName = "codex-aarch64-apple-darwin";
   archiveName = "${assetName}.tar.gz";

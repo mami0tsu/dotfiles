@@ -1,7 +1,11 @@
 {
   pkgs,
+  self,
   ...
 }:
+let
+  localPackages = self.packages.${pkgs.system};
+in
 {
   home.packages = with pkgs; [
     bat # v0.26.1
@@ -18,11 +22,11 @@
     ripgrep # v15.1.0
 
     awscli2 # v2.34.24
-    (pkgs.callPackage ../packages/apm.nix { }) # v0.20.0
-    (pkgs.callPackage ../packages/ax.nix { }) # v0.1.10
+    localPackages.apm # v0.20.0
+    localPackages.ax # v0.1.10
     claude-code # v2.1.161
-    (pkgs.callPackage ../packages/codex.nix { }) # v0.142.3
-    (pkgs.callPackage ../packages/difit.nix { }) # v4.0.5
+    localPackages.codex # v0.142.3
+    localPackages.difit # v4.0.5
     docker_29 # v29.5.2
     fzf # v0.73.1
     gh # v2.93.0

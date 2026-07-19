@@ -39,6 +39,18 @@
     }@inputs:
     let
       system = "aarch64-darwin";
+      pkgs = import nixpkgs { inherit system; };
+
+      localPackages = {
+        apm = pkgs.callPackage ./nix/packages/apm.nix { };
+        ax = pkgs.callPackage ./nix/packages/ax.nix { };
+        codex = pkgs.callPackage ./nix/packages/codex.nix { };
+        difit = pkgs.callPackage ./nix/packages/difit.nix { };
+        git-open-src = pkgs.callPackage ./nix/packages/git-open-src.nix { };
+        git-wt = pkgs.callPackage ./nix/packages/git-wt.nix { };
+        roots = pkgs.callPackage ./nix/packages/roots.nix { };
+        zsh-defer-src = pkgs.callPackage ./nix/packages/zsh-defer-src.nix { };
+      };
 
       getDarwinConfig =
         username: useremail:
@@ -63,5 +75,6 @@
     {
       darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
       darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
+      packages.${system} = localPackages;
     };
 }

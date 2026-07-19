@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "Asia/Tokyo",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "minimumReleaseAge": "7 days",
+  "minimumReleaseAgeBehaviour": "timestamp-required",
+  "internalChecksFilter": "strict",
+  "enabledManagers": [
+    "custom.regex",
+    "github-actions",
+    "nix"
+  ],
+  "nix": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on monday"
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update local Nix package versions.",
+      "managerFilePatterns": [
+        "/^nix/packages/.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) extractVersion=(?<extractVersion>\\S+)\\s+version = \"(?<currentValue>[^\"]+)\";"
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update pinned Git refs for local Nix sources.",
+      "managerFilePatterns": [
+        "/^nix/packages/.*-src\\.nix$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=git-refs packageName=(?<packageName>\\S+) currentValue=(?<currentValue>\\S+)\\s+rev = \"(?<currentDigest>[a-f0-9]{40})\";"
+      ],
+      "depNameTemplate": "{{{packageName}}}",
+      "datasourceTemplate": "git-refs"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "nix"
+      ],
+      "groupName": "nix flake inputs",
+      "commitMessageTopic": "nix flake inputs"
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions",
+      "commitMessageTopic": "github actions"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "groupName": "local nix packages",
+      "commitMessageTopic": "local nix packages",
+      "postUpgradeTasks": {
+        "commands": [
+          "task renovate:update-nix-hashes"
+        ],
+        "fileFilters": [
+          "flake.nix",
+          "nix/**/*.nix"
+        ],
+        "executionMode": "branch"
+      }
+    }
+  ]
+}
