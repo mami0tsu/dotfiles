@@ -24,6 +24,10 @@
       "headers": {
         "Authorization": "Bearer ${GITHUB_MCP_TOKEN}"
       }
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }
