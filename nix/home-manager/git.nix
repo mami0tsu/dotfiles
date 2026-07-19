@@ -46,8 +46,8 @@
       };
       diff.colorMoved = "default";
       wt = {
-        # git-wt resolves relative basedir from the repository root, not the current subdirectory.
-        basedir = "../{gitroot}-worktrees";
+        # Keep git-wt worktrees under each repository.
+        basedir = ".worktrees";
         nocd = "create";
       };
       ghq.root = "${config.home.homeDirectory}/src";
@@ -61,6 +61,9 @@
       };
     };
 
-    ignores = [ ".DS_Store" ];
+    ignores = [
+      ".DS_Store"
+      ".worktrees/"
+    ];
   };
 }
