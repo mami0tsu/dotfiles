@@ -8,6 +8,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 - `github-operation`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などの GitHub 操作を定型化する skill
 - `development-flow`: 設計、チケット化、実装、レビューまでの上位フロー。設計時は `dig` skill、設計成果物作成後と実装後は `difit-review` skill を必須にする
 - `japanese-tech-writing`: 日本語の技術文書・書籍原稿の文章規範。章、草稿、記事、解説文の執筆・推敲・リライトに使う
+- `cognitive-rhythm-writing`: 説明文の緩急を、認知モードの切替と未回収の緊張として設計する文章規範
 
 ## MCP Server
 
