@@ -35,4 +35,11 @@ repository に規約があれば優先する。
 規約がなければ `<type>/<ticket-id>/<short-description>` とし、`type` は `feature`、`hotfix`、`chore` から選ぶ。
 ticket ID が未確定の検証作業だけ `wip/<short-description>` を使う。
 
+## commit のタイトル
+
+repository に規約があれば優先する。
+規約がない場合は、ticket ID をタイトル末尾に置き、直前を半角スペース1文字で区切る。
+
+- commit：`<type>: <summary> <ticket-id>`。`<type>` は Conventional Commits から変更内容に合うものを選ぶ
+
 状態変更前に、対象、主要コマンド、停止条件をユーザーへ短く示す。

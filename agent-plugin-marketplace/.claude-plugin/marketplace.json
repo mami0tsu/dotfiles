@@ -8,6 +8,10 @@
     {
       "name": "development",
       "source": "./plugins/development"
+    },
+    {
+      "name": "documentation",
+      "source": "./plugins/documentation"
     }
   ]
 }

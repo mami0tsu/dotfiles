@@ -12,6 +12,7 @@ in
     coreutils # v9.11
     curl # v8.20.0
     delta # v0.19.2
+    d2
     eza # v0.23.4
     findutils # v4.10.0
     gnugrep # v3.12

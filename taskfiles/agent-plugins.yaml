@@ -3,11 +3,12 @@ version: '3'
 vars:
   agent_plugin_marketplace_name: mami0tsu
   agent_plugin_legacy_marketplace_name: dotfiles
-  agent_plugin_name: development
-  agent_plugin_ref: '{{.agent_plugin_name}}@{{.agent_plugin_marketplace_name}}'
-  agent_plugin_legacy_ref: '{{.agent_plugin_name}}@{{.agent_plugin_legacy_marketplace_name}}'
+  development_plugin_ref: 'development@{{.agent_plugin_marketplace_name}}'
+  documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
+  agent_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
   agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agent-plugin-marketplace'
-  agent_plugin_package_dir: '{{.agent_plugin_marketplace_dir}}/plugins/{{.agent_plugin_name}}'
+  development_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/development'
+  documentation_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/documentation'
 
 tasks:
   clean:
@@ -37,7 +38,8 @@ tasks:
     internal: true
     silent: true
     cmds:
-      - claude plugin uninstall {{.agent_plugin_ref}} --yes || true
+      - claude plugin uninstall {{.development_plugin_ref}} --yes || true
+      - claude plugin uninstall {{.documentation_plugin_ref}} --yes || true
       - claude plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
 
   claude:deploy:
@@ -45,13 +47,15 @@ tasks:
     silent: true
     cmds:
       - claude plugin marketplace add {{.agent_plugin_marketplace_dir}}
-      - claude plugin install {{.agent_plugin_ref}}
+      - claude plugin install {{.development_plugin_ref}}
+      - claude plugin install {{.documentation_plugin_ref}}
 
   claude:validate:
     internal: true
     silent: true
     cmds:
-      - claude plugin validate {{.agent_plugin_package_dir}} --strict
+      - claude plugin validate {{.development_plugin_dir}} --strict
+      - claude plugin validate {{.documentation_plugin_dir}} --strict
       - claude plugin validate {{.agent_plugin_marketplace_dir}} --strict
 
   claude:migrate:
@@ -65,7 +69,8 @@ tasks:
     internal: true
     silent: true
     cmds:
-      - codex plugin remove {{.agent_plugin_ref}} || true
+      - codex plugin remove {{.development_plugin_ref}} || true
+      - codex plugin remove {{.documentation_plugin_ref}} || true
       - codex plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
 
   codex:deploy:
@@ -73,7 +78,8 @@ tasks:
     silent: true
     cmds:
       - codex plugin marketplace add {{.agent_plugin_marketplace_dir}}
-      - codex plugin add {{.agent_plugin_ref}}
+      - codex plugin add {{.development_plugin_ref}}
+      - codex plugin add {{.documentation_plugin_ref}}
 
   codex:migrate:
     internal: true

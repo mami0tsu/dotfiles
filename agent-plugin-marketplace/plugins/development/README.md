@@ -7,8 +7,6 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 - `git-usage`: worktree と branch の作成、commit、rebase、push を安全に行うための Git リファレンス
 - `gh-usage`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などを扱う GitHub CLI リファレンス
 - `dev-flow`: レビュー済み成果物を入力に、実装、敵対的検証、人間レビュー、Draft PR、振り返りまでを制御する上位フロー
-- `japanese-tech-writing`: 日本語の技術文書・書籍原稿の文章規範。章、草稿、記事、解説文の執筆・推敲・リライトに使う
-- `cognitive-rhythm-writing`: 説明文の緩急を、認知モードの切替と未回収の緊張として設計する文章規範
 
 ## MCP Server
 

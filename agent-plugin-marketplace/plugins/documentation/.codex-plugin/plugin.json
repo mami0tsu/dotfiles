@@ -1,0 +1,21 @@
+{
+  "name": "documentation",
+  "version": "0.1.0",
+  "description": "Codex CLI と Claude Code で共通利用する文書作成用 skills。",
+  "author": {
+    "name": "mami0tsu"
+  },
+  "repository": "https://github.com/mami0tsu/dotfiles",
+  "license": "MIT",
+  "keywords": ["documentation", "writing", "diagram", "d2", "codex", "claude-code"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Documentation",
+    "shortDescription": "日本語の技術文書と D2 diagram の作成",
+    "longDescription": "日本語の技術文書を執筆・推敲し、D2 で構成図やフロー図を作成するための plugin。",
+    "developerName": "mami0tsu",
+    "category": "Productivity",
+    "capabilities": ["Read", "Interactive"],
+    "defaultPrompt": "技術文書または D2 diagram を作成する"
+  }
+}
