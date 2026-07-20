@@ -72,7 +72,7 @@
       "commitMessageTopic": "local nix packages",
       "postUpgradeTasks": {
         "commands": [
-          "task renovate:update-nix-hashes"
+          ".github/renovate-update-nix-hashes.sh"
         ],
         "fileFilters": [
           "flake.nix",
