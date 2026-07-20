@@ -9,6 +9,8 @@
   # Home Manager の互換性を保つための状態バージョンを指定する
   home.stateVersion = "25.11";
 
+  manual.manpages.enable = false;
+
   programs.home-manager.enable = true;
 
   imports = [
