@@ -19,11 +19,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew/842eeb863ecca0eeb463f7a814cdc51e1d925776"; # brew-5.1.1
+      url = "github:zhaofengli/nix-homebrew/842eeb863ecca0eeb463f7a814cdc51e1d925776"; # main
       inputs.brew-src.follows = "brew-src";
     };
     brew-src = {
-      url = "github:Homebrew/brew/860497fef02b98811b838f522beb1578b5c5c14c"; # 5.1.1
+      url = "github:Homebrew/brew/860497fef02b98811b838f522beb1578b5c5c14c"; # master
       flake = false;
     };
   };
