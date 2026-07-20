@@ -1,0 +1,4 @@
+interface:
+  display_name: "D2 Diagram"
+  short_description: "D2 で構成図やフロー図を作成し SVG に出力する"
+  default_prompt: "D2 で図を作成し、ソースと SVG を出力する"

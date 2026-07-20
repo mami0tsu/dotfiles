@@ -101,7 +101,7 @@ plugin install/update に寄せます。Home Manager は MCP 設定ファイル�
 - Marketplace name: `mami0tsu`
 - Codex marketplace: `agent-plugin-marketplace/.agents/plugins/marketplace.json`
 - Claude Code marketplace: `agent-plugin-marketplace/.claude-plugin/marketplace.json`
-- Plugin package: `agent-plugin-marketplace/plugins/development`
+- Plugin packages: `agent-plugin-marketplace/plugins/development`, `agent-plugin-marketplace/plugins/documentation`
 
 初期 MCP server は次の通りです。
 

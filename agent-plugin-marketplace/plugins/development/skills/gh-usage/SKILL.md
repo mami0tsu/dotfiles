@@ -27,3 +27,8 @@ GitHub の読み取りと定型操作には `gh` を優先する。
 
 Draft PR の body は repository の PR template を優先する。
 template がなければ、呼び出し元が指定する fallback template を使う。
+
+## PR のタイトル
+
+repository に規約があれば優先する。
+規約がない場合は `<summary> <ticket-id>` とし、ticket ID の直前を半角スペース1文字で区切る。

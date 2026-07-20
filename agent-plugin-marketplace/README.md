@@ -13,12 +13,14 @@ Marketplace name は `mami0tsu` です。
 ## Plugins
 
 - `development`: Codex CLI と Claude Code で共通利用する開発用 plugin
+- `documentation`: 日本語の技術文書と D2 diagram を作成する plugin
 
 ## Codex CLI
 
 ```sh
 codex plugin marketplace add ./agent-plugin-marketplace
 codex plugin add development@mami0tsu
+codex plugin add documentation@mami0tsu
 ```
 
 ## Claude Code
@@ -26,6 +28,7 @@ codex plugin add development@mami0tsu
 ```sh
 claude plugin marketplace add ./agent-plugin-marketplace
 claude plugin install development@mami0tsu
+claude plugin install documentation@mami0tsu
 ```
 
 ## 旧 marketplace からの移行
