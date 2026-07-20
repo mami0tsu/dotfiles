@@ -53,7 +53,7 @@
   "interface": {
     "displayName": "Development",
     "shortDescription": "共通開発 flow、skill、MCP server",
-    "longDescription": "Codex CLI と Claude Code で設計から実装レビューまでの開発フロー、Git/GitHub 操作 skill、AWS、Terraform、GitHub の共通 MCP server を使うための開発用 plugin。",
+    "longDescription": "Codex CLI と Claude Code で実装から Draft PR と振り返りまでの開発フロー、Git/GitHub の利用 skill、AWS、Terraform、GitHub の共通 MCP server を使うための開発用 plugin。",
     "developerName": "mami0tsu",
     "category": "Developer Tools",
     "capabilities": [

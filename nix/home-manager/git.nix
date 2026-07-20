@@ -63,6 +63,7 @@
 
     ignores = [
       ".DS_Store"
+      ".agent/"
       ".worktrees/"
     ];
   };

@@ -1,6 +1,0 @@
-interface:
-  display_name: "Git"
-  short_description: "Git 実行手順"
-  default_prompt: "Use $git for safe low-level Git runbooks such as start-worktree, commit-changes, rebase-current-branch, and push-branch."
-policy:
-  allow_implicit_invocation: true

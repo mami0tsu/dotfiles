@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Usage"
+  short_description: "Git の安全な利用方法と主要コマンドのリファレンス"
+  default_prompt: "Use $git-usage to choose and run Git commands safely."
