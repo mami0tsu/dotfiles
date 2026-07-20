@@ -1,7 +1,7 @@
 { pkgs, self, ... }:
 
 let
-  localPackages = self.packages.${pkgs.system};
+  localPackages = self.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   home.packages = [

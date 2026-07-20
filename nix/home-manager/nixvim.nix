@@ -10,7 +10,8 @@
 
   programs.nixvim = {
     enable = true;
-    nixpkgs.source = inputs.nixpkgs.outPath;
+    enableMan = false;
+    nixpkgs.source = inputs.nixpkgs;
 
     extraConfigLua = builtins.readFile ../../nvim/init.lua;
 
