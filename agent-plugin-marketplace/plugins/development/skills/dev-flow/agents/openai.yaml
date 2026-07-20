@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Flow"
+  short_description: "実装から Draft PR と振り返りまでの上位フロー"
+  default_prompt: "Use $dev-flow to run a reviewed plan through implementation, adversarial validation, human review, a draft PR, and a local retrospective."

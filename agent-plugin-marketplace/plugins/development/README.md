@@ -4,9 +4,9 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 ## Skills
 
-- `git`: worktree と branch の作成、commit、rebase、push を扱う Git 実行手順
-- `github-operation`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などの GitHub 操作を定型化する skill
-- `development-flow`: 設計、チケット化、実装、レビューまでの上位フロー。設計時は `dig` skill、設計成果物作成後と実装後は `difit-review` skill を必須にする
+- `git-usage`: worktree と branch の作成、commit、rebase、push を安全に行うための Git リファレンス
+- `gh-usage`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などを扱う GitHub CLI リファレンス
+- `dev-flow`: レビュー済み成果物を入力に、実装、敵対的検証、人間レビュー、Draft PR、振り返りまでを制御する上位フロー
 - `japanese-tech-writing`: 日本語の技術文書・書籍原稿の文章規範。章、草稿、記事、解説文の執筆・推敲・リライトに使う
 - `cognitive-rhythm-writing`: 説明文の緩急を、認知モードの切替と未回収の緊張として設計する文章規範
 
@@ -21,10 +21,9 @@ GitHub MCP server は、`gh` で必要な読み取り専用の文脈を取得で
 
 ## Required External Skills
 
-`development-flow` は次の skill が同じ環境で使えることを前提にします。
+`dev-flow` は次の skill が同じ環境で使えることを前提にします。
 plugin には同梱しません。
 
-- `dig`: 設計、プラン、技術的意思決定の深掘り
 - `difit-review`: 実装意図、トレードオフ、迷った点などを差分コメントに添えて人間レビューに出す
 
 ## Codex CLI

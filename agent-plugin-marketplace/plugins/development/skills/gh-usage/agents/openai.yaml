@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub CLI Usage"
+  short_description: "GitHub CLI の安全な利用方法と主要操作のリファレンス"
+  default_prompt: "Use $gh-usage to work with GitHub through gh."
