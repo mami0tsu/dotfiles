@@ -64,6 +64,9 @@ task agent-skills:install
 task deploy
 ```
 
+`task deploy` は再実行できます。
+既に登録済みの agent plugin や skill link がある場合は、必要な差分だけを反映します。
+
 target を明示する場合は `TARGET` に指定します。
 
 ```sh
@@ -75,6 +78,9 @@ TARGET=mami0tsu task deploy
 ```sh
 task clean
 ```
+
+`task clean` も再実行できます。
+未登録の agent plugin や削除済みの APM 生成物は、削除済みとして扱います。
 
 ## Agent Skills
 
@@ -88,6 +94,10 @@ Agent Skills は、自作 skill と外部由来 skill で管理方法を分け�
 ```sh
 task agent-skills:refresh
 ```
+
+APM 管理から外れた skill の symlink は、`task agent-skills:clean` または `task agent-skills:deploy` で削除します。
+通常ディレクトリや、dotfiles の `.agents/skills` 以外を指す symlink は削除しません。
+`task agent-skills:clean` は APM の生成物として `.agents/skills` と `apm_modules/` も削除します。
 
 `.agents/` と `apm_modules/` は生成物なので Git 管理しません。
 
@@ -111,6 +121,12 @@ plugin install/update に寄せます。Home Manager は MCP 設定ファイル�
 
 GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
 `GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
+
+旧 marketplace name `dotfiles` から移行した環境では、次の task で古い登録を削除します。
+
+```sh
+task agent-plugins:migrate
+```
 
 ## 管理内容
 
