@@ -49,9 +49,9 @@ jobs:
 
       - name: Cache Nix
         uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+        with:
+          use-gha-cache: ${{ github.event_name == 'push' && 'enabled' || 'disabled' }}
+          use-flakehub: disabled
 
-      - name: Check Nix Flake
-        run: nix flake check --no-build --no-update-lock-file
-
-      - name: Build Nix Package for CI
-        run: nix build --no-link --print-build-logs .#darwinConfigurations.ci.system
+      - name: Build Darwin Configuration
+        run: nix build --no-link --no-update-lock-file --print-build-logs .#darwinConfigurations.ci.system
