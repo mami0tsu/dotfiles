@@ -5,7 +5,8 @@ vars:
   agent_plugin_legacy_marketplace_name: dotfiles
   development_plugin_ref: 'development@{{.agent_plugin_marketplace_name}}'
   documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
-  agent_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
+  development_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
+  documentation_plugin_legacy_ref: 'documentation@{{.agent_plugin_legacy_marketplace_name}}'
   agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agent-plugin-marketplace'
   development_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/development'
   documentation_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/documentation'
@@ -83,7 +84,10 @@ tasks:
     cmds:
       - task: claude:uninstall-plugin-if-installed
         vars:
-          PLUGIN_REF: '{{.agent_plugin_legacy_ref}}'
+          PLUGIN_REF: '{{.development_plugin_legacy_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_legacy_ref}}'
       - task: claude:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_legacy_marketplace_name}}'
@@ -129,7 +133,10 @@ tasks:
     cmds:
       - task: codex:remove-plugin-if-installed
         vars:
-          PLUGIN_REF: '{{.agent_plugin_legacy_ref}}'
+          PLUGIN_REF: '{{.development_plugin_legacy_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_legacy_ref}}'
       - task: codex:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_legacy_marketplace_name}}'
