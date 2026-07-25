@@ -35,7 +35,6 @@ in
     git-secrets # v1.3.0
     go-task # v3.48.0
     tree-sitter # v0.26.8
-    zellij # v0.44.3
 
     deno # v2.8.0
     fnm # v1.39.0
