@@ -111,6 +111,8 @@ plugin install/update に寄せます。Home Manager は MCP 設定ファイル�
 
 GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
 `GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
+Codex を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
+値が空の場合、GitHub MCP は起動時に token 未設定エラーで停止します。
 
 ## 管理内容
 
