@@ -5,23 +5,31 @@ vars:
     - $HOME/.codex/skills
     - $HOME/.claude/skills
   apm_skills_dir: '{{.APM_SKILLS_DIR | default ".agents/skills"}}'
+  apm_modules_dir: '{{.APM_MODULES_DIR | default "apm_modules"}}'
   apm_skills_install_args: --target agent-skills --only apm
 
 tasks:
   clean:
-    desc: Unlink APM-managed skills and remove their materialized files.
+    desc: Unlink APM-managed skills and remove generated APM files.
     cmds:
       - task: unlink
       - |
         apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        apm_modules_dir="{{.REPO_ROOT}}/{{.apm_modules_dir}}"
 
         if [[ -d "$apm_skills_dir" ]]; then
           rm -r "$apm_skills_dir"
         fi
 
+        if [[ -d "$apm_modules_dir" ]]; then
+          rm -r "$apm_modules_dir"
+        fi
+      - task: prune-stale-links
+
   deploy:
     desc: Materialize locked APM skills and link them into agent skill directories.
     cmds:
+      - task: clean
       - apm install {{.apm_skills_install_args}} --frozen
       - task: link
 
@@ -97,4 +105,43 @@ tasks:
           if [[ -L "$agent_skill_dir" && "$(readlink "$agent_skill_dir")" == "$apm_skill_dir" ]]; then
             unlink "$agent_skill_dir"
           fi
+        done
+
+  prune-stale-links:
+    internal: true
+    silent: true
+    cmds:
+      - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
+        task: prune-stale-links-from-agent-skills-dir
+        vars:
+          AGENT_SKILLS_DIR: '{{.AGENT_SKILLS_DIR}}'
+
+  prune-stale-links-from-agent-skills-dir:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
+
+        if [[ ! -d "$agent_skills_dir" ]]; then
+          exit 0
+        fi
+
+        shopt -s nullglob
+
+        for agent_skill_dir in "$agent_skills_dir"/*; do
+          if [[ ! -L "$agent_skill_dir" ]]; then
+            continue
+          fi
+
+          skill_target="$(readlink "$agent_skill_dir")"
+
+          case "$skill_target" in
+            "$apm_skills_dir"/*)
+              if [[ ! -e "$skill_target" ]]; then
+                unlink "$agent_skill_dir"
+              fi
+              ;;
+          esac
         done
