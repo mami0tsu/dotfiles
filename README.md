@@ -111,6 +111,8 @@ plugin install/update に寄せます。Home Manager は MCP 設定ファイル�
 
 GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
 `GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
+Terraform MCP は Docker daemon が起動している環境で使います。
+Docker daemon が停止している場合、Codex の起動時に initialize 前後で接続が閉じます。
 
 ## 管理内容
 
