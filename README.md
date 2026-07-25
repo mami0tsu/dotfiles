@@ -1,31 +1,23 @@
 # dotfiles
 
-Apple Silicon Mac (`aarch64-darwin`) の環境を nix-darwin と Home Manager で管理する dotfiles です。
+Apple Silicon Mac (`aarch64-darwin`) の開発環境を管理する dotfiles です。
 
-## flake target
+| flake target | 用途 |
+| --- | --- |
+| `mami0tsu` | 通常利用 |
+| `ci` | CI |
 
-現在の flake target は次の通りです。
+## 管理範囲
 
-- `mami0tsu`
-- `ci`
+| 対象 | 内容 |
+| --- | --- |
+| macOS | nix-darwin と Home Manager で適用する基本設定 |
+| 開発ツール | shell、editor、terminal などの設定 |
+| Agent | Agent Plugins と Agent Skills |
 
-別の target を使う場合は `flake.nix` に追加します。
+## 初回セットアップ
 
-```nix
-darwinConfigurations.example = getDarwinConfig "example" "example@example.com";
-```
-
-初期設定や環境の更新では、使う target を `TARGET` に指定します。
-
-```sh
-export TARGET=mami0tsu
-```
-
-## 初期設定
-
-### 1. Nix のインストール
-
-nix-installer を使って Nix をインストールします。
+Nix を flakes 有効の状態でインストールします。
 
 ```sh
 curl -sSfL -o /tmp/nix-installer https://artifacts.nixos.org/nix-installer/nix-installer-aarch64-darwin
@@ -33,11 +25,9 @@ chmod +x /tmp/nix-installer
 /tmp/nix-installer install --enable-flakes
 ```
 
-インストール後、案内に従って新しいシェルを開くか macOS を再起動します。
+インストール後は、新しいシェルを開くか macOS を再起動します。
 
-### 2. nix-darwin の初回実行
-
-初回は `darwin-rebuild` や `task` がまだ入っていないため、Nix から直接実行します。
+初回は `darwin-rebuild` や `task` がまだ入っていないため、Nix から直接適用します。
 
 ```sh
 export TARGET=mami0tsu
@@ -46,14 +36,10 @@ sudo nix --extra-experimental-features "nix-command flakes" run \
   switch --flake ".#$TARGET"
 ```
 
-この時点で Home Manager の設定、Nix パッケージ、Homebrew cask、各種 dotfiles のリンクが適用されます。
-
-### 3. APM 管理 skill のインストール
-
-外部由来の skill は APM で管理します。初回適用後に、lockfile に固定された skill を materialize して、Codex / Claude の global skill directory に symlink します。
+初回適用後は、`task deploy` で Agent Plugins と Agent Skills まで揃えます。
 
 ```sh
-task agent-skills:install
+task deploy
 ```
 
 ## 環境の更新
@@ -64,100 +50,17 @@ task agent-skills:install
 task deploy
 ```
 
-`task deploy` は再実行できます。
-既に登録済みの agent plugin や skill link がある場合は、必要な差分だけを反映します。
-
-target を明示する場合は `TARGET` に指定します。
+target を明示する場合は、`TARGET` を指定して実行します。
 
 ```sh
 TARGET=mami0tsu task deploy
 ```
 
-古い Nix generation は次のコマンドで削除します。
+古い Nix generation と生成済みの agent 関連ファイルは、次のコマンドで削除します。
 
 ```sh
 task clean
 ```
-
-`task clean` も再実行できます。
-未登録の agent plugin や削除済みの APM 生成物は、削除済みとして扱います。
-
-## Agent Skills
-
-Agent Skills は、自作 skill と外部由来 skill で管理方法を分けています。
-
-- 自作 skill: `skills/<name>/SKILL.md` として管理し、Home Manager が `.codex/skills` と `.claude/skills` に symlink します。
-- 外部由来 skill: `apm.yml` と `apm.lock.yaml` で管理します。生成物は `.agents/skills` に置かれ、`task agent-skills:install` が `.codex/skills` と `.claude/skills` に symlink します。
-
-外部由来 skill は commit pin を厳守します。依存を追加・削除した場合や commit pin を変更した場合だけ、次のコマンドで APM 出力を作り直します。
-
-```sh
-task agent-skills:refresh
-```
-
-APM 管理から外れた skill の symlink は、`task agent-skills:clean` または `task agent-skills:deploy` で削除します。
-通常ディレクトリや、dotfiles の `.agents/skills` 以外を指す symlink は削除しません。
-`task agent-skills:clean` は APM の生成物として `.agents/skills` と `apm_modules/` も削除します。
-
-`.agents/` と `apm_modules/` は生成物なので Git 管理しません。
-
-## Agent Plugin と MCP Server
-
-Agent MCP server のランタイム設定は、Codex CLI と Claude Code のネイティブな
-plugin install/update に寄せます。Home Manager は MCP 設定ファイルを生成しません。
-
-共通 plugin は `agent-plugin-marketplace/` の marketplace で管理します。
-
-- Marketplace name: `mami0tsu`
-- Codex marketplace: `agent-plugin-marketplace/.agents/plugins/marketplace.json`
-- Claude Code marketplace: `agent-plugin-marketplace/.claude-plugin/marketplace.json`
-- Plugin packages: `agent-plugin-marketplace/plugins/development`, `agent-plugin-marketplace/plugins/documentation`
-
-Codex の初期 MCP server は次の通りです。
-
-- AWS MCP: `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
-- Terraform MCP: `docker run -i --rm hashicorp/terraform-mcp-server:1.1.0 --toolsets=registry`
-- GitHub MCP: `https://api.githubcopilot.com/mcp/`
-
-Claude Code 用 `.mcp.json` では、AWS MCP に `--region ap-northeast-1` を渡します。
-
-GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
-`GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
-Codex を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
-値が空の場合、GitHub MCP は起動時に token 未設定エラーで停止します。
-
-Terraform MCP は Docker daemon が起動している環境で使います。
-Docker daemon が停止している場合、Codex の起動時に initialize 前後で接続が閉じます。
-
-旧 marketplace name `dotfiles` から移行した環境では、次の task で古い登録を削除します。
-
-```sh
-task agent-plugins:migrate
-```
-
-## 管理内容
-
-Nix 側で主に次の項目を管理しています。
-
-- macOS defaults
-- Homebrew casks
-- Home Manager
-- Git
-- Zsh
-- Starship
-- Neovim / nixvim
-- CLI packages
-- Agent Skills の symlink
-- Agent plugin marketplace
-- dotfiles の XDG config リンク
-
-設定ファイル本体は、各ツールの標準形式のまま管理しています。
-
-- `starship/starship.toml`
-- `ghostty/config`
-- `zellij/config.kdl`
-- `espanso/`
-- `nvim/`
 
 ## 参考
 
