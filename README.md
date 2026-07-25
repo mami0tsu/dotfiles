@@ -114,6 +114,9 @@ GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fa
 Codex を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
 値が空の場合、GitHub MCP は起動時に token 未設定エラーで停止します。
 
+Terraform MCP は Docker daemon が起動している環境で使います。
+Docker daemon が停止している場合、Codex の起動時に initialize 前後で接続が閉じます。
+
 ## 管理内容
 
 Nix 側で主に次の項目を管理しています。
