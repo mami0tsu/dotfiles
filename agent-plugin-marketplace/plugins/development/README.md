@@ -4,62 +4,17 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 ## Skills
 
-- `git-usage`: worktree と branch の作成、commit、rebase、push を安全に行うための Git リファレンス
-- `gh-usage`: Draft PR 作成、CI 分析、review comment、Issue、Discussion の確認などを扱う GitHub CLI リファレンス
-- `dev-flow`: レビュー済み成果物を入力に、実装、敵対的検証、人間レビュー、Draft PR、振り返りまでを制御する上位フロー
+| スキル | 用途 |
+| --- | --- |
+| `git-usage` | worktree、branch、commit、rebase、push を扱う Git リファレンス |
+| `gh-usage` | Draft PR、CI、review comment、Issue、Discussion を扱う GitHub CLI リファレンス |
+| `dev-flow` | チケットに沿った実装、検証、レビュー、Draft PR、振り返りの上位フロー |
 
-## MCP Server
+## MCP サーバー
 
-- `aws`: Codex では `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
-- `aws`: Claude Code では `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --region ap-northeast-1`
-- `terraform`: `docker run -i --rm hashicorp/terraform-mcp-server:1.1.0 --toolsets=registry`
-- `github`: リモート GitHub MCP server `https://api.githubcopilot.com/mcp/`
-
-GitHub MCP server を使う前に、`GITHUB_MCP_TOKEN` に最小権限の GitHub PAT を設定します。
-GitHub MCP server は、`gh` で必要な読み取り専用の文脈を取得できない場合の fallback として使います。
-Codex または Claude Code を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
-値が空の場合、GitHub MCP server は起動時に token 未設定エラーで停止します。
-
-Terraform MCP server は Docker daemon が起動している環境で使います。
-Docker daemon が停止している場合、Codex の起動時に initialize 前後で接続が閉じます。
-
-## Required External Skills
-
-`dev-flow` は次の skill が同じ環境で使えることを前提にします。
-plugin には同梱しません。
-
-- `difit-review`: 実装意図、トレードオフ、迷った点などを差分コメントに添えて人間レビューに出す
-
-## Codex CLI
-
-このリポジトリの marketplace を追加してから plugin を install します。
-
-```sh
-codex plugin marketplace add ./agent-plugin-marketplace
-codex plugin add development@mami0tsu
-```
-
-Codex 用 MCP 設定は `.codex-plugin/plugin.json` に直接書きます。
-Claude Code 用 MCP 設定は `.mcp.json` に置きます。
-`bearer_token_env_var` は Codex 用の設定なので、Claude Code 用 `.mcp.json` には書きません。
-
-Codex が plugin manifest からリモート GitHub MCP の認証設定を取り込めない場合は、GitHub MCP server を明示的に追加します。
-
-```sh
-codex mcp add github --url https://api.githubcopilot.com/mcp/ --bearer-token-env-var GITHUB_MCP_TOKEN
-```
-
-## Claude Code
-
-このリポジトリの marketplace を追加してから plugin を install します。
-
-```sh
-claude plugin marketplace add ./agent-plugin-marketplace
-claude plugin install development@mami0tsu
-```
-
-Claude Code が plugin MCP header 内の `GITHUB_MCP_TOKEN` を展開できない場合は、GitHub MCP server を明示的に追加します。
-
-```sh
-claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp/","headers":{"Authorization":"Bearer '"$GITHUB_MCP_TOKEN"'"}}'
-```
+| MCP サーバー | 用途 |
+| --- | --- |
+| `aws` | AWS の操作 |
+| `terraform` | Terraform Registry の参照 |
+| `github` | GitHub の参照 |
+| `linear` | Linear の参照 |
