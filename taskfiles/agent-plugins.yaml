@@ -38,17 +38,36 @@ tasks:
     internal: true
     silent: true
     cmds:
-      - claude plugin uninstall {{.development_plugin_ref}} --yes || true
-      - claude plugin uninstall {{.documentation_plugin_ref}} --yes || true
-      - claude plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: claude:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
 
   claude:deploy:
     internal: true
     silent: true
     cmds:
-      - claude plugin marketplace add {{.agent_plugin_marketplace_dir}}
-      - claude plugin install {{.development_plugin_ref}}
-      - claude plugin install {{.documentation_plugin_ref}}
+      - task: claude:ensure-marketplace
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
+          MARKETPLACE_DIR: '{{.agent_plugin_marketplace_dir}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: claude:install-plugin
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: claude:install-plugin
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
 
   claude:validate:
     internal: true
@@ -62,28 +81,170 @@ tasks:
     internal: true
     silent: true
     cmds:
-      - claude plugin uninstall {{.agent_plugin_legacy_ref}} --yes || true
-      - claude plugin marketplace remove {{.agent_plugin_legacy_marketplace_name}} || true
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.agent_plugin_legacy_ref}}'
+      - task: claude:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_legacy_marketplace_name}}'
 
   codex:clean:
     internal: true
     silent: true
     cmds:
-      - codex plugin remove {{.development_plugin_ref}} || true
-      - codex plugin remove {{.documentation_plugin_ref}} || true
-      - codex plugin marketplace remove {{.agent_plugin_marketplace_name}} || true
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: codex:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
 
   codex:deploy:
     internal: true
     silent: true
     cmds:
-      - codex plugin marketplace add {{.agent_plugin_marketplace_dir}}
-      - codex plugin add {{.development_plugin_ref}}
-      - codex plugin add {{.documentation_plugin_ref}}
+      - task: codex:ensure-marketplace
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
+          MARKETPLACE_DIR: '{{.agent_plugin_marketplace_dir}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: codex:add-plugin
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+      - task: codex:add-plugin
+        vars:
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
 
   codex:migrate:
     internal: true
     silent: true
     cmds:
-      - codex plugin remove {{.agent_plugin_legacy_ref}} || true
-      - codex plugin marketplace remove {{.agent_plugin_legacy_marketplace_name}} || true
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.agent_plugin_legacy_ref}}'
+      - task: codex:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_legacy_marketplace_name}}'
+
+  claude:ensure-marketplace:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        marketplace_name="{{.MARKETPLACE_NAME}}"
+        marketplace_dir="{{.MARKETPLACE_DIR}}"
+        marketplace_list="$(claude plugin marketplace list)"
+        marketplace_configured=false
+        if printf '%s\n' "$marketplace_list" | grep -Eq "^[[:space:]]*[^[:space:]]?[[:space:]]*${marketplace_name}$"; then
+          marketplace_configured=true
+        fi
+        marketplace_root="$(printf '%s\n' "$marketplace_list" | awk -v name="$marketplace_name" '
+          $0 ~ "^[[:space:]]*[^[:space:]]?[[:space:]]*" name "$" { found = 1; next }
+          found && $0 ~ /^[[:space:]]*Source: Directory \(/ {
+            sub(/^.*Source: Directory \(/, "")
+            sub(/\).*$/, "")
+            print
+            exit
+          }
+        ')"
+
+        if [[ "$marketplace_configured" == true && "$marketplace_root" != "$marketplace_dir" ]]; then
+          claude plugin marketplace remove "$marketplace_name"
+          marketplace_configured=false
+          marketplace_root=""
+        fi
+
+        if [[ "$marketplace_configured" == false ]]; then
+          claude plugin marketplace add "$marketplace_dir"
+        fi
+
+  claude:install-plugin:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        plugin_ref="{{.PLUGIN_REF}}"
+        claude plugin install "$plugin_ref"
+
+  claude:remove-marketplace-if-configured:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        marketplace_name="{{.MARKETPLACE_NAME}}"
+        marketplace_list="$(claude plugin marketplace list)"
+
+        if printf '%s\n' "$marketplace_list" | grep -Eq "^[[:space:]]*[^[:space:]]?[[:space:]]*${marketplace_name}$"; then
+          claude plugin marketplace remove "$marketplace_name"
+        fi
+
+  claude:uninstall-plugin-if-installed:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        plugin_ref="{{.PLUGIN_REF}}"
+        plugin_list="$(claude plugin list --json)"
+
+        if printf '%s\n' "$plugin_list" | grep -Fq "\"id\": \"$plugin_ref\""; then
+          claude plugin uninstall "$plugin_ref" --yes
+        fi
+
+  codex:ensure-marketplace:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        marketplace_name="{{.MARKETPLACE_NAME}}"
+        marketplace_dir="{{.MARKETPLACE_DIR}}"
+        marketplace_list="$(codex plugin marketplace list)"
+        marketplace_root="$(printf '%s\n' "$marketplace_list" | awk -v name="$marketplace_name" '$1 == name { print $2; exit }')"
+
+        if [[ -n "$marketplace_root" && "$marketplace_root" != "$marketplace_dir" ]]; then
+          codex plugin marketplace remove "$marketplace_name"
+          marketplace_root=""
+        fi
+
+        if [[ -z "$marketplace_root" ]]; then
+          codex plugin marketplace add "$marketplace_dir"
+        fi
+
+  codex:add-plugin:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        plugin_ref="{{.PLUGIN_REF}}"
+        codex plugin add "$plugin_ref"
+
+  codex:remove-marketplace-if-configured:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        marketplace_name="{{.MARKETPLACE_NAME}}"
+        marketplace_list="$(codex plugin marketplace list)"
+
+        if printf '%s\n' "$marketplace_list" | awk 'NR > 1 { print $1 }' | grep -Fxq "$marketplace_name"; then
+          codex plugin marketplace remove "$marketplace_name"
+        fi
+
+  codex:remove-plugin-if-installed:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        plugin_ref="{{.PLUGIN_REF}}"
+        plugin_list="$(codex plugin list --json)"
+
+        if printf '%s\n' "$plugin_list" | grep -Fq "\"pluginId\": \"$plugin_ref\""; then
+          codex plugin remove "$plugin_ref"
+        fi
