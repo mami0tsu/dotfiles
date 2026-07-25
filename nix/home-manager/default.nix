@@ -15,6 +15,7 @@
 
   imports = [
     ./dotfiles.nix
+    ./espanso.nix
     ./git.nix
     ./nixvim.nix
     ./packages.nix
