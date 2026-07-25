@@ -109,9 +109,15 @@ Codex の初期 MCP server は次の通りです。
 - Terraform MCP: `docker run -i --rm hashicorp/terraform-mcp-server:1.1.0 --toolsets=registry`
 - GitHub MCP: `https://api.githubcopilot.com/mcp/`
 
+Claude Code 用 `.mcp.json` では、AWS MCP に `--region ap-northeast-1` を渡します。
+
 GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
 `GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
-Claude Code 用 `.mcp.json` では、AWS MCP に `--region ap-northeast-1` を渡します。
+Codex を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
+値が空の場合、GitHub MCP は起動時に token 未設定エラーで停止します。
+
+Terraform MCP は Docker daemon が起動している環境で使います。
+Docker daemon が停止している場合、Codex の起動時に initialize 前後で接続が閉じます。
 
 ## 管理内容
 
