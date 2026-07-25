@@ -16,6 +16,8 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 GitHub MCP server を使う前に、`GITHUB_MCP_TOKEN` に最小権限の GitHub PAT を設定します。
 GitHub MCP server は、`gh` で必要な読み取り専用の文脈を取得できない場合の fallback として使います。
+Codex または Claude Code を起動するシェルで `printenv GITHUB_MCP_TOKEN` が値を返すことを確認してから使います。
+値が空の場合、GitHub MCP server は起動時に token 未設定エラーで停止します。
 
 ## Required External Skills
 
