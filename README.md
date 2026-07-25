@@ -103,11 +103,13 @@ plugin install/update に寄せます。Home Manager は MCP 設定ファイル�
 - Claude Code marketplace: `agent-plugin-marketplace/.claude-plugin/marketplace.json`
 - Plugin packages: `agent-plugin-marketplace/plugins/development`, `agent-plugin-marketplace/plugins/documentation`
 
-初期 MCP server は次の通りです。
+Codex の初期 MCP server は次の通りです。
 
-- AWS MCP: `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --region ap-northeast-1`
+- AWS MCP: `uvx mcp-proxy-for-aws==1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=ap-northeast-1`
 - Terraform MCP: `docker run -i --rm hashicorp/terraform-mcp-server:1.1.0 --toolsets=registry`
 - GitHub MCP: `https://api.githubcopilot.com/mcp/`
+
+Claude Code 用 `.mcp.json` では、AWS MCP に `--region ap-northeast-1` を渡します。
 
 GitHub MCP は `gh` で取得できない読み取り専用の文脈を補う fallback として使います。
 `GITHUB_MCP_TOKEN` に最小権限の PAT を設定します。秘密値は dotfiles では管理しません。
