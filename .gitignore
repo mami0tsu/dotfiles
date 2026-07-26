@@ -4,4 +4,5 @@
 /.claude-plugin/
 /apm.lock.yaml
 /.apm.lock.yaml.*
+.github/textlint/node_modules/
 apm_modules/

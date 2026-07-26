@@ -1,0 +1,9 @@
+{
+  "filters": {
+    "comments": true
+  },
+  "rules": {
+    "preset-ja-technical-writing": true,
+    "@textlint-ja/preset-ai-writing": true
+  }
+}

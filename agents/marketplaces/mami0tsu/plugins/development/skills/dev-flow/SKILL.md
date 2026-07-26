@@ -18,7 +18,8 @@ description: レビュー済みのチケットや設計成果物を実装し、w
 6. 変更を commit、push し、`gh-usage` で Draft PR を作成する。
 7. `.agent/retrospectives/<ticket-id>.md` に振り返りを記録する。
 
-worktree を再利用する前に remote の default branch を fetch し、作業 branch の merge-base、または detached HEAD が remote tip と一致することを確認する。
+worktree を再利用する前に remote の default branch を fetch する。
+作業 branch の merge-base、または detached HEAD が remote tip と一致することを確認する。
 一致する専用 worktree にいる場合だけ、手順1と2を再実行しない。
 それ以外は `git-usage` を使い、`git wt` を優先して worktree を作成する。
 

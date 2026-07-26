@@ -1,0 +1,12 @@
+{
+  "name": "dotfiles-textlint-ai-writing-dependencies",
+  "version": "1.7.0",
+  "private": true,
+  "packageManager": "pnpm@11.17.0",
+  "dependencies": {
+    "@textlint-ja/textlint-rule-preset-ai-writing": "1.7.0",
+    "textlint-filter-rule-comments": "1.3.0",
+    "textlint-rule-preset-ja-technical-writing": "10.0.1",
+    "textlint": "15.7.1"
+  }
+}
