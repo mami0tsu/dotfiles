@@ -12,7 +12,7 @@ in
     coreutils # v9.11
     curl # v8.20.0
     delta # v0.19.2
-    d2
+    d2 # v0.7.1
     eza # v0.23.4
     findutils # v4.10.0
     gnugrep # v3.12
@@ -30,7 +30,7 @@ in
     localPackages.difit # v4.0.5
     docker_29 # v29.5.2
     fzf # v0.73.1
-    gh # v2.93.0
+    gh # v2.96.0
     ghq # v1.9.4
     git-secrets # v1.3.0
     go-task # v3.48.0
