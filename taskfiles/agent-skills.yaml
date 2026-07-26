@@ -4,18 +4,17 @@ vars:
   agent_skills_dirs:
     - $HOME/.codex/skills
     - $HOME/.claude/skills
-  apm_skills_dir: '{{.APM_SKILLS_DIR | default ".agents/skills"}}'
-  apm_modules_dir: '{{.APM_MODULES_DIR | default "apm_modules"}}'
   apm_skills_install_args: --target agent-skills --only apm
 
 tasks:
   clean:
     desc: Unlink APM-managed skills and remove generated APM files.
     cmds:
+      - task: validate-generated-paths
       - task: unlink
       - |
-        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
-        apm_modules_dir="{{.REPO_ROOT}}/{{.apm_modules_dir}}"
+        apm_skills_dir="{{.REPO_ROOT}}/.agents/skills"
+        apm_modules_dir="{{.REPO_ROOT}}/apm_modules"
 
         if [[ -d "$apm_skills_dir" ]]; then
           rm -r "$apm_skills_dir"
@@ -29,16 +28,63 @@ tasks:
   deploy:
     desc: Materialize locked APM skills and link them into agent skill directories.
     cmds:
-      - task: clean
-      - apm install {{.apm_skills_install_args}} --frozen
+      - |
+        source_dir="{{.REPO_ROOT}}/agents/skills"
+        source_lock_file="$source_dir/apm.lock.yaml"
+        staged_lock_file="{{.REPO_ROOT}}/apm.lock.yaml"
+
+        if [[ ! -f "$source_lock_file" ]]; then
+          echo "APM source lockfile does not exist: $source_lock_file" >&2
+          exit 1
+        fi
+
+        if [[ -e "$staged_lock_file" || -L "$staged_lock_file" ]]; then
+          echo "Refusing to overwrite an existing staged lockfile: $staged_lock_file" >&2
+          exit 1
+        fi
+
+        temporary_lock_file="$(mktemp "{{.REPO_ROOT}}/.apm.lock.yaml.XXXXXX")"
+        staged_lock_created=false
+
+        cleanup() {
+          if [[ "$staged_lock_created" == true ]]; then
+            rm -f "$staged_lock_file"
+          fi
+          rm -f "$temporary_lock_file"
+        }
+        trap cleanup EXIT
+
+        cp "$source_lock_file" "$temporary_lock_file"
+        if ! ln "$temporary_lock_file" "$staged_lock_file"; then
+          echo "Refusing to overwrite an existing staged lockfile: $staged_lock_file" >&2
+          exit 1
+        fi
+        staged_lock_created=true
+
+        task agent-skills:clean
+        cd "$source_dir"
+        apm install --root "{{.REPO_ROOT}}" {{.apm_skills_install_args}} --frozen
       - task: link
+
+  lock:
+    desc: Regenerate the APM lockfile from the skill manifest.
+    dir: '{{.REPO_ROOT}}/agents/skills'
+    cmds:
+      - apm lock
+
+  update:
+    desc: Update locked APM skill dependencies without deploying them.
+    dir: '{{.REPO_ROOT}}/agents/skills'
+    cmds:
+      - apm lock --update
 
   link:
     internal: true
     silent: true
     cmds:
+      - task: validate-generated-paths
       - |
-        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        apm_skills_dir="{{.REPO_ROOT}}/.agents/skills"
 
         if [[ ! -d "$apm_skills_dir" ]]; then
           echo "No APM skills were installed into $apm_skills_dir" >&2
@@ -54,7 +100,7 @@ tasks:
     silent: true
     cmds:
       - |
-        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        apm_skills_dir="{{.REPO_ROOT}}/.agents/skills"
         agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
 
         mkdir -p "$agent_skills_dir"
@@ -78,6 +124,7 @@ tasks:
     internal: true
     silent: true
     cmds:
+      - task: validate-generated-paths
       - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
         task: unlink-from-agent-skills-dir
         vars:
@@ -88,7 +135,7 @@ tasks:
     silent: true
     cmds:
       - |
-        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        apm_skills_dir="{{.REPO_ROOT}}/.agents/skills"
         agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
 
         if [[ ! -d "$apm_skills_dir" ]]; then
@@ -111,6 +158,7 @@ tasks:
     internal: true
     silent: true
     cmds:
+      - task: validate-generated-paths
       - for: { var: agent_skills_dirs, as: AGENT_SKILLS_DIR }
         task: prune-stale-links-from-agent-skills-dir
         vars:
@@ -121,7 +169,7 @@ tasks:
     silent: true
     cmds:
       - |
-        apm_skills_dir="{{.REPO_ROOT}}/{{.apm_skills_dir}}"
+        apm_skills_dir="{{.REPO_ROOT}}/.agents/skills"
         agent_skills_dir="{{.AGENT_SKILLS_DIR}}"
 
         if [[ ! -d "$agent_skills_dir" ]]; then
@@ -144,4 +192,20 @@ tasks:
               fi
               ;;
           esac
+        done
+
+  validate-generated-paths:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        apm_dir="{{.REPO_ROOT}}/.agents"
+        apm_skills_dir="$apm_dir/skills"
+        apm_modules_dir="{{.REPO_ROOT}}/apm_modules"
+
+        for generated_path in "$apm_dir" "$apm_skills_dir" "$apm_modules_dir"; do
+          if [[ -L "$generated_path" ]]; then
+            echo "Refusing to operate on a symlinked generated path: $generated_path" >&2
+            exit 1
+          fi
         done
