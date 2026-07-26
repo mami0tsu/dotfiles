@@ -26,7 +26,6 @@
     brews = [ ];
     casks = [
       "discord"
-      "ghostty"
       "google-chrome"
       "orbstack"
       "slack"

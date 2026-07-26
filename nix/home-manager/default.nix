@@ -17,6 +17,7 @@
     ./dotfiles.nix
     ./espanso.nix
     ./git.nix
+    ./ghostty.nix
     ./nixvim.nix
     ./packages.nix
     ./packages-go.nix
