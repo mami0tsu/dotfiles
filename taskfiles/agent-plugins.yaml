@@ -7,7 +7,7 @@ vars:
   documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
   development_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
   documentation_plugin_legacy_ref: 'documentation@{{.agent_plugin_legacy_marketplace_name}}'
-  agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agent-plugin-marketplace'
+  agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agents/marketplaces/mami0tsu'
   development_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/development'
   documentation_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/documentation'
 

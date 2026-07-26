@@ -7,13 +7,13 @@
 stdenvNoCC.mkDerivation rec {
   pname = "apm";
   # renovate: datasource=github-releases depName=microsoft/apm extractVersion=^v(?<version>.+)$
-  version = "0.20.0";
+  version = "0.26.0";
   assetName = "apm-darwin-arm64";
   archiveName = "${assetName}.tar.gz";
 
   src = fetchurl {
     url = "https://github.com/microsoft/apm/releases/download/v${version}/${archiveName}";
-    sha256 = "1zdy26r2h9r95hdr2d4f37z6r8lwahb01n6kgkp429gkszrrzpcr";
+    sha256 = "1psl0qr5xwxpfsvmx4z0sn14989pd5sfs27726sffjzbic5dvggy";
   };
 
   sourceRoot = assetName;

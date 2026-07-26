@@ -2,4 +2,6 @@
 .zcompdump
 /.agents/
 /.claude-plugin/
+/apm.lock.yaml
+/.apm.lock.yaml.*
 apm_modules/
