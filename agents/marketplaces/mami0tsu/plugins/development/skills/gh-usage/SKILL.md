@@ -1,34 +1,59 @@
 ---
 name: gh-usage
-description: GitHub CLI を安全かつ効率的に使うためのリファレンス。Issue、Discussion、PR、review comment、GitHub Actions を確認するとき、または Draft PR を作成するときに使う。
+description: GitHub CLI を使い、Issue、Discussion、pull request、GitHub Actions、review comment を読み取り、Draft pull request を作成するときに使う。
 ---
 
 # GitHub CLI Usage
 
-GitHub の読み取りと定型操作には `gh` を優先する。
+`gh` で GitHub の情報を読み取り、必要なときだけ Draft pull request を作成する。
 
-## 原則
+## 対象範囲
 
-- 最初に `gh auth status` と対象 repository を確認する。
-- 一覧取得より、URL、Issue 番号、PR 番号による直接参照を優先する。
-- 必要な JSON field だけを `--json` で取得する。
-- GitHub MCP は、認証済みの `gh` で取得できない場合だけ使う。
-- 書き込みは Draft PR 作成だけに限定し、その他の操作は読み取り専用とする。
-- branch 作成、commit、rebase、push は `git-usage` に委譲する。
+- Issue を読む：[Issue と Discussion](references/issues-and-discussions.md)
+- Discussion を読む：[Issue と Discussion](references/issues-and-discussions.md)
+- pull request を読む：[pull request](references/pull-requests.md)
+- GitHub Actions の状態と失敗したログを読む：[Actions と review comment](references/actions-and-review-comments.md)
+- review comment と解決状態を読む：[Actions と review comment](references/actions-and-review-comments.md)
+- Draft pull request を作成する：[pull request](references/pull-requests.md)
 
-## よく使う操作
+branch の作成、commit、rebase、push は [git-usage](../git-usage/SKILL.md) に委譲する。
 
-- Issue：`gh issue view <number>`
-- Discussion：read-only の `gh api graphql` で取得する
-- PR：`gh pr view <number>`
-- CI：`gh pr checks <number>`、`gh run view <run-id> --log-failed`
-- review comment：`gh api` で review と thread に必要な field を取得する
-- Draft PR：`gh pr create --draft --base <base> --head <head> --title <title> --body-file -`
+Issue、Discussion、pull request への編集、コメント、close、merge、review、GitHub Actions の rerun、cancel、delete は対象外である。
 
-Draft PR の body は repository の PR template を優先する。
-template がなければ、呼び出し元が指定する fallback template を使う。
+## 共通の判断規則
 
-## PR のタイトル
+開始時の認証と repository の確認は、[共通の事前確認](references/common.md) に従う。
 
-repository に規約があれば優先する。
-規約がない場合は `<summary> <ticket-id>` とし、ticket ID の直前を半角スペース1文字で区切る。
+一覧から探す必要があるときだけ `list` を使い、識別できたら番号または URL に切り替える。
+
+`--json` では、判断に必要な field だけを指定する。
+
+JSON 全体を取得してから必要な値を探す方法は取らない。
+
+`gh api graphql` は read-only query に限る。
+
+GraphQL mutation、`gh api` の更新系 HTTP method、書き込み系の `gh` subcommand は実行しない。
+
+Draft pull request の作成前には、対象 branch が push 済みであることを `git-usage` で確認する。
+
+`gh pr create` には `--head`、`--base`、`--title`、`--body-file`、`--draft` を明示する。
+
+この指定により、`gh pr create` が branch を push または fork する対話へ進むことを避ける。
+
+## ヘルプのフォールバック
+
+検証済みの `gh 2.96.0 (nixpkgs)` では、通常経路の前に `--help` を読まず、対応する reference のコマンドを使う。
+
+次の場合だけ、必要な subcommand の help を確認する。
+
+- 要求された操作が対象範囲にない。
+- `gh --version` が記録済みのバージョンと異なり、対象コマンドの構文または挙動を確認できない。
+- 実行結果が未対応 option または変更された構文を示す。
+
+たとえば pull request 作成だけを確認するときは、`gh pr create --help` を使う。
+
+念のため `gh --help` を読むことはしない。
+
+## 検証記録
+
+構造確認と Agent シナリオ試験は、[検証記録](references/validation.md) に残す。
