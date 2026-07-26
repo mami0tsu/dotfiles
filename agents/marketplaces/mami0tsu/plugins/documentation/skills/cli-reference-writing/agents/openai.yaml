@@ -1,0 +1,4 @@
+interface:
+  display_name: "CLI Reference Writing"
+  short_description: "ユースケース指向の CLI リファレンス Skill を作成する"
+  default_prompt: "Use $cli-reference-writing to create or update a use-case-oriented CLI reference skill."
