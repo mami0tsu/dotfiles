@@ -212,7 +212,11 @@ tasks:
       - |
         marketplace_name="{{.MARKETPLACE_NAME}}"
         marketplace_dir="{{.MARKETPLACE_DIR}}"
-        marketplace_list="$(codex plugin marketplace list)"
+        if ! marketplace_list="$(codex plugin marketplace list)"; then
+          codex plugin marketplace remove "$marketplace_name"
+          codex plugin marketplace add "$marketplace_dir"
+          exit 0
+        fi
         marketplace_root="$(printf '%s\n' "$marketplace_list" | awk -v name="$marketplace_name" '$1 == name { print $2; exit }')"
 
         if [[ -n "$marketplace_root" && "$marketplace_root" != "$marketplace_dir" ]]; then
