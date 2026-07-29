@@ -27,6 +27,7 @@ tasks:
 
   deploy:
     desc: Materialize locked APM skills and link them into agent skill directories.
+    silent: true
     cmds:
       - |
         source_dir="{{.REPO_ROOT}}/agents/skills"
@@ -44,6 +45,7 @@ tasks:
         fi
 
         temporary_lock_file="$(mktemp "{{.REPO_ROOT}}/.apm.lock.yaml.XXXXXX")"
+        apm_output_file="$(mktemp "{{.REPO_ROOT}}/.apm-install.XXXXXX")"
         staged_lock_created=false
 
         cleanup() {
@@ -51,6 +53,7 @@ tasks:
             rm -f "$staged_lock_file"
           fi
           rm -f "$temporary_lock_file"
+          rm -f "$apm_output_file"
         }
         trap cleanup EXIT
 
@@ -61,9 +64,12 @@ tasks:
         fi
         staged_lock_created=true
 
-        task agent-skills:clean
+        task --silent agent-skills:clean
         cd "$source_dir"
-        apm install --root "{{.REPO_ROOT}}" {{.apm_skills_install_args}} --frozen
+        if ! apm install --root "{{.REPO_ROOT}}" {{.apm_skills_install_args}} --frozen >"$apm_output_file" 2>&1; then
+          cat "$apm_output_file" >&2
+          exit 1
+        fi
       - task: link
 
   lock:
