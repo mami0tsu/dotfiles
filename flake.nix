@@ -46,6 +46,7 @@
         ax = pkgs.callPackage ./nix/packages/ax.nix { };
         codex = pkgs.callPackage ./nix/packages/codex.nix { };
         difit = pkgs.callPackage ./nix/packages/difit.nix { };
+        gh-stack = pkgs.callPackage ./nix/packages/gh-stack.nix { };
         git-open-src = pkgs.callPackage ./nix/packages/git-open-src.nix { };
         git-wt = pkgs.callPackage ./nix/packages/git-wt.nix { };
         roots = pkgs.callPackage ./nix/packages/roots.nix { };

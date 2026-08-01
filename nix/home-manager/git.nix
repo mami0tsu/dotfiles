@@ -37,7 +37,9 @@
       };
       commit.verbose = true;
       merge.conflictStyle = "diff3";
+      rerere.enabled = true;
       push.autoSetupRemote = true;
+      remote.pushDefault = "origin";
       interactive.diffFilter = "delta --color-only";
       delta = {
         line-numbers = true;

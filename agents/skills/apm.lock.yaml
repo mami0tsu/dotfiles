@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-07-26T02:54:13.530149+00:00'
+generated_at: '2026-08-01T07:08:13.844846+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: aws/agent-toolkit-for-aws
@@ -235,6 +235,16 @@ dependencies:
     .agents/skills/aws-serverless/references/production.md: sha256:d4f4973c1b24aa1c85431d53f39e15bc0f3ed1ec56ae5cfb719e69b2954b1cc9
     .agents/skills/aws-serverless/references/troubleshooting.md: sha256:4689eb233d8be8c5a5d1c8749fdaf38b910518ed5e47a5aedb3827f17a65f210
   content_hash: sha256:d194802edacf6adf02c993b31ff3062c57fa7dd9383d68ac0a3ea9bb4a78f361
+- repo_url: github/gh-stack
+  name: gh-stack
+  host: github.com
+  resolved_commit: a1b4a3d4d0bcde9ec3a78ab99b2d63af121857a9
+  resolved_ref: a1b4a3d4d0bcde9ec3a78ab99b2d63af121857a9
+  version: unknown
+  virtual_path: skills/gh-stack
+  is_virtual: true
+  package_type: claude_skill
+  content_hash: sha256:10a4da93d82f822cbcd2eec43ec8ccf02d70bc98662b86531c6fb00de9856c65
 - repo_url: ryonakae/dotfiles
   name: dig
   host: github.com
