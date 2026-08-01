@@ -15,6 +15,30 @@ set:
   - pipefail
 
 tasks:
+  validate:taskfile:
+    desc: Load Taskfiles and dry-run every public task graph.
+    silent: true
+    cmds:
+      # ルート Taskfile とすべての include を読み込みます。
+      - task --list-all
+      # dry-run はシェルコマンドを実行しません。
+      # 公開タスクから、すべての include、task 参照、テンプレートを検査します。
+      - task --dry default
+      - task --dry clean
+      - task --dry deploy
+      - task --dry agent-plugins:clean
+      - task --dry agent-plugins:deploy
+      - task --dry agent-plugins:validate
+      - task --dry agent-plugins:migrate
+      - task --dry agent-skills:clean
+      - task --dry agent-skills:deploy
+      - task --dry agent-skills:lock
+      - task --dry agent-skills:update
+      - task --dry nix:clean
+      - task --dry nix:deploy
+      # internal task は Task から直接実行できません。
+      # すべて上記の公開タスクから到達するため、直接検査する対象はありません。
+
   clean:
     desc: Clean Nix generations, agent plugins, and agent skills.
     cmds:
