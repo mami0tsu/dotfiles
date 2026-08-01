@@ -37,7 +37,7 @@ git diff --staged
 
 ### 結果の確認
 
-対象 path が untracked、未 stage、stage 済みのどれかを `git status --short --branch` と二つの diff で説明できる状態にする。
+対象 path が untracked、未 stage、stage 済みのどれかを `git status --short --branch` と2つの diff で説明できる状態にする。
 
 ### 停止条件
 
@@ -47,7 +47,7 @@ git diff --staged
 
 ### 代表的な失敗
 
-`git diff` が空でも `git status` に変更が出る場合は、その変更がすでに stage 済みである可能性がある。
+`git diff` が空でも、`git status` に残る変更はすでに stage 済みの可能性がある。
 
 `git diff --staged` を実行して確認する。
 

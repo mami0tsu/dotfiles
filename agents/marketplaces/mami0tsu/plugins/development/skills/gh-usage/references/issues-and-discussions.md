@@ -94,7 +94,7 @@ gh discussion view <number-or-url> --repo <owner>/<repo> \
   --comments --order oldest --limit <count>
 ```
 
-一つの comment の全 reply thread が必要な場合は、comment URL または node ID を渡す。
+1つの comment の全 reply thread が必要な場合は、comment URL または node ID を渡す。
 
 ```sh
 gh discussion view <comment-url-or-node-id> --repo <owner>/<repo> \

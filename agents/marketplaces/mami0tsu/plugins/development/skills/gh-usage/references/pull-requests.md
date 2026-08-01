@@ -61,7 +61,7 @@ argument を省略して意図しない current branch の pull request が選�
 
 `mergeStateStatus` が `UNKNOWN` の場合は、GitHub 側の計算中である可能性があるため、Actions の状態を確認してから利用者へ報告する。
 
-`files` が多く出力が大きい場合は、対象 file を絞る必要があるか利用者へ確認する。
+`files` の出力が大きい場合は、対象 file を絞るかどうかを利用者へ確認する。
 
 ## Draft pull request を作成する
 

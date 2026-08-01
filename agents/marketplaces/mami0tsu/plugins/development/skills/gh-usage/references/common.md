@@ -37,7 +37,7 @@ gh repo view --json nameWithOwner,url
 
 `gh auth status` が対象 host の有効な account を示すことを確認する。
 
-`gh repo view` の `nameWithOwner` と `url` が要求された repository と一致することを確認する。
+`gh repo view` の `nameWithOwner` と `url` が、要求された repository の識別子と URL に一致することを確認する。
 
 ### 停止条件
 
