@@ -16,6 +16,7 @@
   imports = [
     ./dotfiles.nix
     ./espanso.nix
+    ./gh.nix
     ./git.nix
     ./ghostty.nix
     ./nixvim.nix
