@@ -4,7 +4,7 @@
 
 - 実行日：2026-07-26
 - 実行環境：macOS、D2 `v0.7.1`
-- 確認内容：`SKILL.md` から二つの CLI 操作リファレンスとこの記録への導線があり、対象ユースケース、情報源、完全な検証バージョン、確認コマンド、ヘルプの限定条件を確認した。
+- 確認内容：`SKILL.md` から2つの CLI 操作リファレンスとこの記録への導線があり、対象ユースケース、情報源、完全な検証バージョン、確認コマンド、ヘルプの限定条件を確認した。
   D2 0.7.1 では `d2 validate --help` が `d2 --help` と同じ CLI 全体の help を返し、`validate` 専用 help はないことも確認した。
 - Plugin 検証：`claude plugin validate agents/marketplaces/mami0tsu/plugins/documentation --strict` が成功した。
 
@@ -23,11 +23,11 @@
 
 - 実行日：2026-07-26
 - 実行環境：macOS、D2 `v0.7.1`
-- 入力と対象ユースケース：開始、判断、二つの終了経路を持つフロー図を作成し、SVG を出力して確認する。
+- 入力と対象ユースケース：開始、判断、2つの終了経路を持つフロー図を作成し、SVG を出力して確認する。
 - 読み込んだ参照ファイル：`architecture-and-flow.md`、`rendering-and-review.md`
 - CLI のバージョンと実行したヘルプコマンド：`d2 v0.7.1`。通常経路ではヘルプを実行しない。
 - 実行結果：`d2 validate flow.d2`、`d2 flow.d2 flow.svg`、`rsvg-convert flow.svg -o flow-preview.png` が成功した。
-  PNG を表示し、開始から二つの終了経路までの矢印と分岐ラベルを確認した。
+  PNG を表示し、開始から2つの終了経路までの矢印と分岐ラベルを確認した。
 - 変更内容：なし。
 
 ## シナリオ 3：watch で SVG の更新を確認する

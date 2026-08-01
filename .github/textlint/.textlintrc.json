@@ -1,0 +1,18 @@
+{
+  "filters": {
+    "comments": true
+  },
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": {
+        "max": 300
+      },
+      "no-mix-dearu-desumasu": false
+    },
+    "@textlint-ja/preset-ai-writing": {
+      "no-ai-list-formatting": {
+        "disableBoldListItems": true
+      }
+    }
+  }
+}

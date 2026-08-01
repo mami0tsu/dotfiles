@@ -21,7 +21,7 @@ D2 ソースと SVG を対にして残す。
 ## リファレンス
 
 - [構成図とフロー図](references/architecture-and-flow.md)：shape、connection、container、label、style、layout を使って図を記述する。
-- [SVG 出力、watch、視覚確認](references/rendering-and-review.md)：SVG の出力、編集時の watch、レイアウトの選択、表示結果の確認を行う。
+- [SVG 出力、watch、視覚確認](references/rendering-and-review.md)：SVG の出力、編集時の watch、レイアウトの選択、表示結果を確認する。
 - [検証記録](references/validation.md)：この Skill の静的確認とシナリオ試験の記録を確認する。
 
 ## ヘルプを参照する条件

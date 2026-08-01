@@ -187,7 +187,7 @@ non-fast-forward rejection が出た場合、`--force` や `--force-with-lease` 
 
 ### 代表的な失敗
 
-`rejected ... non-fast-forward` は remote branch に local にない commit があることを示す。
+`rejected ... non-fast-forward` は、local で確認できない commit が remote branch 側にあることを示す。
 
 `git fetch <remote>` を実行し、branch の同期または rebase 方針を利用者へ確認する。
 

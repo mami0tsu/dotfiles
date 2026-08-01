@@ -4,7 +4,7 @@
 
 - 実行日：2026-07-26
 - 実行環境：macOS、Git 2.55.0、`/Users/mami0tsu/dotfiles/.worktrees/P-51-improve-git-usage`
-- 確認内容：`SKILL.md` から四つの CLI 操作リファレンスと本記録へ直接リンクし、八つの対象ユースケースを対応付けた。
+- 確認内容：`SKILL.md` から4つの CLI 操作リファレンスと本記録へ直接リンクし、8つの対象ユースケースを対応付けた。
 - 確認内容：各 CLI 操作リファレンスに情報源、検証 version、確認コマンド、目的、前提条件、推奨コマンド、結果の確認、停止条件、代表的な失敗を記載した。
 - 確認内容：`git --version` と対象 subcommand のヘルプで Git 2.55.0 の構文を確認した。
 - 確認内容：`task agent-plugins:validate` を実行し、development plugin、documentation plugin、marketplace の strict validation が通過した。

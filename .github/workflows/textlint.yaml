@@ -1,0 +1,61 @@
+---
+name: Textlint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**/*.md'
+      - .github/workflows/textlint.yaml
+      - .github/textlint/**
+
+# ワークフローレベルではパーミッションを設定しない
+permissions: {}
+
+# デフォルトシェルでパイプエラーを有効化する
+defaults:
+  run:
+    shell: bash
+
+# ワークフローが同じブランチで複数起動したらキャンセルする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint Markdown
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
+        with:
+          version: 11.17.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: .github/textlint/pnpm-lock.yaml
+
+      - name: Lint Markdown
+        working-directory: .github/textlint
+        run: |
+          pnpm install --frozen-lockfile
+          git -C ../.. ls-files -z -- '*.md' |
+            while IFS= read -r -d '' file; do
+              printf '../../%s\0' "$file"
+            done |
+            xargs -0 pnpm exec textlint \
+              --config .textlintrc.json \
+              --ignore-path .textlintignore \
+              --
