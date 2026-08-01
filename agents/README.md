@@ -8,9 +8,9 @@
 
 ## 構成
 
-- `marketplaces/mami0tsu/`：Codex CLI と Claude Code が共有する plugin marketplace です。
-- `skills/apm.yml`：APM で取得する skill の依存定義です。
-- `skills/apm.lock.yaml`：依存定義から解決した commit を記録する lockfile です。
+- `marketplaces/mami0tsu/`：Codex CLI と Claude Code が共有する plugin marketplace。
+- `skills/apm.yml`：APM で取得する skill の依存定義。
+- `skills/apm.lock.yaml`：依存定義から解決した commit を記録する lockfile。
 
 Marketplace の登録と削除には、次の task を使います。
 
