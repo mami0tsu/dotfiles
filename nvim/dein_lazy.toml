@@ -1,9 +1,0 @@
-[[plugins]]
-repo = 'previm/previm'
-hook_add = '''
-  let g:previm_open_cmd = 'open -a Google\ Chrome'
-'''
-
-[[plugins]]
-repo = 'mattn/vim-goimports'
-on_ft = ['go']

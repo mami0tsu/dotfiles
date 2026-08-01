@@ -1,19 +1,65 @@
 { config, pkgs, ... }:
+let
+  legacyPlugins = import ./legacy-plugins.nix { inherit pkgs; };
+in
 {
   programs.nixvim = {
-    extraPlugins = with pkgs.vimPlugins; [
+    extraPlugins = (with pkgs.vimPlugins; [
       auto-pairs
-      deol-nvim
       denops-vim
+      ddc-vim
+      ddc-ui-native
+      ddc-ui-pum
+      ddc-source-around
+      ddc-source-file
+      ddc-source-lsp
+      ddc-filter-matcher_head
+      ddc-filter-sorter_rank
       pum-vim
       tcomment_vim
       vim-prettier
       vim-terraform
-    ];
+    ]) ++ (with legacyPlugins; [
+      previm
+      ddc-ui-inline
+      ddc-buffer
+      ddc-source-shell_native
+      ddc-source-input
+      ddc-source-rg
+      ddc-source-line
+      ddc-source-cmdline
+      ddc-source-cmdline-history
+      ddc-filter-matcher_length
+      ddc-filter-matcher_prefix
+      ddc-filter-matcher_vimregexp
+      ddc-filter-sorter_head
+      ddc-filter-converter_remove_overlap
+      ddc-filter-converter_truncate_abbr
+      ddu-vim
+      ddu-commands-vim
+      ddu-ui-ff
+      ddu-ui-filer
+      ddu-source-buffer
+      ddu-source-file
+      ddu-source-file_rec
+      ddu-source-line
+      ddu-source-rg
+      ddu-kind-file
+      ddu-kind-word
+      ddu-filter-matcher_files
+      ddu-filter-matcher_relative
+      ddu-filter-matcher_substring
+      ddu-filter-sorter_alpha
+      ddu-column-filename
+      deol-nvim
+      vim-goimports
+      moody-nvim
+    ]);
 
     extraConfigVim = ''
       autocmd BufWritePre *.md PrettierAsync
 
+      let g:previm_open_cmd = 'open -a Google\ Chrome'
       let g:deol#external_history_path = '${config.xdg.stateHome}/zsh_history'
       let g:deol#prompt_pattern = '\w*>'
 

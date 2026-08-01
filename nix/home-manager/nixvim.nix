@@ -22,8 +22,6 @@
       "ddu.vim".source = ../../nvim/ddu.vim;
       "ddu-ui-ff.vim".source = ../../nvim/ddu-ui-ff.vim;
       "ddu-ui-filer.vim".source = ../../nvim/ddu-ui-filer.vim;
-      "dein.toml".source = ../../nvim/dein.toml;
-      "dein_lazy.toml".source = ../../nvim/dein_lazy.toml;
       "neovim.toml".source = ../../nvim/neovim.toml;
     };
   };
