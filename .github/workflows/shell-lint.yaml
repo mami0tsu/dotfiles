@@ -1,0 +1,49 @@
+name: Shell Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**/*.sh'
+      - .github/workflows/shell-lint.yaml
+  push:
+    branches: [main]
+    paths:
+      - '**/*.sh'
+      - .github/workflows/shell-lint.yaml
+
+# ワークフローレベルではパーミッションを設定しない
+permissions: {}
+
+# デフォルトシェルでパイプエラーを有効化する
+defaults:
+  run:
+    shell: bash
+
+# ワークフローが同じブランチで複数起動したらキャンセルする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Run ShellCheck
+        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32
+        with:
+          fail_level: error
+          filter_mode: nofilter
+          path: .
+          pattern: '*.sh'
+          reporter: github-check
