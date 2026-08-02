@@ -1,0 +1,19 @@
+---
+extends: default
+
+# このロックファイルは APM が生成するため、リポジトリでは管理しません。
+ignore: |
+  agents/skills/apm.lock.yaml
+
+rules:
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable
+  line-length:
+    max: 160
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+  truthy: disable
