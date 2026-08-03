@@ -12,7 +12,7 @@
 stdenvNoCC.mkDerivation rec {
   pname = "difit";
   # renovate: datasource=github-releases depName=yoshiko-pg/difit extractVersion=^v(?<version>.+)$
-  version = "4.0.5";
+  version = "4.0.7";
 
   src = fetchFromGitHub {
     owner = "yoshiko-pg";

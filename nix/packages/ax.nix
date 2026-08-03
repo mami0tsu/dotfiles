@@ -7,7 +7,7 @@
 stdenvNoCC.mkDerivation rec {
   pname = "ax";
   # renovate: datasource=github-releases depName=yusukebe/ax extractVersion=^v(?<version>.+)$
-  version = "0.1.10";
+  version = "0.1.22";
   assetName = "ax-darwin-arm64";
 
   src = fetchurl {
