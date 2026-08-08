@@ -1,29 +1,37 @@
 {
-  buildGoModule,
-  fetchFromGitHub,
-  git,
+  fetchurl,
   lib,
+  mkGithubReleaseArchive,
+  unzip,
 }:
 
-buildGoModule rec {
+mkGithubReleaseArchive rec {
   pname = "git-wt";
-  # renovate: datasource=github-tags depName=k1LoW/git-wt extractVersion=^v(?<version>.+)$
+  # renovate: datasource=github-releases depName=k1LoW/git-wt extractVersion=^v(?<version>.+)$
   version = "0.27.0";
 
-  src = fetchFromGitHub {
+  assetName = "git-wt_v${version}_darwin_arm64";
+  archiveName = "${assetName}.zip";
+
+  src = fetchurl {
+    url = "https://github.com/k1LoW/git-wt/releases/download/v${version}/${archiveName}";
+    hash = "sha256-uu4zuUgTsC+nxGrt7fVpxgV92GeJ86Ocgd8bgCotMx4=";
+  };
+
+  binaryPath = "git-wt";
+  nativeBuildInputs = [ unzip ];
+
+  passthru.release = {
     owner = "k1LoW";
     repo = "git-wt";
     tag = "v${version}";
-    hash = "sha256-oGY9uMqP/hlIG9p/JaVqoBaxI7VFDIEIlwP5rBa3Diw=";
+    asset = archiveName;
   };
-
-  vendorHash = "sha256-4ak2Gx/i/yvj/tAoDJjsfpBUKJI5iDyKIuv7R7Pzz/w=";
-
-  nativeCheckInputs = [ git ];
 
   meta = {
     description = "A CLI tool for managing git worktrees";
     homepage = "https://github.com/k1LoW/git-wt";
     license = lib.licenses.mit;
+    mainProgram = "git-wt";
   };
 }

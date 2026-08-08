@@ -1,10 +1,10 @@
 {
   fetchurl,
   lib,
-  stdenvNoCC,
+  mkGithubReleaseBinary,
 }:
 
-stdenvNoCC.mkDerivation rec {
+mkGithubReleaseBinary rec {
   pname = "ax";
   # renovate: datasource=github-releases depName=yusukebe/ax extractVersion=^v(?<version>.+)$
   version = "0.1.10";
@@ -15,18 +15,14 @@ stdenvNoCC.mkDerivation rec {
     hash = "sha256-FCCrnigkNiCtCHsuzpskyZaxfJGGUdltOMu2A+WKvOk=";
   };
 
-  dontUnpack = true;
-  dontConfigure = true;
-  dontBuild = true;
+  executable = "ax";
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/bin"
-    install -m 0755 "$src" "$out/bin/ax"
-
-    runHook postInstall
-  '';
+  passthru.release = {
+    owner = "yusukebe";
+    repo = "ax";
+    tag = "v${version}";
+    asset = assetName;
+  };
 
   meta = {
     description = "AI-era curl: fetch, discover, extract";

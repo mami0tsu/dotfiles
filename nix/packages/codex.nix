@@ -1,10 +1,10 @@
 {
   fetchurl,
   lib,
-  stdenvNoCC,
+  mkGithubReleaseArchive,
 }:
 
-stdenvNoCC.mkDerivation rec {
+mkGithubReleaseArchive rec {
   pname = "codex";
   # renovate: datasource=github-releases depName=openai/codex extractVersion=^rust-v(?<version>.+)$
   version = "0.145.0";
@@ -18,17 +18,14 @@ stdenvNoCC.mkDerivation rec {
 
   sourceRoot = ".";
 
-  dontConfigure = true;
-  dontBuild = true;
+  binaryPath = assetName;
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/bin"
-    install -m 0755 "${assetName}" "$out/bin/codex"
-
-    runHook postInstall
-  '';
+  passthru.release = {
+    owner = "openai";
+    repo = "codex";
+    tag = "rust-v${version}";
+    asset = archiveName;
+  };
 
   meta = {
     description = "Lightweight coding agent that runs in your terminal";

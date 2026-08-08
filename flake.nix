@@ -2,16 +2,13 @@
   description = "";
 
   inputs = {
-    nixpkgs.url =
-      "github:nixos/nixpkgs/6d12004108e0e4a5cfa4bd83b14477f040b15773"; # nixpkgs-unstable
+    nixpkgs.url = "github:nixos/nixpkgs/6d12004108e0e4a5cfa4bd83b14477f040b15773"; # nixpkgs-unstable
     home-manager = {
-      url =
-        "github:nix-community/home-manager/3139deb8cafbe73b39b24451255b2fdd3426077e"; # master
+      url = "github:nix-community/home-manager/3139deb8cafbe73b39b24451255b2fdd3426077e"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url =
-        "github:nix-darwin/nix-darwin/57a3171f94705599a2499248ca5758d5eb47c0e0"; # master
+      url = "github:nix-darwin/nix-darwin/57a3171f94705599a2499248ca5758d5eb47c0e0"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim = {
@@ -41,18 +38,7 @@
       system = "aarch64-darwin";
       pkgs = import nixpkgs { inherit system; };
 
-      localPackages = {
-        apm = pkgs.callPackage ./nix/packages/apm.nix { };
-        ax = pkgs.callPackage ./nix/packages/ax.nix { };
-        codex = pkgs.callPackage ./nix/packages/codex.nix { };
-        difit = pkgs.callPackage ./nix/packages/difit.nix { };
-        gh-aw = pkgs.callPackage ./nix/packages/gh-aw.nix { };
-        gh-stack = pkgs.callPackage ./nix/packages/gh-stack.nix { };
-        git-open-src = pkgs.callPackage ./nix/packages/git-open-src.nix { };
-        git-wt = pkgs.callPackage ./nix/packages/git-wt.nix { };
-        roots = pkgs.callPackage ./nix/packages/roots.nix { };
-        zsh-defer-src = pkgs.callPackage ./nix/packages/zsh-defer-src.nix { };
-      };
+      localPackages = import ./nix/packages { inherit (pkgs) callPackage; };
 
       getDarwinConfig =
         username: useremail:
@@ -78,5 +64,29 @@
       darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
       darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
       packages.${system} = localPackages;
+      checks.${system} =
+        pkgs.lib.mapAttrs (
+          name: package:
+          pkgs.runCommand "${name}-smoke-test"
+            {
+              nativeBuildInputs = [ package ];
+            }
+            ''
+              ${pkgs.lib.getExe package} --version
+              touch "$out"
+            ''
+        ) (pkgs.lib.filterAttrs (_: package: package.meta ? mainProgram) localPackages)
+        // {
+          git-open-src-syntax = pkgs.runCommand "git-open-src-syntax" { nativeBuildInputs = [ pkgs.zsh ]; } ''
+            zsh -n ${localPackages.git-open-src}/git-open
+            touch "$out"
+          '';
+          zsh-defer-src-syntax =
+            pkgs.runCommand "zsh-defer-src-syntax" { nativeBuildInputs = [ pkgs.zsh ]; }
+              ''
+                zsh -n ${localPackages.zsh-defer-src}/zsh-defer.plugin.zsh
+                touch "$out"
+              '';
+        };
     };
 }
