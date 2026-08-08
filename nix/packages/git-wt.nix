@@ -8,7 +8,7 @@
 buildGoModule rec {
   pname = "git-wt";
   # renovate: datasource=github-tags depName=k1LoW/git-wt extractVersion=^v(?<version>.+)$
-  version = "0.27.0";
+  version = "0.29.0";
 
   src = fetchFromGitHub {
     owner = "k1LoW";
