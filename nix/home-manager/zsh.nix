@@ -57,7 +57,18 @@ in
       }
 
       function claude() {
-        _run_with_github_mcp_token claude "$@"
+        local argument
+
+        for argument in "$@"; do
+          case "$argument" in
+            --settings | --settings=*)
+              print -u2 -- "claude: --settings is managed by Home Manager"
+              return 2
+              ;;
+          esac
+        done
+
+        _run_with_github_mcp_token claude --settings "${config.home.homeDirectory}/.claude/permissions.json" "$@"
       }
 
       # ghq wrapper
