@@ -3,10 +3,10 @@
 
   inputs = {
     nixpkgs.url =
-      "github:nixos/nixpkgs/6d12004108e0e4a5cfa4bd83b14477f040b15773"; # nixpkgs-unstable
+      "github:nixos/nixpkgs/bcca8dd3bba0686b330fba113dc545b5988f4235"; # nixpkgs-unstable
     home-manager = {
       url =
-        "github:nix-community/home-manager/3139deb8cafbe73b39b24451255b2fdd3426077e"; # master
+        "github:nix-community/home-manager/e83dffa86cccb6237fe194d4eeb47f41557749d1"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
@@ -19,11 +19,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew/842eeb863ecca0eeb463f7a814cdc51e1d925776"; # main
+      url = "github:zhaofengli/nix-homebrew/60623ec512406261f553d24033c8a0c53fd0b7f2"; # main
       inputs.brew-src.follows = "brew-src";
     };
     brew-src = {
-      url = "github:Homebrew/brew/860497fef02b98811b838f522beb1578b5c5c14c"; # master
+      url = "github:Homebrew/brew/48f5f3f30eb4d68d45686527823ed15a50fe50ba"; # master
       flake = false;
     };
   };
