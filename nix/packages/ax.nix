@@ -12,7 +12,7 @@ stdenvNoCC.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/yusukebe/ax/releases/download/v${version}/${assetName}";
-    hash = "sha256-FCCrnigkNiCtCHsuzpskyZaxfJGGUdltOMu2A+WKvOk=";
+    hash = "sha256-gZXl4wd6/UzlqwWap+WmjhPeuc1g/7Iwq6Z1HDOeIjQ=";
   };
 
   dontUnpack = true;
