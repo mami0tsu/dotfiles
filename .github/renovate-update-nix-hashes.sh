@@ -6,6 +6,7 @@ packages=(
   ax
   codex
   difit
+  gh-aw
   roots
   git-wt
   zsh-defer-src

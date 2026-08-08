@@ -19,6 +19,7 @@ in
     gnused # v4.9
     gojq # v0.12.19
     # jq
+    sops # v3.13.2
     tree # v2.3.2
     ripgrep # v15.1.0
 
