@@ -29,12 +29,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
 
       - name: Lint workflows with actionlint
-        uses: reviewdog/action-actionlint@a499b807aed4af40b8f2f7b885b9e38c469a945c # v1.73.0
+        uses: reviewdog/action-actionlint@50842263c20a7c46bd0065b9e624d3c569db061e # v1.73.0
         with:
           actionlint_flags: .github/workflows/*.yaml
           fail_level: error
