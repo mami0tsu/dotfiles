@@ -24,11 +24,11 @@ in
     ripgrep # v15.1.0
 
     awscli2 # v2.34.24
-    localPackages.apm # v0.26.0
-    localPackages.ax # v0.1.10
+    localPackages.apm
+    localPackages.ax
     claude-code # v2.1.217
-    localPackages.codex # v0.145.0
-    localPackages.difit # v4.0.5
+    localPackages.codex
+    localPackages.difit
     docker_29 # v29.5.2
     fzf # v0.73.1
     ghq # v1.9.4

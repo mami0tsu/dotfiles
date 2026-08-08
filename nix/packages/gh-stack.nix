@@ -1,10 +1,10 @@
 {
   fetchurl,
   lib,
-  stdenvNoCC,
+  mkGithubReleaseBinary,
 }:
 
-stdenvNoCC.mkDerivation rec {
+mkGithubReleaseBinary rec {
   pname = "gh-stack";
   # renovate: datasource=github-releases depName=github/gh-stack extractVersion=^v(?<version>.+)$
   version = "0.1.0";
@@ -15,18 +15,14 @@ stdenvNoCC.mkDerivation rec {
     hash = "sha256-XKmCQaJl1t4BgJXNrl88QNpcp4JFDuwOqRqo4+sYMQM=";
   };
 
-  dontUnpack = true;
-  dontConfigure = true;
-  dontBuild = true;
+  executable = "gh-stack";
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/bin"
-    install -m 0755 "$src" "$out/bin/gh-stack"
-
-    runHook postInstall
-  '';
+  passthru.release = {
+    owner = "github";
+    repo = "gh-stack";
+    tag = "v${version}";
+    asset = assetName;
+  };
 
   meta = {
     description = "GitHub CLI extension for managing stacked branches and pull requests";

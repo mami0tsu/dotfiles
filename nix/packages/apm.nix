@@ -1,10 +1,12 @@
 {
   fetchurl,
+  git,
   lib,
-  stdenvNoCC,
+  makeWrapper,
+  mkGithubReleaseArchive,
 }:
 
-stdenvNoCC.mkDerivation rec {
+mkGithubReleaseArchive rec {
   pname = "apm";
   # renovate: datasource=github-releases depName=microsoft/apm extractVersion=^v(?<version>.+)$
   version = "0.26.0";
@@ -13,23 +15,24 @@ stdenvNoCC.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/microsoft/apm/releases/download/v${version}/${archiveName}";
-    sha256 = "1psl0qr5xwxpfsvmx4z0sn14989pd5sfs27726sffjzbic5dvggy";
+    hash = "sha256-/r3dCovrS+e0EecI7XRpN6FEgtXgk163drfzXjIGVN8=";
   };
 
   sourceRoot = assetName;
 
-  dontConfigure = true;
-  dontBuild = true;
+  binaryPath = "apm";
+  nativeBuildInputs = [ makeWrapper ];
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/libexec/apm" "$out/bin"
-    cp -R . "$out/libexec/apm/"
-    ln -s "$out/libexec/apm/apm" "$out/bin/apm"
-
-    runHook postInstall
+  postInstall = ''
+    wrapProgram "$out/bin/apm" --prefix PATH : ${lib.makeBinPath [ git ]}
   '';
+
+  passthru.release = {
+    owner = "microsoft";
+    repo = "apm";
+    tag = "v${version}";
+    asset = archiveName;
+  };
 
   meta = {
     description = "Agent Package Manager";

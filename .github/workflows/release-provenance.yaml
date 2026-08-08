@@ -1,0 +1,45 @@
+---
+name: Release Provenance
+
+on:
+  pull_request:
+    paths:
+      - .github/scripts/verify-release-provenance.sh
+      - .github/workflows/release-provenance.yaml
+      - nix/packages/**
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      - name: Verify release provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          packages=()
+          while IFS= read -r file; do
+            case "$file" in
+              nix/packages/apm.nix) packages+=(apm) ;;
+              nix/packages/ax.nix) packages+=(ax) ;;
+              nix/packages/codex.nix) packages+=(codex) ;;
+              nix/packages/gh-aw.nix) packages+=(gh-aw) ;;
+              nix/packages/gh-stack.nix) packages+=(gh-stack) ;;
+              nix/packages/git-wt.nix) packages+=(git-wt) ;;
+              nix/packages/roots.nix) packages+=(roots) ;;
+            esac
+          done < <(
+            git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+          )
+          if ((${#packages[@]} == 0)); then
+            packages=(apm ax codex gh-aw gh-stack git-wt roots)
+          fi
+          .github/scripts/verify-release-provenance.sh "${packages[@]}"
