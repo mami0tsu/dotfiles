@@ -9,6 +9,9 @@ in
 {
   programs.gh = {
     enable = true;
-    extensions = [ localPackages.gh-stack ];
+    extensions = [
+      localPackages.gh-stack
+      localPackages.gh-aw
+    ];
   };
 }
