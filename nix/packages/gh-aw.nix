@@ -1,10 +1,10 @@
 {
   fetchurl,
   lib,
-  stdenvNoCC,
+  mkGithubReleaseBinary,
 }:
 
-stdenvNoCC.mkDerivation rec {
+mkGithubReleaseBinary rec {
   pname = "gh-aw";
   # renovate: datasource=github-releases depName=github/gh-aw extractVersion=^v(?<version>.+)$
   version = "0.83.4";
@@ -15,18 +15,14 @@ stdenvNoCC.mkDerivation rec {
     hash = "sha256-qK5W9RXFsmR4j+D2KEPDu5UCkoaCz2X0iGp/U1aO8Q4=";
   };
 
-  dontUnpack = true;
-  dontConfigure = true;
-  dontBuild = true;
+  executable = "gh-aw";
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/bin"
-    install -m 0755 "$src" "$out/bin/gh-aw"
-
-    runHook postInstall
-  '';
+  passthru.release = {
+    owner = "github";
+    repo = "gh-aw";
+    tag = "v${version}";
+    asset = assetName;
+  };
 
   meta = {
     description = "GitHub CLI extension for GitHub Agentic Workflows";
