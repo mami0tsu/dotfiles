@@ -16,7 +16,7 @@ description: レビュー済みのチケットや設計成果物を実装し、w
 4. 入力成果物の範囲内で実装し、テストする。
 5. `review` で検証、関心別 commit、人間レビューを完了する。
 6. 変更を push し、`gh-usage` で Draft PR を作成する。
-7. `.agent/retrospectives/<ticket-id>.md` に振り返りを記録する。
+7. `retrospective` で振り返りを記録する。
 
 worktree を再利用する前に remote の default branch を fetch する。
 作業 branch の merge-base、または detached HEAD が remote tip と一致することを確認する。
@@ -37,6 +37,4 @@ template がなければ [assets/pull_request_template.md](assets/pull_request_t
 ## 振り返り
 
 `.agent/` が Git の除外対象であり、追跡も stage もされていないことを確認する。
-[assets/retrospective.md](assets/retrospective.md) を使い、Agent Rules、Agent Skills、権限設定の改善候補を残す。
-
-認証情報、個人情報、未公開の機密情報は記録しない。
+`retrospective` に ticket ID、作業履歴、実行許可を求めたコマンドを渡す。

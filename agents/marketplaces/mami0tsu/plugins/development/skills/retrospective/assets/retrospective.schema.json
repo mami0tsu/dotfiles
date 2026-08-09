@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ticket_id", "findings", "permission_requests"],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "ticket_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "summary", "evidence", "proposed_change", "targets"],
+        "properties": {
+          "category": {
+            "enum": ["agent_rule", "agent_skill", "permission"]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposed_change": {
+            "type": "string",
+            "minLength": 1
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "permission_requests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "purpose", "permission_reason", "outcome", "requested_prefix", "default_permission"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "permission_reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outcome": {
+            "enum": ["approved_succeeded", "approved_failed", "denied", "cancelled"]
+          },
+          "requested_prefix": {
+            "$ref": "#/$defs/prefix"
+          },
+          "default_permission": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["decision", "prefix", "reason"],
+            "properties": {
+              "decision": {
+                "enum": ["candidate", "rejected", "deferred"]
+              },
+              "prefix": {
+                "$ref": "#/$defs/prefix"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "decision": {
+                      "const": "candidate"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "prefix": {
+                      "minItems": 1
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "prefix": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

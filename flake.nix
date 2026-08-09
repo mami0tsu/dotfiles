@@ -63,6 +63,10 @@
 
       getTestTools = pkgs: [
         pkgs.go-task
+        (pkgs.python3.withPackages (pythonPackages: [
+          pythonPackages.jsonschema
+          pythonPackages.pyyaml
+        ]))
         pkgs.renovate
       ];
 

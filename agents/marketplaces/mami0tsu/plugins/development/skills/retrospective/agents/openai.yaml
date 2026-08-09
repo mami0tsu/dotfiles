@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retrospective"
+  short_description: "AI の振る舞いと権限設定の改善候補を YAML で記録する"
+  default_prompt: "Use $retrospective to record actionable improvements to agent behavior and permissions."
