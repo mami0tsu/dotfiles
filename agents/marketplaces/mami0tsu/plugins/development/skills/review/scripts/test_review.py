@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -12,6 +13,10 @@ import unittest
 
 
 SCRIPT = Path(__file__).with_name("review.py")
+SPEC = importlib.util.spec_from_file_location("review_skill_helper", SCRIPT)
+assert SPEC is not None and SPEC.loader is not None
+REVIEW_MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(REVIEW_MODULE)
 
 
 class ReviewScriptTest(unittest.TestCase):
@@ -44,9 +49,10 @@ cat <<'OUTPUT'
 document.md:L1
 実装の意図
 
-<!-- difit-comment-author: agent -->
 Reply 1 (Unknown)
-この表現を直してください
+実装の意図
+Reply 2 (agent)
+修正方針への回答
 ==================================================
 Total comments: 1
 OUTPUT
@@ -133,7 +139,9 @@ OUTPUT
         self.assertEqual(arguments[0:2], [selection["target"], selection["base"]])
         self.assertIn("--clean", arguments)
         comment_value = json.loads(arguments[arguments.index("--comment") + 1])
-        self.assertTrue(comment_value[0]["body"].endswith("<!-- difit-comment-author: agent -->"))
+        self.assertEqual(comment_value[0]["body"], "実装の意図")
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        self.assertEqual(state["activeAgentMessages"][0]["commentedBy"], "agent")
 
         extracted = json.loads(
             self.run_review("extract", "--transcript", str(transcript)).stdout
@@ -141,7 +149,7 @@ OUTPUT
         self.assertEqual(len(extracted["candidates"]), 1)
         candidate = extracted["candidates"][0]
         self.assertEqual(candidate["messageIndex"], 1)
-        self.assertEqual(candidate["body"], "この表現を直してください")
+        self.assertEqual(candidate["body"], "実装の意図")
         self.run_review("acknowledge", candidate["signature"])
         self.run_review("discard-transcript", "--transcript", str(transcript))
 
@@ -254,6 +262,35 @@ OUTPUT
         )
         second = json.loads(self.run_review("next").stdout)
         self.assertEqual(first["target"], second["target"])
+
+    def test_different_human_root_at_known_position_is_not_hidden(self) -> None:
+        transcript = """📝 Comments from review session:
+==================================================
+document.md:L1
+人間が作り直したコメント
+==================================================
+Total comments: 1
+"""
+        thread = {
+            "id": "agent-thread",
+            "filePath": "document.md",
+            "position": {"side": "new", "line": 1},
+            "body": "実装の意図",
+        }
+        messages = [
+            {
+                "commentedBy": "agent",
+                "type": "thread",
+                "filePath": "document.md",
+                "position": {"side": "new", "line": 1},
+                "body": "実装の意図",
+            }
+        ]
+        candidates = REVIEW_MODULE.extract_candidates(
+            transcript, set(), [thread], messages
+        )
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0]["body"], "人間が作り直したコメント")
 
 if __name__ == "__main__":
     unittest.main()

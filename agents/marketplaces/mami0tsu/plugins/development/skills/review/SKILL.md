@@ -90,11 +90,9 @@ python3 <skill-dir>/scripts/review.py run \
   [--clean]
 ```
 
-helper は AI コメントへ次の marker を付け、raw transcript を mode `600` の一時ファイルへ保存する。
+helper は AI コメントへ構造化された `author: agent` を設定し、本文と位置を review state に保存する。
 
-```text
-<!-- difit-comment-author: agent -->
-```
+各メッセージを `commentedBy: agent` として本文の外で識別し、raw transcript を mode `600` の一時ファイルへ保存する。
 
 ブラウザが閉じて process が終了するまで待つ。
 
@@ -110,9 +108,9 @@ python3 <skill-dir>/scripts/review.py extract --transcript <path>
 
 raw transcript と抽出結果を照合する。
 
-marker のあるメッセージだけを AI の説明として除外する。
+既知の AI thread の root と、transcript で author が `agent` の reply だけを AI の説明として除外する。
 
-marker のない root comment と reply は人間のメッセージとして扱う。
+一致しない root comment と reply は人間のメッセージとして扱う。
 
 `reviewed` で今回表示した target を人間レビュー済み checkpoint として記録する。
 

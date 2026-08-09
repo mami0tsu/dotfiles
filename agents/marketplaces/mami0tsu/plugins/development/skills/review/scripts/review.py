@@ -17,10 +17,9 @@ import tempfile
 from typing import Any
 
 
-MARKER = "<!-- difit-comment-author: agent -->"
 STATE_NAME = "review-state.json"
 SCHEMA_VERSION = 1
-REPLY_RE = re.compile(r"^Reply ([1-9][0-9]*) \(.*\)$")
+REPLY_RE = re.compile(r"^Reply ([1-9][0-9]*) \((.*)\)$")
 
 
 class ReviewError(RuntimeError):
@@ -133,6 +132,7 @@ def command_init(args: argparse.Namespace) -> None:
             "active": None,
             "comparisons": [],
             "commentThreads": {},
+            "agentMessages": {},
             "processedSignatures": [],
             "lastExtract": None,
         }
@@ -216,9 +216,8 @@ def load_comments(path: Path) -> list[dict[str, Any]]:
             raise ReviewError(f"comment {index} has no diff position")
         copy = dict(item)
         clean_body = body.rstrip()
-        if not clean_body.endswith(MARKER):
-            clean_body = f"{clean_body}\n\n{MARKER}"
         copy["body"] = clean_body
+        copy["author"] = "agent"
         line = copy["position"].get("line")
         if isinstance(line, dict):
             line_label = f"L{line.get('start')}-L{line.get('end')}"
@@ -311,6 +310,30 @@ def command_run(args: argparse.Namespace) -> None:
             known_threads.append(item)
             known_ids.add(item.get("id"))
     state["activeComments"] = known_threads
+    message_sets = state.setdefault("agentMessages", {})
+    if not isinstance(message_sets, dict):
+        raise ReviewError("invalid agent messages in review state")
+    known_messages = message_sets.setdefault(key, [])
+    if not isinstance(known_messages, list):
+        raise ReviewError("invalid comparison agent messages in review state")
+    known_message_keys = {
+        json.dumps(item, ensure_ascii=False, sort_keys=True)
+        for item in known_messages
+        if isinstance(item, dict)
+    }
+    for item in comments:
+        message = {
+            "commentedBy": "agent",
+            "type": item["type"],
+            "filePath": item["filePath"],
+            "position": item["position"],
+            "body": item["body"],
+        }
+        message_key = json.dumps(message, ensure_ascii=False, sort_keys=True)
+        if message_key not in known_message_keys:
+            known_messages.append(message)
+            known_message_keys.add(message_key)
+    state["activeAgentMessages"] = known_messages
     transcript_text = transcript.read_text(encoding="utf-8")
     state["currentTranscript"] = {
         "path": str(transcript.resolve()),
@@ -340,18 +363,22 @@ def review_section(text: str) -> str:
     return section[first + len(border) : last].strip("\n")
 
 
-def split_messages(block: str) -> list[tuple[int, str]]:
+def split_messages(block: str) -> list[tuple[int, str | None, str]]:
     lines = block.splitlines()
     if len(lines) < 2:
         return []
-    messages: list[tuple[int, list[str]]] = [(0, [])]
+    messages: list[tuple[int, str | None, list[str]]] = [(0, None, [])]
     for line in lines[1:]:
         match = REPLY_RE.match(line)
         if match:
-            messages.append((int(match.group(1)), []))
+            messages.append((int(match.group(1)), match.group(2), []))
         else:
-            messages[-1][1].append(line)
-    return [(index, "\n".join(body).strip()) for index, body in messages if "\n".join(body).strip()]
+            messages[-1][2].append(line)
+    return [
+        (index, author, "\n".join(body).strip())
+        for index, author, body in messages
+        if "\n".join(body).strip()
+    ]
 
 
 def signature(position: str, message_index: int, body: str) -> str:
@@ -365,7 +392,10 @@ def signature(position: str, message_index: int, body: str) -> str:
 
 
 def extract_candidates(
-    text: str, processed: set[str], active_comments: list[dict[str, Any]]
+    text: str,
+    processed: set[str],
+    active_comments: list[dict[str, Any]],
+    agent_messages: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     section = review_section(text)
     if not section:
@@ -380,6 +410,14 @@ def extract_candidates(
         line = item["position"]["line"]
         line_label = f"L{line['start']}-L{line['end']}" if isinstance(line, dict) else f"L{line}"
         known_by_label[f"{item['filePath']}:{line_label}"] = item
+    agent_root_bodies_by_label: dict[str, set[str]] = {}
+    for item in agent_messages:
+        if item.get("type") != "thread":
+            continue
+        line = item["position"]["line"]
+        line_label = f"L{line['start']}-L{line['end']}" if isinstance(line, dict) else f"L{line}"
+        label = f"{item['filePath']}:{line_label}"
+        agent_root_bodies_by_label.setdefault(label, set()).add(item["body"])
     for block in blocks:
         lines = block.splitlines()
         if not lines:
@@ -395,8 +433,12 @@ def extract_candidates(
                 sort_keys=True,
                 separators=(",", ":"),
             )
-        for message_index, body in split_messages(block):
-            if body.rstrip().endswith(MARKER):
+        for message_index, author, body in split_messages(block):
+            known_agent_root = (
+                message_index == 0
+                and body in agent_root_bodies_by_label.get(position, set())
+            )
+            if known_agent_root or author == "agent":
                 continue
             value = signature(identity, message_index, body)
             if value in processed:
@@ -432,7 +474,12 @@ def command_extract(args: argparse.Namespace) -> None:
     active_comments = state.get("activeComments", [])
     if not isinstance(active_comments, list):
         raise ReviewError("invalid active comments in review state")
-    candidates = extract_candidates(text, set(processed_value), active_comments)
+    agent_messages = state.get("activeAgentMessages", [])
+    if not isinstance(agent_messages, list):
+        raise ReviewError("invalid active agent messages in review state")
+    candidates = extract_candidates(
+        text, set(processed_value), active_comments, agent_messages
+    )
     digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
     if digest != current.get("sha256"):
         raise ReviewError("current difit transcript content changed")
