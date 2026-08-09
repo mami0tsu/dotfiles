@@ -38,7 +38,26 @@
       system = "aarch64-darwin";
       pkgs = import nixpkgs { inherit system; };
 
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+      ];
+
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+
       localPackages = import ./nix/packages { inherit (pkgs) callPackage; };
+
+      getLintTools = pkgs: [
+        pkgs.actionlint
+        pkgs.shellcheck
+        pkgs.yamllint
+        pkgs.zizmor
+      ];
+
+      getTestTools = pkgs: [
+        pkgs.go-task
+        pkgs.renovate
+      ];
 
       getDarwinConfig =
         username: useremail:
@@ -64,6 +83,20 @@
       darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
       darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
       packages.${system} = localPackages;
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          lint = pkgs.mkShellNoCC {
+            packages = getLintTools pkgs;
+          };
+          test = pkgs.mkShellNoCC {
+            packages = getTestTools pkgs;
+          };
+        }
+      );
       checks.${system} =
         pkgs.lib.mapAttrs (
           name: package:
