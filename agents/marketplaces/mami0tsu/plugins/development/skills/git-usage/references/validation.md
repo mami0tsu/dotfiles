@@ -1,5 +1,21 @@
 # 検証記録
 
+## worktree への作業移送
+
+- 実行日：2026-08-09
+- 実行環境：macOS、Git 2.55.0、git-wt 0.27.0、`/private/tmp/p81-worktree-migrate.YNKvAG`
+- 確認内容：stage済み変更をunstageし、`--copyuntracked` とbinary patchで専用worktreeへ移送できることを確認した。
+- 確認内容：変更、削除、rename、binary、stage済み新規ファイル、未追跡ファイルを移送できることを確認した。
+- 確認内容：移送先ですべての変更が未stageになり、primary worktreeをcleanなdefault branchへ戻せることを確認した。
+
+### Agent シナリオ試験
+
+- 入力と対象ユースケース：primary worktreeの作業branchにある未commit変更を専用worktreeへ移す。
+- 読み込んだ参照ファイル：`SKILL.md`、`references/worktree-list.md`、`references/worktree-migrate.md`。
+- 実施した操作：stage済みpathをunstageし、一時branchのworktreeへ未追跡ファイルとtracked差分を移し、status、diff、未追跡ファイルを照合してから移送元をcleanにした。
+- 結果：primary worktreeをdefault branchへ戻し、専用worktreeに作業branchと未stageの変更を残せた。
+- 停止経路：patch、status、diff、未追跡ファイルの照合に失敗した場合は、cleanupを実行せず停止することを確認した。
+
 ## worktree の切り替え
 
 - 実行日：2026-08-09
