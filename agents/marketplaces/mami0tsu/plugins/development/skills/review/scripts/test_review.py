@@ -292,5 +292,9 @@ Total comments: 1
         self.assertEqual(len(candidates), 1)
         self.assertEqual(candidates[0]["body"], "人間が作り直したコメント")
 
+    def test_current_transcript_without_comment_header_has_no_candidates(self) -> None:
+        candidates = REVIEW_MODULE.extract_candidates("server stopped\n", set(), [], [])
+        self.assertEqual(candidates, [])
+
 if __name__ == "__main__":
     unittest.main()

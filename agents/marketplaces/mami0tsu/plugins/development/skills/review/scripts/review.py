@@ -353,7 +353,7 @@ def review_section(text: str) -> str:
     header = "📝 Comments from review session:"
     start = text.rfind(header)
     if start < 0:
-        raise ReviewError("difit review header is missing from the current transcript")
+        return ""
     section = text[start + len(header) :]
     border = "=" * 50
     first = section.find(border)
