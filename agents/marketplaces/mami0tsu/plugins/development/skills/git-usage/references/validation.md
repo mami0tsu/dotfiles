@@ -1,5 +1,20 @@
 # 検証記録
 
+## worktree の一覧
+
+- 実行日：2026-08-09
+- 実行環境：macOS、Git 2.55.0、git-wt 0.27.0、`/Users/mami0tsu/dotfiles/.worktrees/P-78-worktree-list`
+- 確認内容：`git wt -v` が `git-wt version 0.27.0` を出力することを確認した。
+- 確認内容：`git wt --json --nocd` が各 worktree の `path`、`branch`、`head`、`current` を出力することを確認した。
+
+### Agent シナリオ試験
+
+- 入力と対象ユースケース：現在の worktree と、登録された worktree の path と branch を取得する。
+- 読み込んだ参照ファイル：`SKILL.md`、`references/worktree-list.md`。
+- 実施した操作：`git wt -v` で利用可否を確認し、`git wt --json --nocd` の `current`、`path`、`branch` を照合した。
+- 結果：現在地を変更せず、登録された path と branch、および現在の worktree を取得できた。
+- 停止経路：`git wt` が利用できない場合は `git worktree` へ切り替えず、一覧を取得できない状態で停止することを確認した。
+
 ## 静的確認
 
 - 実行日：2026-07-26
