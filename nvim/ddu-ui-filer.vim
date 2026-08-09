@@ -4,6 +4,14 @@ nnoremap <Space>f
 " }}}
 
 " ddu-filer = {{{
+" 起動時に読み込むと、<buffer> のマッピングが通常バッファへ登録され、グローバルな <Space>f を隠す。
+" filer の FileType を設定した後にだけ、filer 専用のマッピングを登録する。
+augroup ddu_ui_filer_settings
+    autocmd!
+    autocmd FileType ddu-filer call s:ddu_filer_settings()
+augroup END
+
+function! s:ddu_filer_settings() abort
 nnoremap <buffer> <Space>
     \ <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
 nnoremap <buffer> *
@@ -64,6 +72,7 @@ nnoremap <buffer> c
     \   ['itemAction', #{ name: 'copy' }],
     \   ['clearSelectAllItems'],
     \ ])<CR>
+endfunction
 
 function! ToggleHidden(name)
     const current = ddu#custom#get_current(b:ddu_ui_name)

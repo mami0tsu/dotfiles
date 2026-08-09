@@ -1,0 +1,72 @@
+---
+name: Neovim Smoke Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/neovim-smoke-test.yaml
+      - flake.lock
+      - flake.nix
+      - nix/home-manager/nixvim.nix
+      - nix/home-manager/nixvim/**
+      - nvim/**
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/neovim-smoke-test.yaml
+      - flake.lock
+      - flake.nix
+      - nix/home-manager/nixvim.nix
+      - nix/home-manager/nixvim/**
+      - nvim/**
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-test:
+    name: Smoke Test
+    runs-on: macos-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+
+      - name: Cache Nix
+        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+        with:
+          use-gha-cache: ${{ github.event_name == 'push' && 'enabled' || 'disabled' }}
+          use-flakehub: disabled
+
+      - name: Build Home Manager Configuration
+        id: build
+        run: |
+          generation=$(nix build --no-link --no-update-lock-file --print-out-paths \
+            '.#darwinConfigurations.ci.config.home-manager.users.ci.home.activationPackage')
+          echo "generation=$generation" >> "$GITHUB_OUTPUT"
+
+      - name: Test Neovim
+        env:
+          HOME_MANAGER_GENERATION: ${{ steps.build.outputs.generation }}
+          XDG_CACHE_HOME: ${{ runner.temp }}/nvim-cache
+          XDG_CONFIG_HOME: ${{ steps.build.outputs.generation }}/home-files/.config
+          XDG_STATE_HOME: ${{ runner.temp }}/nvim-state
+        run: |
+          mkdir -p "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
+          "$HOME_MANAGER_GENERATION/home-path/bin/nvim" --headless -i NONE "+qa!"
