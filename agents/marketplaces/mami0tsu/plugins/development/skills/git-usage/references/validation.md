@@ -1,5 +1,20 @@
 # 検証記録
 
+## worktree の切り替え
+
+- 実行日：2026-08-09
+- 実行環境：macOS、Git 2.55.0、git-wt 0.27.0、`/Users/mami0tsu/dotfiles/.worktrees/P-80-worktree-switch`
+- 確認内容：既存worktreeをbranchまたはpathで指定すると、`git wt --nocd` が同じabsolute pathを返すことを確認した。
+- 確認内容：`--nocd` がshell integrationによるdirectory移動を抑止することを確認した。
+
+### Agent シナリオ試験
+
+- 入力と対象ユースケース：指定された既存worktreeを後続コマンドの実行先にする。
+- 読み込んだ参照ファイル：`SKILL.md`、`references/worktree-list.md`、`references/worktree-switch.md`。
+- 実施した操作：JSONのpathとbranchを確認し、`git wt --nocd` が返したabsolute pathを `git -C` に指定した。
+- 結果：コマンド実行間のcurrent directoryに依存せず、意図したrepository root、branch、statusを確認できた。
+- 停止経路：切り替え先が一覧にない場合は、`git wt` を実行せず停止することを確認した。
+
 ## worktree の作成
 
 - 実行日：2026-08-09
