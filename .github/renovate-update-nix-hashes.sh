@@ -267,6 +267,14 @@ if [[ "$mode" == "changed" ]]; then
         ;;
     esac
   done
+
+  if ! git diff --quiet HEAD -- .github/textlint/package.json .github/textlint/pnpm-lock.yaml; then
+    nix run 'nixpkgs#nix-update' -- \
+      --flake \
+      --system aarch64-darwin \
+      --version=skip \
+      textlint
+  fi
 fi
 
 update_legacy_plugin_hashes

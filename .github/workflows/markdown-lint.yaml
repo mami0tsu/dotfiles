@@ -1,13 +1,17 @@
 ---
-name: Textlint
+name: Markdown Lint
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '**/*.md'
-      - .github/workflows/textlint.yaml
+      - .github/workflows/markdown-lint.yaml
       - .github/textlint/**
+      - flake.lock
+      - flake.nix
+      - nix/packages/default.nix
+      - nix/packages/textlint.nix
 
 # ワークフローレベルではパーミッションを設定しない
 permissions: {}
@@ -25,7 +29,7 @@ concurrency:
 jobs:
   lint:
     name: Lint Markdown
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
       contents: read
@@ -35,27 +39,17 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
-        with:
-          version: 11.17.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: .github/textlint/pnpm-lock.yaml
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
       - name: Lint Markdown
         working-directory: .github/textlint
         run: |
-          pnpm install --frozen-lockfile
           git -C ../.. ls-files -z -- '*.md' |
             while IFS= read -r -d '' file; do
               printf '../../%s\0' "$file"
             done |
-            xargs -0 pnpm exec textlint \
+            xargs -0 nix develop '../..#lint' -c textlint \
               --config .textlintrc.json \
               --ignore-path .textlintignore \
               --

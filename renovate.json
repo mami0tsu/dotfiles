@@ -13,7 +13,8 @@
   "enabledManagers": [
     "custom.regex",
     "github-actions",
-    "nix"
+    "nix",
+    "npm"
   ],
   "nix": {
     "enabled": true
@@ -64,6 +65,26 @@
       ],
       "groupName": "github actions",
       "commitMessageTopic": "github actions"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchFileNames": [
+        ".github/textlint/package.json"
+      ],
+      "groupName": "textlint dependencies",
+      "commitMessageTopic": "textlint dependencies",
+      "postUpgradeTasks": {
+        "commands": [
+          ".github/renovate-update-nix-hashes.sh"
+        ],
+        "fileFilters": [
+          ".github/textlint/**",
+          "nix/packages/textlint.nix"
+        ],
+        "executionMode": "branch"
+      }
     },
     {
       "matchManagers": [

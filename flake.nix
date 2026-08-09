@@ -47,12 +47,19 @@
 
       localPackages = import ./nix/packages { inherit (pkgs) callPackage; };
 
-      getLintTools = pkgs: [
-        pkgs.actionlint
-        pkgs.shellcheck
-        pkgs.yamllint
-        pkgs.zizmor
-      ];
+      getLintTools =
+        pkgs:
+        let
+          lintPackages = import ./nix/packages { inherit (pkgs) callPackage; };
+        in
+        [
+          pkgs.actionlint
+          lintPackages.ghalint
+          pkgs.shellcheck
+          lintPackages.textlint
+          pkgs.yamllint
+          pkgs.zizmor
+        ];
 
       getTestTools = pkgs: [
         pkgs.go-task
