@@ -1,12 +1,12 @@
 ---
-name: Textlint
+name: Markdown Lint
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '**/*.md'
-      - .github/workflows/textlint.yaml
+      - .github/workflows/markdown-lint.yaml
       - .github/textlint/**
       - flake.lock
       - flake.nix
