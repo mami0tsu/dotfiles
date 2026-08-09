@@ -38,6 +38,7 @@ git ls-remote --symref <remote> HEAD
 - [状態確認と branch](references/state-and-branch.md)：状態確認と新しい branch を扱う。
 - [worktree の一覧](references/worktree-list.md)：既存 worktree の path と branch を特定する。
 - [worktree の作成](references/worktree-create.md)：新規または既存の branch に作業場所を作る。
+- [worktree の切り替え](references/worktree-switch.md)：既存の作業場所を後続コマンドの実行先にする。
 - [変更を commit する](references/change-and-commit.md)：意図した path だけを stage して commit する。
 - [remote と履歴を更新する](references/remote-integration.md)：fetch、pull、rebase、push を扱う。
 - [検証記録](references/validation.md)：静的確認と Agent シナリオ試験の結果を記録する。
