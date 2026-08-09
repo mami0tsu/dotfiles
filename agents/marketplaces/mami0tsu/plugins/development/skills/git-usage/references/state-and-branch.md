@@ -63,7 +63,7 @@ status に upstream が表示されない場合は、push 前に remote と bran
 
 現在の branch、変更済み path、起点にする commit を確認済みである。
 
-新しい作業を隔離するなら、branch 単体ではなく [専用 worktree](worktrees.md) を使う。
+新しい作業を隔離するなら、branch 単体ではなく [worktree](worktree-create.md) を使う。
 
 ### 推奨コマンド
 
