@@ -25,13 +25,13 @@ in
       eval "$(fnm env --use-on-cd)"
       eval "$(git-wt --init zsh)"
 
-      # GitHub MCP の認証
-      function _github_mcp_token() {
+      # GitHub CLI の認証
+      function _github_token() {
         setopt localoptions noxtrace
         local token
 
         if ! token="$(GH_TOKEN= GITHUB_TOKEN= command gh auth token --hostname github.com 2>/dev/null)" || [[ -z "$token" ]]; then
-          print -u2 -- "GitHub MCP を起動できません。保存済みの github.com 認証を読み出せませんでした。"
+          print -u2 -- "GitHub CLI の認証を準備できません。保存済みの github.com 認証を読み出せませんでした。"
           print -u2 -- "通常のターミナルで GH_TOKEN= GITHUB_TOKEN= gh auth status --hostname github.com を確認し、必要なら GH_TOKEN= GITHUB_TOKEN= gh auth login --hostname github.com --web を実行してください。"
           return 1
         fi
@@ -39,21 +39,21 @@ in
         print -r -- "$token"
       }
 
-      function _run_with_github_mcp_token() {
+      function _run_with_github_token() {
         setopt localoptions noxtrace
         local command_name="$1"
         local token
         shift
 
-        if ! token="$(_github_mcp_token)"; then
+        if ! token="$(_github_token)"; then
           return 1
         fi
 
-        GH_TOKEN="$token" GITHUB_TOKEN= GITHUB_MCP_TOKEN="$token" command "$command_name" "$@"
+        GH_TOKEN="$token" GITHUB_TOKEN= command "$command_name" "$@"
       }
 
       function codex() {
-        _run_with_github_mcp_token codex "$@"
+        _run_with_github_token codex "$@"
       }
 
       function claude() {
@@ -68,7 +68,7 @@ in
           esac
         done
 
-        _run_with_github_mcp_token claude --settings "${config.home.homeDirectory}/.claude/permissions.json" "$@"
+        _run_with_github_token claude --settings "${config.home.homeDirectory}/.claude/permissions.json" "$@"
       }
 
       # ghq wrapper
