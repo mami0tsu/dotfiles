@@ -1,9 +1,9 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
     "aws": {
       "type": "stdio",
       "command": "uvx",
-      "timeout": 100000,
       "args": [
         "mcp-proxy-for-aws==1.6.3",
         "https://aws-mcp.us-east-1.api.aws/mcp",
@@ -12,6 +12,7 @@
       ]
     },
     "terraform": {
+      "type": "stdio",
       "command": "docker",
       "args": [
         "run",
@@ -21,15 +22,8 @@
         "--toolsets=registry"
       ]
     },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "headers": {
-        "Authorization": "Bearer ${GITHUB_MCP_TOKEN}"
-      }
-    },
     "linear": {
-      "type": "http",
+      "type": "streamable-http",
       "url": "https://mcp.linear.app/mcp"
     }
   }

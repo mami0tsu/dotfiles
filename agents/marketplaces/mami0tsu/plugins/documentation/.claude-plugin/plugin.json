@@ -1,7 +1,0 @@
-{
-  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
-  "name": "documentation",
-  "version": "0.2.0",
-  "description": "Codex CLI と Claude Code で共通利用する文書作成と CLI リファレンス作成用 skills。",
-  "author": {"name": "mami0tsu"}
-}
