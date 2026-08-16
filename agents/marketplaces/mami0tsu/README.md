@@ -8,8 +8,8 @@ Marketplace name は `mami0tsu` です。
 
 | プラグイン | 用途 |
 | --- | --- |
-| `development` | 開発フロー、Git/GitHub 操作、共通 MCP server を扱うプラグイン |
-| `documentation` | 日本語の技術文書と D2 diagram を作成するプラグイン |
+| `dev` | 開発フロー、Git/GitHub 操作、共通 MCP server を扱うプラグイン |
+| `doc` | 日本語の技術文書と D2 diagram を作成するプラグイン |
 
 ## セットアップと削除
 

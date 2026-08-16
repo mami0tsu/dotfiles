@@ -6,7 +6,7 @@
 - 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`、`/Users/mami0tsu/dotfiles/.worktrees/P-52-improve-gh-usage`
 - 確認内容：frontmatter、`agents/openai.yaml`、`references/`、`SKILL.md` からの参照、全ユースケースの必須項目、情報源、限定した help fallback を確認した。
 - 実行コマンド：`git diff --check`、`task agent-plugins:validate`
-- 結果：`task agent-plugins:validate` は development plugin、documentation plugin、marketplace の strict validation を通過した。
+- 結果：`task agent-plugins:validate` は dev plugin、doc plugin、marketplace の strict validation を通過した。
 
 ## Agent シナリオ試験
 
