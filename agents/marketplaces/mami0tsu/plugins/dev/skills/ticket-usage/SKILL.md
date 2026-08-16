@@ -18,7 +18,7 @@ repository 内で次の設定を読む。
 git config --local --get agent.ticket.provider
 ```
 
-値が `linear`なら [Linear adapter](references/linear.md) を読む。
+値が `linear`なら `$linear-usage`へ操作を委譲する。
 設定がない場合は、対応済み provider と保存先を示して人間へ確認する。
 承認された場合だけ次を実行する。
 

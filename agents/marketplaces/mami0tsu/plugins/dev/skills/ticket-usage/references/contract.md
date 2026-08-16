@@ -40,12 +40,15 @@ adapter は次の操作を提供する。
 
 - **get**：正本 ID または正本 URL から一件を取得する。
 - **list-children**：親 ID を指定し、直下の ticket を列挙する。
-- **create**：team、title、description、assignee、state、parent、blockedBy、blocks を指定し、一回の provider 書き込みで一件作成する。
+- **create**：container、title、description、assignee、state、parent、blockedBy、blocks を指定し、一回の provider 書き込みで一件作成する。
 - **update**：取得済み ID を指定し、明示された field だけを更新する。
 - **set-relations**：parent、blockedBy、blocks を期待する集合へ一致させる。
 
 作成と更新は、成功した API response だけで完了としない。
 `get`で再取得し、正規化した結果を期待値と比較する。
+
+`container`は provider が ticket の作成先として使う正本識別子である。
+adapter は Linear の team や GitHub の repository など、provider 固有の作成先へ `container`を対応づける。
 
 ## relation の意味
 
