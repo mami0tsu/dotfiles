@@ -4,10 +4,10 @@ provider adapter は、次の形へ ticket を正規化する。
 
 ```json
 {
-  "provider": "linear",
-  "id": "P-94",
-  "url": "https://linear.example/issue/P-94/example",
-  "title": "provider 非依存の ticket adapter を作成する",
+  "provider": "example",
+  "id": "EX-123",
+  "url": "https://tickets.example.invalid/tickets/EX-123",
+  "title": "架空の ticket adapter を作成する",
   "description": "Markdown",
   "assignee": {
     "id": "user-id",
@@ -18,13 +18,13 @@ provider adapter は、次の形へ ticket を正規化する。
     "type": "started"
   },
   "parent": {
-    "id": "P-92"
+    "id": "EX-100"
   },
   "blockedBy": [
-    {"id": "P-93"}
+    {"id": "EX-122"}
   ],
   "blocks": [
-    {"id": "P-98"}
+    {"id": "EX-124"}
   ]
 }
 ```
