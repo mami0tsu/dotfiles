@@ -107,7 +107,7 @@ update_legacy_plugin_hashes() {
       if [[ "$mode" == "all" || "$mode" == "check" ]] || revision_was_changed "$revision"; then
         matched_revisions+=("$revision")
         hash="$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$revision.tar.gz")"
-        hash="$(nix hash convert --hash-algo sha256 --to sri "$hash")"
+        hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
         if [[ "$mode" == "check" ]]; then
           if [[ "$hash" != "$existing_hash" ]]; then
             printf 'stale hash for %s/%s at %s\n' "$owner" "$repo" "$revision" >&2
@@ -218,7 +218,7 @@ update_source_package_hash() {
   fi
 
   hash="$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$revision.tar.gz")"
-  hash="$(nix hash convert --hash-algo sha256 --to sri "$hash")"
+  hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
   replace_single_hash "$file" "$hash"
 }
 
@@ -230,7 +230,7 @@ update_release_package_hash() {
 
   url="$(nix eval --raw ".#packages.aarch64-darwin.${package}.src.url")"
   hash="$(nix-prefetch-url "$url")"
-  hash="$(nix hash convert --hash-algo sha256 --to sri "$hash")"
+  hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
   replace_single_hash "$file" "$hash"
 }
 
