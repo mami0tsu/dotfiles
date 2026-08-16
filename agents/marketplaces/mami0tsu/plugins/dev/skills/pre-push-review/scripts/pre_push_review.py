@@ -14,6 +14,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Any
 
 
@@ -297,12 +298,7 @@ def validate_difit() -> str:
         raise ReviewError("difit --version failed")
     version = version_result.stdout.strip()
     if version != "4.0.5":
-        help_result = subprocess.run(
-            [executable, "--help"], capture_output=True, text=True, check=False
-        )
-        required = ("--comment", "--clean")
-        if help_result.returncode != 0 or any(item not in help_result.stdout for item in required):
-            raise ReviewError(f"difit {version} does not expose required options")
+        raise ReviewError(f"pre-push-review requires difit 4.0.5, found {version}")
     return executable
 
 
@@ -484,6 +480,7 @@ def command_run(args: argparse.Namespace) -> None:
     executable = validate_difit()
     transcript = new_transcript_path()
     command = [executable, args.target, args.base]
+    command.append("--keep-alive")
     if args.clean:
         command.append("--clean")
     if comments:
@@ -507,6 +504,7 @@ def command_run(args: argparse.Namespace) -> None:
 
     return_code: int | None = None
     process: subprocess.Popen[str] | None = None
+    disconnect_handled = False
     try:
         with transcript.open("w", encoding="utf-8") as output:
             process = subprocess.Popen(
@@ -525,6 +523,13 @@ def command_run(args: argparse.Namespace) -> None:
                 sys.stdout.flush()
                 output.write(line)
                 output.flush()
+                if (
+                    not disconnect_handled
+                    and "Client disconnected, but server is staying alive" in line
+                ):
+                    disconnect_handled = True
+                    time.sleep(0.25)
+                    os.killpg(process.pid, 2)
             return_code = process.wait()
     except BaseException:
         if process is not None and process.poll() is None:
@@ -744,6 +749,11 @@ def command_extract(args: argparse.Namespace) -> None:
         text = args.transcript.read_text(encoding="utf-8")
     except OSError as error:
         raise ReviewError(f"cannot read transcript: {error}") from error
+    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    if digest != current.get("sha256"):
+        current["status"] = "unreadable"
+        write_state(state)
+        raise ReviewError("current difit transcript content changed")
     processed_value = state.get("processedSignatures", [])
     if not isinstance(processed_value, list):
         raise ReviewError("invalid processed signatures in review state")
@@ -753,16 +763,18 @@ def command_extract(args: argparse.Namespace) -> None:
     agent_messages = state.get("activeAgentMessages", [])
     if not isinstance(agent_messages, list):
         raise ReviewError("invalid active agent messages in review state")
-    candidates = extract_candidates(
-        text,
-        set(processed_value),
-        active_comments,
-        agent_messages,
-        f"{current.get('base')}:{current.get('target')}",
-    )
-    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
-    if digest != current.get("sha256"):
-        raise ReviewError("current difit transcript content changed")
+    try:
+        candidates = extract_candidates(
+            text,
+            set(processed_value),
+            active_comments,
+            agent_messages,
+            f"{current.get('base')}:{current.get('target')}",
+        )
+    except ReviewError:
+        current["status"] = "unreadable"
+        write_state(state)
+        raise
     state["lastExtract"] = {
         "transcriptSha256": digest,
         "candidateSignatures": [item["signature"] for item in candidates],
@@ -821,6 +833,8 @@ def command_reviewed(_args: argparse.Namespace) -> None:
         or not isinstance(last_extract, dict)
         or last_extract.get("transcriptSha256") != digest
     ):
+        transcript["status"] = "unreadable"
+        write_state(state)
         raise ReviewError("active transcript extraction is stale or changed")
     current = checkpoint("HEAD")
     if current["tree"] != active["target"]:
@@ -869,7 +883,7 @@ def command_discard_transcript(args: argparse.Namespace) -> None:
     except OSError as error:
         raise ReviewError(f"cannot read transcript before deletion: {error}") from error
     if (
-        current.get("status") != "running"
+        current.get("status") not in ("running", "unreadable")
         and hashlib.sha256(text.encode("utf-8")).hexdigest() != current.get("sha256")
     ):
         raise ReviewError("current difit transcript content changed")

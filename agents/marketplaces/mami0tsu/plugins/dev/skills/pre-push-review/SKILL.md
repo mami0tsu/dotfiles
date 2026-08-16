@@ -125,6 +125,8 @@ python3 <skill-dir>/scripts/pre_push_review.py run \
 
 helper は Agent comment の識別情報と raw transcript を private file に保存する。
 
+helper は difit を `--keep-alive` で起動し、browser disconnect を検出したあと SIGINT でコメント出力を取得する。
+
 ブラウザが閉じて process が終了するまで待つ。
 
 URL が表示されたあとも process を background 化しない。
@@ -204,5 +206,7 @@ push は呼び出し元が実行する。
 - 返信先を一意に特定できない。
 
 `npx difit`へフォールバックしない。
+
+終了制御とコメント出力形式を検証済みの difit 4.0.5 だけを使う。
 
 履歴の書き換え後も保存済み commit と tree object が存在する場合は、両 tree の差分として続行できる。

@@ -79,6 +79,7 @@ OUTPUT
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
+            timeout=15,
         )
         if check and result.returncode != 0:
             self.fail(
@@ -285,6 +286,7 @@ OUTPUT
 
         arguments = json.loads(self.arguments_path.read_text(encoding="utf-8"))
         self.assertEqual(arguments[0:2], [selection["target"], selection["base"]])
+        self.assertIn("--keep-alive", arguments)
         self.assertIn("--clean", arguments)
         comment_value = json.loads(arguments[arguments.index("--comment") + 1])
         self.assertEqual(comment_value[0]["body"], "実装の意図")
@@ -591,6 +593,115 @@ OUTPUT
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn("not a unique Agent thread", rejected.stderr)
 
+    def test_unreadable_completed_transcript_can_be_explicitly_discarded(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        self.fake_difit.write_text(
+            "#!/bin/sh\n"
+            "if [ \"$1\" = \"--version\" ]; then echo 4.0.5; exit 0; fi\n"
+            "echo 'server stopped without comments output'\n",
+            encoding="utf-8",
+        )
+        self.fake_difit.chmod(0o755)
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        run = self.run_review(
+            "run",
+            "--target",
+            selection["target"],
+            "--base",
+            selection["base"],
+            "--comments",
+            str(comments),
+            "--clean",
+        )
+        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        extract = self.run_review(
+            "extract", "--transcript", str(transcript), check=False
+        )
+        self.assertNotEqual(extract.returncode, 0)
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        self.assertEqual(state["currentTranscript"]["status"], "unreadable")
+        self.run_review(
+            "discard-transcript",
+            "--transcript",
+            str(transcript),
+            "--allow-incomplete",
+        )
+
+    def test_changed_transcript_becomes_unreadable_before_extract(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        run = self.run_review(
+            "run", "--target", selection["target"], "--base", selection["base"],
+            "--comments", str(comments), "--clean",
+        )
+        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        transcript.write_text(transcript.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+        extract = self.run_review("extract", "--transcript", str(transcript), check=False)
+        self.assertNotEqual(extract.returncode, 0)
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        self.assertEqual(state["currentTranscript"]["status"], "unreadable")
+        self.run_review(
+            "discard-transcript", "--transcript", str(transcript), "--allow-incomplete"
+        )
+
+    def test_changed_transcript_becomes_unreadable_after_extract(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        run = self.run_review(
+            "run", "--target", selection["target"], "--base", selection["base"],
+            "--comments", str(comments), "--clean",
+        )
+        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        self.run_review("extract", "--transcript", str(transcript))
+        transcript.write_text(transcript.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+        reviewed = self.run_review("reviewed", check=False)
+        self.assertNotEqual(reviewed.returncode, 0)
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        self.assertEqual(state["currentTranscript"]["status"], "unreadable")
+        self.run_review(
+            "discard-transcript", "--transcript", str(transcript), "--allow-incomplete"
+        )
+
+    def test_keep_alive_disconnect_collects_comments_via_sigint(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        self.fake_difit.write_text(
+            "#!/bin/sh\n"
+            "if [ \"$1\" = \"--version\" ]; then echo 4.0.5; exit 0; fi\n"
+            "trap 'printf \"\\n📝 Comments from review session:\\n==================================================\\n==================================================\\nTotal comments: 0\\n\"; exit 0' INT\n"
+            "echo 'Client disconnected, but server is staying alive (--keep-alive)'\n"
+            "while :; do sleep 1; done\n",
+            encoding="utf-8",
+        )
+        self.fake_difit.chmod(0o755)
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        run = self.run_review(
+            "run", "--target", selection["target"], "--base", selection["base"],
+            "--comments", str(comments), "--clean",
+        )
+        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        self.assertEqual(state["currentTranscript"]["status"], "completed")
+        extracted = json.loads(
+            self.run_review("extract", "--transcript", str(transcript)).stdout
+        )
+        self.assertEqual(extracted["candidates"], [])
+
     def test_matching_init_resumes_before_reopening_a_reviewed_range(self) -> None:
         initialized = self.initialize_committed_change()
         state_path = Path(initialized["state"])
@@ -805,7 +916,7 @@ OUTPUT
             check=False,
         )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("does not expose required options", result.stderr)
+        self.assertIn("requires difit 4.0.5", result.stderr)
 
     def test_complete_rejects_head_after_reviewed_target(self) -> None:
         self.initialize_committed_change()
