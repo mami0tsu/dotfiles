@@ -8,6 +8,15 @@ description: Atlassian Rovo MCP を使い、ticket-usage の共通 contract に�
 [ticket contract](../ticket-usage/references/contract.md) を読み、Atlassian Rovo MCP の Jira tool へ対応づける。
 provider 固有の object を呼び出し元 flow へ渡さない。
 
+## Jira だけへ接続する
+
+この adapter は Jira tool だけを呼び出す。
+Confluence tool、`searchAtlassian`、`fetchAtlassian`は呼び出さない。
+
+共通 Atlassian MCP endpoint を `mcp.json`へ登録するだけでは、接続先 product を Jira に限定できない。
+接続時の OAuth consent、または Atlassian Administration の Rovo MCP server permissions で Jira だけを許可する。
+Jira 以外の product access が許可されている場合は接続設定の問題として報告し、この adapter からその権限を利用しない。
+
 ## Atlassian site を解決する
 
 最初に `getAccessibleAtlassianResources`を実行し、利用可能な site と `cloudId`を取得する。
