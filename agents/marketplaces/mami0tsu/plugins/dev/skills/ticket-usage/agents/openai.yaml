@@ -1,0 +1,12 @@
+interface:
+  display_name: "Ticket Usage"
+  short_description: "provider 非依存の契約で開発 ticket を安全に操作する"
+  default_prompt: "Use $ticket-usage to read or update a development ticket through its configured provider."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "linear"
+      description: "Linear issue の取得、作成、更新、relation 操作"
+      transport: "streamable_http"
+      url: "https://mcp.linear.app/mcp"
