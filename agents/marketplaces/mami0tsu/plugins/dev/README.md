@@ -19,7 +19,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 
 | MCP サーバー | 用途 |
 | --- | --- |
-| `aws` | AWS の操作 |
 | `atlassian` | Jira の参照と更新 |
-| `terraform` | Terraform Registry の参照 |
+| `aws` | AWS の操作 |
 | `linear` | Linear の参照 |
+| `terraform` | Terraform Registry の参照 |

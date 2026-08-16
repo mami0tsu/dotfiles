@@ -1,6 +1,10 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
+    "atlassian": {
+      "type": "streamable-http",
+      "url": "https://mcp.atlassian.com/v1/mcp/authv2"
+    },
     "aws": {
       "type": "stdio",
       "command": "uvx",
@@ -10,6 +14,10 @@
         "--region",
         "ap-northeast-1"
       ]
+    },
+    "linear": {
+      "type": "streamable-http",
+      "url": "https://mcp.linear.app/mcp"
     },
     "terraform": {
       "type": "stdio",
@@ -21,14 +29,6 @@
         "hashicorp/terraform-mcp-server:1.1.0",
         "--toolsets=registry"
       ]
-    },
-    "linear": {
-      "type": "streamable-http",
-      "url": "https://mcp.linear.app/mcp"
-    },
-    "atlassian": {
-      "type": "streamable-http",
-      "url": "https://mcp.atlassian.com/v1/mcp/authv2"
     }
   }
 }
