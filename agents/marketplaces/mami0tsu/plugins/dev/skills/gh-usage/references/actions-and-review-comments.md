@@ -76,11 +76,11 @@ rerun、cancel、delete、workflow の有効化または無効化は実行しな
 
 run が見つからない場合は、branch、head SHA、workflow 名、対象 repository を確認する。
 
-## review comment を読む
+## review、Conversation comment、review thread を読む
 
 ### 目的
 
-pull request の inline review comment、解決状態、outdated 状態、対象 path を取得する。
+pull request の review body、Conversation comment、inline review comment、解決状態、outdated 状態、対象 path を取得する。
 
 ### 前提条件
 
@@ -92,7 +92,14 @@ review comment は `gh pr review` では読まない。
 
 ### 推奨コマンド
 
-review thread をページングしながら取得する。
+review body と Conversation comment は、必要な field だけを指定して取得する。
+
+```sh
+gh pr view <number-or-url> --repo <owner>/<repo> \
+  --json number,url,reviews,comments
+```
+
+inline review thread をページングしながら取得する。
 
 ```sh
 gh api graphql --paginate \
@@ -105,18 +112,23 @@ gh api graphql --paginate \
           url
           reviewThreads(first: 100, after: $endCursor) {
             nodes {
+              id
               isResolved
               isOutdated
+              viewerCanReply
               path
               line
               originalLine
               diffSide
               comments(first: 100) {
                 nodes {
+                  id
                   author { login }
                   body
                   createdAt
                   url
+                  state
+                  pullRequestReview { id state }
                   commit { oid }
                   originalCommit { oid }
                 }
@@ -131,23 +143,55 @@ gh api graphql --paginate \
   '
 ```
 
-thread ごとに、`isResolved`、`isOutdated`、`path`、`line`、`originalLine`、`diffSide` を読む。
+thread ごとに、`id`、`isResolved`、`isOutdated`、`viewerCanReply`、`path`、`line`、`originalLine`、`diffSide` を読む。
 
-comment ごとに、`author.login`、`body`、`createdAt`、`url`、`commit.oid`、`originalCommit.oid` を読む。
+comment ごとに、`author.login`、`body`、`createdAt`、`url`、`state`、`pullRequestReview.id`、`pullRequestReview.state`、`commit.oid`、`originalCommit.oid` を読む。
 
 ### 結果の確認
 
 返された pull request の `number` と `url` が、指定した番号と対象 URL に一致することを確認する。
 
+review body、Conversation comment、inline thread を object ID と URL で区別し、同じ本文だけを根拠に同一視しない。
+
 未解決 thread は `isResolved: false`、古い diff に属する thread は `isOutdated: true` として区別する。
 
 `comments.pageInfo.hasNextPage` が `true` の thread は、1 回の query で全 comment を取得できていない。
 
+その場合は thread node ID ごとに、comment を全 page 取得する。
+
+```sh
+gh api graphql --paginate \
+  -F threadId='<review-thread-node-id>' \
+  -f query='
+    query($endCursor: String, $threadId: ID!) {
+      node(id: $threadId) {
+        ... on PullRequestReviewThread {
+          id
+          comments(first: 100, after: $endCursor) {
+            nodes {
+              id
+              author { login }
+              body
+              state
+              createdAt
+              url
+              pullRequestReview { id state }
+              commit { oid }
+              originalCommit { oid }
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }
+    }
+  '
+```
+
 ### 停止条件
 
-コメントへの返信、resolve または unresolve、review の投稿は実行しない。
+書き込みが必要な場合は [pending review](pending-reviews.md) に移り、即時公開 comment、resolve、unresolve、submit は実行しない。
 
-`comments.pageInfo.hasNextPage` が `true` の場合は、必要な追加取得方法を利用者へ確認する。
+全 comment を取得できない thread がある場合は、partial な結果で判断せず停止する。
 
 GraphQL query の実行は HTTP POST になるが、mutation を含まない query は読み取り操作として扱う。
 

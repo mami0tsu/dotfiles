@@ -47,3 +47,23 @@
 - 通常経路：`gh --version` の後に `gh auth status` を実行した。default account の token が invalid だったため、認証が必要な pull request と GraphQL query の実行を停止した。
 - フォールバックで実行したコマンド：`gh pr checks 56 --repo mami0tsu/dotfiles --json unsupportedField`、`gh pr checks --help`、`gh issue create --help`。
 - 結果と変更内容：最初のコマンドは `Unknown JSON field: "unsupportedField"` と有効 field の一覧を返した。続けて `gh pr checks --help` だけで `bucket`、`completedAt`、`description`、`event`、`link`、`name`、`startedAt`、`state`、`workflow` を確認した。global help は参照していない。対象外の操作は `gh issue create --help` だけを参照し、作成操作は実行していない。
+
+### pending review の構文と停止経路
+
+- 実行日：2026-08-16
+- 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`、`/Users/mami0tsu/dotfiles/.worktrees/P-95-gh-usage`
+- 入力と対象ユースケース：pending review の作成、新規 thread、既存 thread への reply、review body 更新を submit なしで構成する。
+- 読み込んだ参照ファイル：`SKILL.md`、`references/common.md`、`references/actions-and-review-comments.md`、`references/pending-reviews.md`
+- schema 確認：`AddPullRequestReviewInput`、`AddPullRequestReviewThreadInput`、`AddPullRequestReviewThreadReplyInput`、`UpdatePullRequestReviewInput`を`gh api graphql`の`__type` query で取得した。
+- 結果：`event`は optional、thread と reply は pending review ID を受け取り、review body 更新は review ID と body を必須とすることを確認した。実 repository への mutation は実行していない。
+- 停止経路：workflow state にない既存 pending review、異なる author または pull request、非`PENDING` state、head OID 不一致では書き込みを停止する。`submitPullRequestReview`、resolve 系 mutation、即時公開 comment は許可対象に含めない。
+
+### 既存 Draft pull request の stack 化
+
+- 実行日：2026-08-16
+- 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`、`gh stack version 0.1.0`、`/Users/mami0tsu/dotfiles/.worktrees/P-95-gh-usage`
+- 入力と対象ユースケース：個別に作成済みの Draft pull request URL を、bottom から top の順で stack 化する。
+- 読み込んだ参照ファイル：`SKILL.md`、`references/pull-requests.md`、`references/stacked-pull-requests.md`
+- CLI の確認：`gh stack --version`、`gh stack link --help`を実行した。
+- 結果：`link`は PR URL を受け取り、`--open`を省略でき、既存 PR の base を stack 順へ更新することを確認した。実 repository の stack は変更していない。
+- 停止経路：2件未満、非線形依存、別 repository、非 Draft、別 stack 所属、base 変更が未承認の場合は実行しない。
