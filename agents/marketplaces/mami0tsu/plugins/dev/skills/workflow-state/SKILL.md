@@ -1,6 +1,8 @@
 ---
 name: workflow-state
 description: repository の Git common directory に workflow 状態を保存し、複数 worktree や人間待ちをまたぐ実行を初期化、照合、更新、再開、完了するときに使う。
+allowed-tools: >-
+  Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/workflow-state/scripts/workflow_state.py:*)
 ---
 
 # Workflow State
