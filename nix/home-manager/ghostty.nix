@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, self, ... }:
 {
   programs.ghostty = {
     enable = true;
-    package = pkgs.ghostty-bin;
+    package = self.packages.${pkgs.stdenv.hostPlatform.system}.ghostty;
     clearDefaultKeybinds = true;
 
     settings = {
