@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "development",
+  "version": "0.8.0",
+  "description": "開発用プラグイン",
+  "author": {
+    "name": "mami0tsu"
+  },
+  "repository": "https://github.com/mami0tsu/dotfiles",
+  "license": "MIT",
+  "keywords": [
+    "development",
+    "mcp",
+    "aws",
+    "terraform",
+    "linear",
+    "workflow"
+  ]
+}

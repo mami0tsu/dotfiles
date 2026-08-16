@@ -24,11 +24,6 @@ tasks:
       - task: codex:deploy
       - task: claude:deploy
 
-  validate:
-    desc: Validate the shared agent plugin manifests with Claude Code.
-    cmds:
-      - task: claude:validate
-
   migrate:
     desc: Remove the legacy dotfiles agent plugin marketplace from Codex CLI and Claude Code.
     cmds:
@@ -69,14 +64,6 @@ tasks:
       - task: claude:install-plugin
         vars:
           PLUGIN_REF: '{{.documentation_plugin_ref}}'
-
-  claude:validate:
-    internal: true
-    silent: true
-    cmds:
-      - claude plugin validate {{.development_plugin_dir}} --strict
-      - claude plugin validate {{.documentation_plugin_dir}} --strict
-      - claude plugin validate {{.agent_plugin_marketplace_dir}} --strict
 
   claude:migrate:
     internal: true

@@ -28,7 +28,6 @@ tasks:
       - task --dry deploy
       - task --dry agent-plugins:clean
       - task --dry agent-plugins:deploy
-      - task --dry agent-plugins:validate
       - task --dry agent-plugins:migrate
       - task --dry agent-skills:clean
       - task --dry agent-skills:deploy

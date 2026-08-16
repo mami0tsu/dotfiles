@@ -19,9 +19,9 @@
 
 対話シェルの `codex` と `claude` は、`GH_TOKEN` と `GITHUB_TOKEN` を外した状態で保存済み認証を読み出す。
 
-取得した token は起動するプロセスにだけ `GITHUB_MCP_TOKEN` と `GH_TOKEN` として渡す。
+取得した token は起動するプロセスにだけ `GH_TOKEN` として渡す。
 
-このため、GitHub MCP 用の token はシェルの環境変数、コマンドライン引数、履歴には残らない。
+このため、GitHub CLI 用の token はシェルの環境変数、コマンドライン引数、履歴には残らない。
 
 `GH_TOKEN` は Codex または Claude Code の内部で実行する `gh` の認証にも使う。
 
