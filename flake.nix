@@ -36,7 +36,10 @@
     }@inputs:
     let
       system = "aarch64-darwin";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = package: nixpkgs.lib.getName package == "claude-code";
+      };
 
       systems = [
         "aarch64-darwin"
