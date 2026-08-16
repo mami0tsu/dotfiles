@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "development",
+      "name": "dev",
       "source": {
         "source": "local",
-        "path": "./plugins/development"
+        "path": "./plugins/dev"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -17,10 +17,10 @@
       "category": "Developer Tools"
     },
     {
-      "name": "documentation",
+      "name": "doc",
       "source": {
         "source": "local",
-        "path": "./plugins/documentation"
+        "path": "./plugins/doc"
       },
       "policy": {
         "installation": "AVAILABLE",

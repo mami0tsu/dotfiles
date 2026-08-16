@@ -6,12 +6,12 @@
   },
   "plugins": [
     {
-      "name": "development",
-      "source": "./plugins/development"
+      "name": "dev",
+      "source": "./plugins/dev"
     },
     {
-      "name": "documentation",
-      "source": "./plugins/documentation"
+      "name": "doc",
+      "source": "./plugins/doc"
     }
   ]
 }

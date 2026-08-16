@@ -6,7 +6,7 @@
 - 実行環境：macOS、D2 `v0.7.1`
 - 確認内容：`SKILL.md` から2つの CLI 操作リファレンスとこの記録への導線があり、対象ユースケース、情報源、完全な検証バージョン、確認コマンド、ヘルプの限定条件を確認した。
   D2 0.7.1 では `d2 validate --help` が `d2 --help` と同じ CLI 全体の help を返し、`validate` 専用 help はないことも確認した。
-- Plugin 検証：`claude plugin validate agents/marketplaces/mami0tsu/plugins/documentation --strict` が成功した。
+- Plugin 検証：`claude plugin validate agents/marketplaces/mami0tsu/plugins/doc --strict` が成功した。
 
 ## シナリオ 1：構成図を dagre で SVG と PNG に出力する
 

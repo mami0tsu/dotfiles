@@ -3,13 +3,15 @@ version: '3'
 vars:
   agent_plugin_marketplace_name: mami0tsu
   agent_plugin_legacy_marketplace_name: dotfiles
+  dev_plugin_ref: 'dev@{{.agent_plugin_marketplace_name}}'
+  doc_plugin_ref: 'doc@{{.agent_plugin_marketplace_name}}'
   development_plugin_ref: 'development@{{.agent_plugin_marketplace_name}}'
   documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
   development_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
   documentation_plugin_legacy_ref: 'documentation@{{.agent_plugin_legacy_marketplace_name}}'
   agent_plugin_marketplace_dir: '{{.REPO_ROOT}}/agents/marketplaces/mami0tsu'
-  development_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/development'
-  documentation_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/documentation'
+  dev_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/dev'
+  doc_plugin_dir: '{{.agent_plugin_marketplace_dir}}/plugins/doc'
 
 tasks:
   clean:
@@ -25,10 +27,12 @@ tasks:
       - task: claude:deploy
 
   migrate:
-    desc: Remove the legacy dotfiles agent plugin marketplace from Codex CLI and Claude Code.
+    desc: Remove legacy plugins and deploy the renamed plugins in Codex CLI and Claude Code.
     cmds:
       - task: codex:migrate
       - task: claude:migrate
+      - task: codex:deploy
+      - task: claude:deploy
 
   claude:clean:
     internal: true
@@ -40,6 +44,12 @@ tasks:
       - task: claude:uninstall-plugin-if-installed
         vars:
           PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
       - task: claude:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
@@ -58,12 +68,18 @@ tasks:
       - task: claude:uninstall-plugin-if-installed
         vars:
           PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
       - task: claude:install-plugin
         vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
       - task: claude:install-plugin
         vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
 
   claude:migrate:
     internal: true
@@ -89,6 +105,12 @@ tasks:
       - task: codex:remove-plugin-if-installed
         vars:
           PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
       - task: codex:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
@@ -107,12 +129,18 @@ tasks:
       - task: codex:remove-plugin-if-installed
         vars:
           PLUGIN_REF: '{{.documentation_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
+      - task: codex:remove-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
       - task: codex:add-plugin
         vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
       - task: codex:add-plugin
         vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
 
   codex:migrate:
     internal: true
