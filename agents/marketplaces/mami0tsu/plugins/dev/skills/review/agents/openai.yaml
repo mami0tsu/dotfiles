@@ -1,4 +1,0 @@
-interface:
-  display_name: "Review"
-  short_description: "コードと文書を検証して difit で人間レビューを反復する"
-  default_prompt: "Use $review to validate, commit, and iterate on a local diff through human review."

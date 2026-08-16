@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep local difit review checkpoints and classify review messages."""
+"""Keep pre-push difit checkpoints and classify review messages."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ import tempfile
 from typing import Any
 
 
-STATE_NAME = "review-state.json"
+STATE_NAME = "pre-push-review-state.json"
 SCHEMA_VERSION = 1
 REPLY_RE = re.compile(r"^Reply ([1-9][0-9]*) \((.*)\)$")
 
@@ -40,6 +40,20 @@ def git(*args: str, check: bool = True) -> str:
     return result.stdout.strip()
 
 
+def git_raw(*args: str) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip()
+        raise ReviewError(f"git {' '.join(args)} failed: {detail}")
+    return result.stdout
+
+
 def repository_root() -> Path:
     return Path(git("rev-parse", "--show-toplevel"))
 
@@ -50,6 +64,22 @@ def state_path() -> Path:
     if not path.is_absolute():
         path = repository_root() / path
     return path.resolve()
+
+
+def legacy_state_path() -> Path:
+    value = git("rev-parse", "--git-path", "review-state.json")
+    path = Path(value)
+    if not path.is_absolute():
+        path = repository_root() / path
+    return path.resolve()
+
+
+def require_no_legacy_state() -> None:
+    path = legacy_state_path()
+    if path.exists():
+        raise ReviewError(
+            f"legacy review state exists; migrate or complete it before continuing: {path}"
+        )
 
 
 def require_clean() -> None:
@@ -86,6 +116,7 @@ def validate_checkpoint(value: dict[str, Any]) -> None:
 
 
 def read_state() -> dict[str, Any]:
+    require_no_legacy_state()
     path = state_path()
     if not path.exists():
         raise ReviewError("review state does not exist; run init first")
@@ -120,24 +151,64 @@ def write_state(value: dict[str, Any]) -> None:
 def command_init(args: argparse.Namespace) -> None:
     repository_root()
     require_clean()
+    require_no_legacy_state()
     path = state_path()
+    base = checkpoint(args.base)
+    target = checkpoint(args.target)
+    if args.base != base["commit"]:
+        raise ReviewError("base must be a full commit OID")
+    if args.target != target["commit"]:
+        raise ReviewError("target must be a full commit OID")
+    if base["commit"] == target["commit"]:
+        raise ReviewError("base and target must differ")
     if path.exists():
-        raise ReviewError(f"review state already exists: {path}")
-    base = checkpoint(args.base or "HEAD")
+        state = read_state()
+        stored_base = state.get("base")
+        stored_target = state.get("initialTarget")
+        if (
+            not isinstance(stored_base, dict)
+            or not isinstance(stored_target, dict)
+            or stored_base.get("commit") != base["commit"]
+            or stored_target.get("commit") != target["commit"]
+        ):
+            raise ReviewError("existing review state does not match base and target identity")
+        last_review = state.get("lastReview")
+        if isinstance(last_review, dict):
+            validate_checkpoint(last_review)
+            if checkpoint("HEAD")["tree"] != last_review["tree"]:
+                next_selection(state)
+        else:
+            next_selection(state)
+        print(
+            json.dumps(
+                {"state": str(path), "base": base, "target": target, "resumed": True},
+                ensure_ascii=False,
+            )
+        )
+        return
+    if target["commit"] != resolve_commit("HEAD"):
+        raise ReviewError("target must match the current HEAD commit")
     write_state(
         {
             "schemaVersion": SCHEMA_VERSION,
             "base": base,
+            "initialTarget": target,
             "lastReview": None,
             "active": None,
             "comparisons": [],
             "commentThreads": {},
             "agentMessages": {},
+            "validations": {},
             "processedSignatures": [],
             "lastExtract": None,
         }
     )
-    print(json.dumps({"state": str(path), "base": base}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"state": str(path), "base": base, "target": target},
+            ensure_ascii=False,
+        )
+    )
 
 
 def next_selection(state: dict[str, Any]) -> dict[str, Any]:
@@ -145,14 +216,27 @@ def next_selection(state: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(base_checkpoint, dict):
         raise ReviewError("review state has no base checkpoint")
     validate_checkpoint(base_checkpoint)
-    target_checkpoint = checkpoint("HEAD")
+    if state.get("lastReview") is None:
+        initial_target = state.get("initialTarget")
+        if not isinstance(initial_target, dict):
+            raise ReviewError("review state has no initial target checkpoint")
+        validate_checkpoint(initial_target)
+        target_checkpoint = checkpoint("HEAD")
+        if initial_target["tree"] != target_checkpoint["tree"]:
+            raise ReviewError("initial target tree no longer matches the current HEAD tree")
+    else:
+        target_checkpoint = checkpoint("HEAD")
     key = f"{base_checkpoint['tree']}:{target_checkpoint['tree']}"
+    if base_checkpoint["tree"] == target_checkpoint["tree"]:
+        raise ReviewError("next review range is empty; reopen the active range or complete it")
     comparisons = state.get("comparisons", [])
     if not isinstance(comparisons, list):
         raise ReviewError("invalid comparisons in review state")
     return {
         "base": base_checkpoint["tree"],
         "target": target_checkpoint["tree"],
+        "baseCommit": base_checkpoint["commit"],
+        "targetCommit": target_checkpoint["commit"],
         "baseTitle": base_checkpoint["title"],
         "targetTitle": target_checkpoint["title"],
         "clean": key not in comparisons,
@@ -163,6 +247,43 @@ def next_selection(state: dict[str, Any]) -> dict[str, Any]:
 def command_next(_args: argparse.Namespace) -> None:
     require_clean()
     print(json.dumps(next_selection(read_state()), ensure_ascii=False))
+
+
+def command_validated(args: argparse.Namespace) -> None:
+    require_clean()
+    state = read_state()
+    base = checkpoint(args.base)
+    target = checkpoint(args.target)
+    if args.base != base["commit"]:
+        raise ReviewError("validated base must be a full commit OID")
+    if args.target != target["commit"]:
+        raise ReviewError("validated target must be a full commit OID")
+    if target["commit"] != resolve_commit("HEAD"):
+        raise ReviewError("validated target must match the current HEAD commit")
+    selection = next_selection(state)
+    if base["tree"] != selection["base"] or target["tree"] != selection["target"]:
+        raise ReviewError("validated comparison does not match the next review range")
+    checks = [value.strip() for value in args.normal_check if value.strip()]
+    subagents = sorted(set(value.strip() for value in args.subagent if value.strip()))
+    if len(checks) != len(args.normal_check):
+        raise ReviewError("normal check labels must not be empty")
+    required = 1 if args.risk == "normal" else 2
+    maximum = 1 if args.risk == "normal" else 3
+    if not required <= len(subagents) <= maximum:
+        raise ReviewError(
+            f"{args.risk} risk requires {required} to {maximum} distinct subagents"
+        )
+    validations = state.get("validations")
+    if not isinstance(validations, dict):
+        raise ReviewError("invalid validations in review state")
+    validations[selection["key"]] = {
+        "baseCommit": base["commit"],
+        "targetCommit": target["commit"],
+        "normalChecks": checks,
+        "risk": args.risk,
+        "subagents": subagents,
+    }
+    write_state(state)
 
 
 def validate_difit() -> str:
@@ -212,8 +333,29 @@ def load_comments(path: Path) -> list[dict[str, Any]]:
         body = item.get("body")
         if not isinstance(body, str) or not body.strip():
             raise ReviewError(f"comment {index} has an empty body")
-        if not isinstance(item.get("filePath"), str) or not isinstance(item.get("position"), dict):
+        file_path = item.get("filePath")
+        position = item.get("position")
+        if not isinstance(file_path, str) or not file_path or not isinstance(position, dict):
             raise ReviewError(f"comment {index} has no diff position")
+        candidate_path = Path(file_path)
+        if candidate_path.is_absolute() or ".." in candidate_path.parts:
+            raise ReviewError(f"comment {index} filePath must be a repository-relative path")
+        if position.get("side") not in ("old", "new"):
+            raise ReviewError(f"comment {index} position has an invalid side")
+        line = position.get("line")
+        valid_line = isinstance(line, int) and not isinstance(line, bool) and line > 0
+        if isinstance(line, dict):
+            start = line.get("start")
+            end = line.get("end")
+            valid_line = (
+                isinstance(start, int)
+                and not isinstance(start, bool)
+                and isinstance(end, int)
+                and not isinstance(end, bool)
+                and 0 < start <= end
+            )
+        if not valid_line:
+            raise ReviewError(f"comment {index} position has an invalid line")
         copy = dict(item)
         clean_body = body.rstrip()
         copy["body"] = clean_body
@@ -228,15 +370,76 @@ def load_comments(path: Path) -> list[dict[str, Any]]:
             raise ReviewError("difit cannot safely distinguish multiple threads at one displayed position")
         if copy["type"] == "thread":
             displayed_positions.add(displayed)
-            copy.setdefault("id", "agent-" + hashlib.sha256(
+            copy["id"] = "agent-" + hashlib.sha256(
                 json.dumps(
                     {"filePath": copy["filePath"], "position": copy["position"], "body": clean_body},
                     ensure_ascii=False,
                     sort_keys=True,
                 ).encode("utf-8")
-            ).hexdigest()[:24])
+            ).hexdigest()[:24]
         output.append(copy)
     return output
+
+
+def validate_comments_for_range(
+    comments: list[dict[str, Any]], state: dict[str, Any], key: str, base: str, target: str
+) -> None:
+    changed_paths = {
+        value
+        for value in git_raw(
+            "diff", "--no-ext-diff", "--no-textconv", "--name-only", "-z", base, target
+        ).split("\0")
+        if value
+    }
+    thread_sets = state.get("commentThreads", {})
+    if not isinstance(thread_sets, dict):
+        raise ReviewError("invalid comment threads in review state")
+    known_threads = thread_sets.get(key, [])
+    if not isinstance(known_threads, list):
+        raise ReviewError("invalid comparison comment threads in review state")
+    for index, item in enumerate(comments):
+        if item["filePath"] not in changed_paths:
+            raise ReviewError(f"comment {index} filePath is not part of the comparison")
+        diff_text = git(
+            "diff",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--unified=0",
+            base,
+            target,
+            "--",
+            item["filePath"],
+        )
+        valid_lines: dict[str, set[int]] = {"old": set(), "new": set()}
+        for match in re.finditer(
+            r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@",
+            diff_text,
+            re.MULTILINE,
+        ):
+            old_start, old_count, new_start, new_count = match.groups()
+            old_size = int(old_count) if old_count is not None else 1
+            new_size = int(new_count) if new_count is not None else 1
+            valid_lines["old"].update(range(int(old_start), int(old_start) + old_size))
+            valid_lines["new"].update(range(int(new_start), int(new_start) + new_size))
+        line = item["position"]["line"]
+        requested_lines = (
+            range(line["start"], line["end"] + 1)
+            if isinstance(line, dict)
+            else (line,)
+        )
+        if not all(value in valid_lines[item["position"]["side"]] for value in requested_lines):
+            raise ReviewError(f"comment {index} position is outside a changed diff hunk")
+        if item["type"] != "reply":
+            continue
+        matches = [
+            thread
+            for thread in known_threads
+            if isinstance(thread, dict)
+            and thread.get("filePath") == item["filePath"]
+            and thread.get("position") == item["position"]
+        ]
+        if len(matches) != 1:
+            raise ReviewError(f"comment {index} reply target is not a unique Agent thread")
 
 
 def new_transcript_path() -> Path:
@@ -252,21 +455,32 @@ def command_run(args: argparse.Namespace) -> None:
     current_transcript = state.get("currentTranscript")
     if isinstance(current_transcript, dict) and not current_transcript.get("deleted"):
         raise ReviewError("extract and discard the current transcript before another run")
-    selection = next_selection(state)
-    if args.target != selection["target"] or args.base != selection["base"]:
-        active = state.get("active")
-        allowed_active = (
-            isinstance(active, dict)
-            and args.target == active.get("target")
-            and args.base == active.get("base")
-        )
-        if not allowed_active:
+    active = state.get("active")
+    allowed_active = (
+        isinstance(active, dict)
+        and args.target == active.get("target")
+        and args.base == active.get("base")
+    )
+    if allowed_active:
+        if checkpoint("HEAD")["tree"] != args.target:
+            raise ReviewError("HEAD tree no longer matches the active review target")
+        expected_clean = False
+    else:
+        selection = next_selection(state)
+        if args.target != selection["target"] or args.base != selection["base"]:
             raise ReviewError("requested comparison does not match next or active review range")
-    expected_clean = selection["clean"] if args.target == selection["target"] and args.base == selection["base"] else False
+        expected_clean = selection["clean"]
     if args.clean != expected_clean:
         raise ReviewError(f"--clean must be {'present' if expected_clean else 'absent'} for this range")
 
+    validations = state.get("validations")
+    validation_key = f"{args.base}:{args.target}"
+    validation = validations.get(validation_key) if isinstance(validations, dict) else None
+    if not isinstance(validation, dict):
+        raise ReviewError("comparison has no completed validation record")
+
     comments = load_comments(args.comments)
+    validate_comments_for_range(comments, state, validation_key, args.base, args.target)
     executable = validate_difit()
     transcript = new_transcript_path()
     command = [executable, args.target, args.base]
@@ -275,28 +489,72 @@ def command_run(args: argparse.Namespace) -> None:
     if comments:
         command.extend(["--comment", json.dumps(comments, ensure_ascii=False, separators=(",", ":"))])
 
-    with transcript.open("w", encoding="utf-8") as output:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-        )
-        assert process.stdout is not None
-        for line in process.stdout:
-            sys.stdout.write(line)
-            sys.stdout.flush()
-            output.write(line)
-            output.flush()
-        return_code = process.wait()
-    if return_code != 0:
-        raise ReviewError(f"difit exited with status {return_code}; transcript: {transcript}")
-
     key = f"{args.base}:{args.target}"
     comparisons = state.setdefault("comparisons", [])
-    if key not in comparisons:
-        comparisons.append(key)
+    state["currentTranscript"] = {
+        "path": str(transcript.resolve()),
+        "sha256": hashlib.sha256(b"").hexdigest(),
+        "base": args.base,
+        "target": args.target,
+        "status": "running",
+        "processGroup": None,
+        "extracted": False,
+        "empty": False,
+        "deleted": False,
+    }
+    state["lastExtract"] = None
+    write_state(state)
+
+    return_code: int | None = None
+    process: subprocess.Popen[str] | None = None
+    try:
+        with transcript.open("w", encoding="utf-8") as output:
+            process = subprocess.Popen(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                start_new_session=True,
+            )
+            state["currentTranscript"]["processGroup"] = process.pid
+            write_state(state)
+            assert process.stdout is not None
+            for line in process.stdout:
+                sys.stdout.write(line)
+                sys.stdout.flush()
+                output.write(line)
+                output.flush()
+            return_code = process.wait()
+    except BaseException:
+        if process is not None and process.poll() is None:
+            try:
+                os.killpg(process.pid, 15)
+            except ProcessLookupError:
+                pass
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, 9)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+        transcript_text = transcript.read_text(encoding="utf-8")
+        state["currentTranscript"]["sha256"] = hashlib.sha256(
+            transcript_text.encode("utf-8")
+        ).hexdigest()
+        state["currentTranscript"]["status"] = "interrupted"
+        write_state(state)
+        raise
+    transcript_text = transcript.read_text(encoding="utf-8")
+    state["currentTranscript"]["sha256"] = hashlib.sha256(
+        transcript_text.encode("utf-8")
+    ).hexdigest()
+    state["currentTranscript"]["status"] = "completed" if return_code == 0 else "failed"
+    if return_code != 0:
+        write_state(state)
+        raise ReviewError(f"difit exited with status {return_code}; transcript: {transcript}")
     state["active"] = {"base": args.base, "target": args.target, "key": key}
     thread_sets = state.setdefault("commentThreads", {})
     if not isinstance(thread_sets, dict):
@@ -334,33 +592,36 @@ def command_run(args: argparse.Namespace) -> None:
             known_messages.append(message)
             known_message_keys.add(message_key)
     state["activeAgentMessages"] = known_messages
-    transcript_text = transcript.read_text(encoding="utf-8")
-    state["currentTranscript"] = {
-        "path": str(transcript.resolve()),
-        "sha256": hashlib.sha256(transcript_text.encode("utf-8")).hexdigest(),
-        "base": args.base,
-        "target": args.target,
-        "extracted": False,
-        "empty": False,
-        "deleted": False,
-    }
-    state["lastExtract"] = None
+    if key not in comparisons:
+        comparisons.append(key)
     write_state(state)
     print(json.dumps({"transcript": str(transcript), "base": args.base, "target": args.target}, ensure_ascii=False))
 
 
 def review_section(text: str) -> str:
     header = "📝 Comments from review session:"
-    start = text.rfind(header)
+    if text.count(header) > 1:
+        raise ReviewError("difit transcript contains an ambiguous review header")
+    start = text.find(header)
     if start < 0:
-        return ""
+        raise ReviewError("difit transcript has no review comment section")
     section = text[start + len(header) :]
     border = "=" * 50
+    if section.count(border) != 2:
+        raise ReviewError("difit transcript contains ambiguous comment boundaries")
     first = section.find(border)
     last = section.rfind(border)
     if first < 0 or last <= first:
         raise ReviewError("cannot locate difit comment boundaries")
-    return section[first + len(border) : last].strip("\n")
+    content = section[first + len(border) : last].strip("\n")
+    footer = section[last + len(border) :]
+    totals = re.findall(r"(?:^|\n)Total comments: ([0-9]+)(?:\n|$)", footer)
+    if len(totals) != 1:
+        raise ReviewError("difit transcript has no unique comment count")
+    blocks = [] if not content else content.split("\n=====\n")
+    if int(totals[0]) != len(blocks):
+        raise ReviewError("difit transcript comment count does not match its thread blocks")
+    return content
 
 
 def split_messages(block: str) -> list[tuple[int, str | None, str]]:
@@ -381,9 +642,14 @@ def split_messages(block: str) -> list[tuple[int, str | None, str]]:
     ]
 
 
-def signature(position: str, message_index: int, body: str) -> str:
+def signature(comparison_key: str, position: str, message_index: int, body: str) -> str:
     payload = json.dumps(
-        {"position": position, "messageIndex": message_index, "body": body},
+        {
+            "comparisonKey": comparison_key,
+            "position": position,
+            "messageIndex": message_index,
+            "body": body,
+        },
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
@@ -396,6 +662,7 @@ def extract_candidates(
     processed: set[str],
     active_comments: list[dict[str, Any]],
     agent_messages: list[dict[str, Any]],
+    comparison_key: str,
 ) -> list[dict[str, Any]]:
     section = review_section(text)
     if not section:
@@ -411,13 +678,15 @@ def extract_candidates(
         line_label = f"L{line['start']}-L{line['end']}" if isinstance(line, dict) else f"L{line}"
         known_by_label[f"{item['filePath']}:{line_label}"] = item
     agent_root_bodies_by_label: dict[str, set[str]] = {}
+    agent_reply_bodies_by_label: dict[str, set[str]] = {}
     for item in agent_messages:
-        if item.get("type") != "thread":
-            continue
         line = item["position"]["line"]
         line_label = f"L{line['start']}-L{line['end']}" if isinstance(line, dict) else f"L{line}"
         label = f"{item['filePath']}:{line_label}"
-        agent_root_bodies_by_label.setdefault(label, set()).add(item["body"])
+        if item.get("type") == "thread":
+            agent_root_bodies_by_label.setdefault(label, set()).add(item["body"])
+        elif item.get("type") == "reply":
+            agent_reply_bodies_by_label.setdefault(label, set()).add(item["body"])
     for block in blocks:
         lines = block.splitlines()
         if not lines:
@@ -438,9 +707,14 @@ def extract_candidates(
                 message_index == 0
                 and body in agent_root_bodies_by_label.get(position, set())
             )
-            if known_agent_root or author == "agent":
+            known_agent_reply = (
+                message_index > 0
+                and author == "agent"
+                and body in agent_reply_bodies_by_label.get(position, set())
+            )
+            if known_agent_root or known_agent_reply:
                 continue
-            value = signature(identity, message_index, body)
+            value = signature(comparison_key, identity, message_index, body)
             if value in processed:
                 continue
             candidates.append(
@@ -462,6 +736,8 @@ def command_extract(args: argparse.Namespace) -> None:
     current = state.get("currentTranscript")
     if not isinstance(current, dict) or current.get("deleted"):
         raise ReviewError("there is no current difit transcript to extract")
+    if current.get("status") != "completed":
+        raise ReviewError("incomplete difit transcript must be inspected and explicitly discarded")
     if args.transcript.resolve() != Path(str(current.get("path"))).resolve():
         raise ReviewError("transcript does not match the current difit run")
     try:
@@ -478,7 +754,11 @@ def command_extract(args: argparse.Namespace) -> None:
     if not isinstance(agent_messages, list):
         raise ReviewError("invalid active agent messages in review state")
     candidates = extract_candidates(
-        text, set(processed_value), active_comments, agent_messages
+        text,
+        set(processed_value),
+        active_comments,
+        agent_messages,
+        f"{current.get('base')}:{current.get('target')}",
     )
     digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
     if digest != current.get("sha256"):
@@ -495,12 +775,20 @@ def command_extract(args: argparse.Namespace) -> None:
 
 def command_acknowledge(args: argparse.Namespace) -> None:
     state = read_state()
+    last_extract = state.get("lastExtract")
+    if not isinstance(last_extract, dict):
+        raise ReviewError("extract the current transcript before acknowledging messages")
+    candidates = last_extract.get("candidateSignatures")
+    if not isinstance(candidates, list):
+        raise ReviewError("invalid extracted candidate signatures in review state")
     processed = state.setdefault("processedSignatures", [])
     if not isinstance(processed, list):
         raise ReviewError("invalid processed signatures in review state")
     for value in args.signatures:
         if not re.fullmatch(r"[0-9a-f]{64}", value):
             raise ReviewError(f"invalid signature: {value}")
+        if value not in candidates:
+            raise ReviewError(f"signature is not in the current extraction: {value}")
         if value not in processed:
             processed.append(value)
     write_state(state)
@@ -512,6 +800,28 @@ def command_reviewed(_args: argparse.Namespace) -> None:
     active = state.get("active")
     if not isinstance(active, dict) or not isinstance(active.get("target"), str):
         raise ReviewError("there is no active review range")
+    transcript = state.get("currentTranscript")
+    if (
+        not isinstance(transcript, dict)
+        or transcript.get("deleted")
+        or not transcript.get("extracted")
+        or transcript.get("base") != active.get("base")
+        or transcript.get("target") != active.get("target")
+    ):
+        raise ReviewError("extract the active transcript before marking it reviewed")
+    path = Path(str(transcript.get("path")))
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as error:
+        raise ReviewError(f"cannot read transcript before marking reviewed: {error}") from error
+    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    last_extract = state.get("lastExtract")
+    if (
+        digest != transcript.get("sha256")
+        or not isinstance(last_extract, dict)
+        or last_extract.get("transcriptSha256") != digest
+    ):
+        raise ReviewError("active transcript extraction is stale or changed")
     current = checkpoint("HEAD")
     if current["tree"] != active["target"]:
         raise ReviewError("HEAD tree no longer matches the active review target")
@@ -529,13 +839,39 @@ def command_discard_transcript(args: argparse.Namespace) -> None:
     current = state.get("currentTranscript")
     if not isinstance(current, dict) or path != Path(str(current.get("path"))).resolve():
         raise ReviewError("transcript does not match the current difit run")
-    if not current.get("extracted"):
+    incomplete = current.get("status") != "completed"
+    if incomplete and not args.allow_incomplete:
+        raise ReviewError("inspect the incomplete transcript and pass --allow-incomplete to discard it")
+    if current.get("status") == "running":
+        process_group = current.get("processGroup")
+        if not isinstance(process_group, int) or process_group <= 0:
+            raise ReviewError("running transcript has no verifiable process group; stop for human recovery")
+        try:
+            os.killpg(process_group, 0)
+        except ProcessLookupError:
+            pass
+        except PermissionError as error:
+            raise ReviewError("cannot verify the running difit process group") from error
+        else:
+            raise ReviewError("difit process group is still running; stop it before discarding")
+    if not incomplete and not current.get("extracted"):
         raise ReviewError("extract the current transcript before discarding it")
+    if not incomplete:
+        last_extract = state.get("lastExtract")
+        processed = state.get("processedSignatures", [])
+        if not isinstance(last_extract, dict) or not isinstance(processed, list):
+            raise ReviewError("invalid extracted message state")
+        pending = set(last_extract.get("candidateSignatures", [])) - set(processed)
+        if pending:
+            raise ReviewError("acknowledge every extracted human message before discarding")
     try:
         text = path.read_text(encoding="utf-8")
     except OSError as error:
         raise ReviewError(f"cannot read transcript before deletion: {error}") from error
-    if hashlib.sha256(text.encode("utf-8")).hexdigest() != current.get("sha256"):
+    if (
+        current.get("status") != "running"
+        and hashlib.sha256(text.encode("utf-8")).hexdigest() != current.get("sha256")
+    ):
         raise ReviewError("current difit transcript content changed")
     path.unlink()
     current["deleted"] = True
@@ -556,6 +892,8 @@ def command_complete(_args: argparse.Namespace) -> None:
         raise ReviewError("the current empty transcript must be extracted and deleted")
     if current.get("base") != active.get("base") or current.get("target") != active.get("target"):
         raise ReviewError("the current transcript does not match the active difit range")
+    if checkpoint("HEAD")["tree"] != active.get("target"):
+        raise ReviewError("HEAD tree no longer matches the reviewed target")
     state_path().unlink()
 
 
@@ -564,11 +902,20 @@ def parser() -> argparse.ArgumentParser:
     commands = value.add_subparsers(dest="command", required=True)
 
     init = commands.add_parser("init")
-    init.add_argument("--base")
+    init.add_argument("--base", required=True)
+    init.add_argument("--target", required=True)
     init.set_defaults(handler=command_init)
 
     next_command = commands.add_parser("next")
     next_command.set_defaults(handler=command_next)
+
+    validated = commands.add_parser("validated")
+    validated.add_argument("--base", required=True)
+    validated.add_argument("--target", required=True)
+    validated.add_argument("--risk", choices=("normal", "high"), required=True)
+    validated.add_argument("--normal-check", action="append", required=True)
+    validated.add_argument("--subagent", action="append", required=True)
+    validated.set_defaults(handler=command_validated)
 
     run = commands.add_parser("run")
     run.add_argument("--target", required=True)
@@ -590,6 +937,7 @@ def parser() -> argparse.ArgumentParser:
 
     discard = commands.add_parser("discard-transcript")
     discard.add_argument("--transcript", type=Path, required=True)
+    discard.add_argument("--allow-incomplete", action="store_true")
     discard.set_defaults(handler=command_discard_transcript)
 
     complete = commands.add_parser("complete")
