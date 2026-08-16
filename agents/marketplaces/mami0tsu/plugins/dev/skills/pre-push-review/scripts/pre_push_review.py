@@ -250,6 +250,32 @@ def command_next(_args: argparse.Namespace) -> None:
     print(json.dumps(next_selection(read_state()), ensure_ascii=False))
 
 
+def command_retarget(args: argparse.Namespace) -> None:
+    require_clean()
+    state = read_state()
+    if state.get("lastReview") is not None:
+        raise ReviewError("review already advanced; use next with the current HEAD")
+    current = state.get("currentTranscript")
+    if isinstance(current, dict) and not current.get("deleted"):
+        raise ReviewError("extract or explicitly discard the current transcript before retargeting")
+    target = checkpoint(args.target)
+    if args.target != target["commit"]:
+        raise ReviewError("retarget target must be a full commit OID")
+    if target["commit"] != resolve_commit("HEAD"):
+        raise ReviewError("retarget target must match the current HEAD commit")
+    base = state.get("base")
+    if not isinstance(base, dict) or base.get("tree") == target["tree"]:
+        raise ReviewError("retarget range must contain a committed tree change")
+    state["initialTarget"] = target
+    state["active"] = None
+    state["activeComments"] = []
+    state["activeAgentMessages"] = []
+    state["currentTranscript"] = None
+    state["lastExtract"] = None
+    write_state(state)
+    print(json.dumps({"target": target, "retargeted": True}, ensure_ascii=False))
+
+
 def command_validated(args: argparse.Namespace) -> None:
     require_clean()
     state = read_state()
@@ -922,6 +948,10 @@ def parser() -> argparse.ArgumentParser:
 
     next_command = commands.add_parser("next")
     next_command.set_defaults(handler=command_next)
+
+    retarget = commands.add_parser("retarget")
+    retarget.add_argument("--target", required=True)
+    retarget.set_defaults(handler=command_retarget)
 
     validated = commands.add_parser("validated")
     validated.add_argument("--base", required=True)

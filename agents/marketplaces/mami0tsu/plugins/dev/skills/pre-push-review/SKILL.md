@@ -82,6 +82,14 @@ python3 <skill-dir>/scripts/pre_push_review.py validated \
 
 呼び出し元が修正を commit した後、同じ sub-agent に新しい target と検証結果を渡して再検証する。
 
+初回 target を review 済みとして記録する前に修正 commit が必要になった場合は、transcript を確認して破棄した後、新しい target を明示する。
+
+```sh
+python3 <skill-dir>/scripts/pre_push_review.py retarget --target <target-commit>
+```
+
+review 済み checkpoint がある場合は `retarget` を使わず、`next` が現在の HEAD を選ぶ。
+
 ## difit を起動する
 
 通常検証と敵対的検証が完了し、worktree が clean であることを再確認する。

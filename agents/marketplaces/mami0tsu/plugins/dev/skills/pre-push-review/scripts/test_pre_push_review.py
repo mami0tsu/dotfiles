@@ -177,6 +177,72 @@ OUTPUT
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("initial target tree no longer matches", result.stderr)
 
+    def test_retarget_advances_an_unreviewed_initial_target(self) -> None:
+        initialized = self.initialize_committed_change()
+        state_path = Path(initialized["state"])
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["active"] = {"base": "old", "target": "old"}
+        state["activeComments"] = [{"body": "old"}]
+        state["activeAgentMessages"] = [{"body": "old"}]
+        state["currentTranscript"] = {"deleted": True}
+        state["lastExtract"] = {"candidateSignatures": []}
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        (self.root / "second.md").write_text("second\n", encoding="utf-8")
+        subprocess.run(["git", "add", "--", "second.md"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "second target"], cwd=self.root, check=True)
+        target = self.commit_oid()
+        retargeted = json.loads(
+            self.run_review("retarget", "--target", target).stdout
+        )
+        self.assertTrue(retargeted["retargeted"])
+        selection = json.loads(self.run_review("next").stdout)
+        self.assertEqual(selection["targetCommit"], target)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        self.assertIsNone(state["active"])
+        self.assertEqual(state["activeComments"], [])
+        self.assertEqual(state["activeAgentMessages"], [])
+        self.assertIsNone(state["currentTranscript"])
+        self.assertIsNone(state["lastExtract"])
+
+    def test_retarget_rejects_an_unprocessed_transcript(self) -> None:
+        initialized = self.initialize_committed_change()
+        state_path = Path(initialized["state"])
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["currentTranscript"] = {"deleted": False}
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        result = self.run_review(
+            "retarget", "--target", self.commit_oid(), check=False
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("current transcript", result.stderr)
+
+    def test_retarget_rejects_after_reviewed_checkpoint(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        run = self.run_review(
+            "run", "--target", selection["target"], "--base", selection["base"],
+            "--comments", str(comments), "--clean",
+        )
+        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        self.run_review("extract", "--transcript", str(transcript))
+        self.run_review("reviewed")
+        (self.root / "second.md").write_text("second\n", encoding="utf-8")
+        subprocess.run(["git", "add", "--", "second.md"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "second target"], cwd=self.root, check=True)
+        result = self.run_review(
+            "retarget", "--target", self.commit_oid(), check=False
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("review already advanced", result.stderr)
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        self.assertEqual(
+            state["initialTarget"]["commit"], initialized["target"]["commit"]
+        )
+
     def test_init_resumes_only_matching_identity(self) -> None:
         initialized = self.initialize_committed_change()
         matching = self.run_review(
