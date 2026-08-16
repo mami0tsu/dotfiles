@@ -36,7 +36,10 @@
     }@inputs:
     let
       system = "aarch64-darwin";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
 
       systems = [
         "aarch64-darwin"

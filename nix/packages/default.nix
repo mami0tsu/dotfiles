@@ -7,6 +7,7 @@ in
 {
   apm = callPackage ./apm.nix { inherit mkGithubReleaseArchive; };
   ax = callPackage ./ax.nix { inherit mkGithubReleaseBinary; };
+  claude-code = callPackage ./claude-code.nix { inherit mkGithubReleaseArchive; };
   codex = callPackage ./codex.nix { inherit mkGithubReleaseArchive; };
   difit = callPackage ./difit.nix { };
   gh-aw = callPackage ./gh-aw.nix { inherit mkGithubReleaseBinary; };

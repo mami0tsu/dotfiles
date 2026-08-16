@@ -26,7 +26,7 @@ in
     awscli2 # v2.34.24
     localPackages.apm
     localPackages.ax
-    claude-code # v2.1.217
+    localPackages.claude-code
     localPackages.codex
     localPackages.difit
     docker_29 # v29.5.2

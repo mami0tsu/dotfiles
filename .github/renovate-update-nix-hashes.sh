@@ -255,7 +255,7 @@ if [[ "$mode" == "changed" ]]; then
       git-open-src|zsh-defer-src)
         update_source_package_hash "$package"
         ;;
-      apm|ax|codex|gh-aw|gh-stack|git-wt|roots)
+      apm|ax|claude-code|codex|gh-aw|gh-stack|git-wt|roots)
         update_release_package_hash "$package"
         ;;
       *)
