@@ -13,7 +13,6 @@ in
   gh-aw = callPackage ./gh-aw.nix { inherit mkGithubReleaseBinary; };
   ghalint = callPackage ./ghalint.nix { };
   gh-stack = callPackage ./gh-stack.nix { inherit mkGithubReleaseBinary; };
-  ghostty = callPackage ./ghostty.nix { };
   git-open-src = callPackage ./git-open-src.nix { };
   git-wt = callPackage ./git-wt.nix { inherit mkGithubReleaseArchive; };
   roots = callPackage ./roots.nix { inherit mkGithubReleaseArchive; };
