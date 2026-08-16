@@ -7,6 +7,7 @@
   "schedule": [
     "at any time"
   ],
+  "prConcurrentLimit": 10,
   "minimumReleaseAge": "7 days",
   "minimumReleaseAgeBehaviour": "timestamp-required",
   "internalChecksFilter": "strict",
@@ -45,9 +46,8 @@
         "/^nix/home-manager/nixvim/legacy-plugins\\.nix$/"
       ],
       "matchStrings": [
-        "# renovate: datasource=git-refs packageName=(?<packageName>\\S+) currentValue=(?<currentValue>\\S+)\\s+rev = \"(?<currentDigest>[a-f0-9]{40})\";"
+        "# renovate: datasource=git-refs packageName=(?<packageName>https://github\\.com/(?<depName>\\S+)) currentValue=(?<currentValue>\\S+)\\s+rev = \"(?<currentDigest>[a-f0-9]{40})\";"
       ],
-      "depNameTemplate": "{{{packageName}}}",
       "datasourceTemplate": "git-refs"
     }
   ],
@@ -56,15 +56,26 @@
       "matchManagers": [
         "nix"
       ],
-      "groupName": "nix flake inputs",
-      "commitMessageTopic": "nix flake inputs"
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "groupName": "flake.lock maintenance",
+      "commitMessageAction": "refresh",
+      "commitMessageTopic": "flake.lock"
     },
     {
-      "matchManagers": [
-        "github-actions"
+      "matchFileNames": [
+        ".github/textlint/pnpm-lock.yaml"
       ],
-      "groupName": "github actions",
-      "commitMessageTopic": "github actions"
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "groupName": "pnpm-lock.yaml maintenance",
+      "commitMessageAction": "refresh",
+      "commitMessageTopic": "pnpm-lock.yaml"
     },
     {
       "matchManagers": [
@@ -73,8 +84,6 @@
       "matchFileNames": [
         ".github/textlint/package.json"
       ],
-      "groupName": "textlint dependencies",
-      "commitMessageTopic": "textlint dependencies",
       "postUpgradeTasks": {
         "commands": [
           ".github/renovate-update-nix-hashes.sh"
@@ -90,7 +99,6 @@
       "matchManagers": [
         "custom.regex"
       ],
-      "commitMessageTopic": "local nix package",
       "postUpgradeTasks": {
         "commands": [
           ".github/renovate-update-nix-hashes.sh"
