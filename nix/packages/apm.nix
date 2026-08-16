@@ -9,7 +9,7 @@
 mkGithubReleaseArchive rec {
   pname = "apm";
   # renovate: datasource=github-releases depName=microsoft/apm extractVersion=^v(?<version>.+)$
-  version = "0.26.0";
+  version = "0.28.0";
   assetName = "apm-darwin-arm64";
   archiveName = "${assetName}.tar.gz";
 
