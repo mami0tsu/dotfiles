@@ -1,11 +1,11 @@
 ---
 name: gh-usage
-description: GitHub CLI を使い、Issue、Discussion、pull request、GitHub Actions、review comment を読み取り、Draft pull request を作成するときに使う。
+description: GitHub CLI を使い、Issue、Discussion、pull request、GitHub Actions、review comment を読み取り、Draft pull request、pending review、stacked pull request を安全に扱うときに使う。
 ---
 
 # GitHub CLI Usage
 
-`gh` で GitHub の情報を読み取り、必要なときだけ Draft pull request を作成する。
+`gh` で GitHub の情報を読み取り、Draft pull request と submit 前の pending review だけを書き込む。
 
 ## 対象範囲
 
@@ -15,10 +15,12 @@ description: GitHub CLI を使い、Issue、Discussion、pull request、GitHub A
 - GitHub Actions の状態と失敗したログを読む：[Actions と review comment](references/actions-and-review-comments.md)
 - review comment と解決状態を読む：[Actions と review comment](references/actions-and-review-comments.md)
 - Draft pull request を作成する：[pull request](references/pull-requests.md)
+- pending review を作成または更新する：[pending review](references/pending-reviews.md)
+- Draft pull request を stack 化する：[stacked pull request](references/stacked-pull-requests.md)
 
 branch の作成、commit、rebase、push は [git-usage](../git-usage/SKILL.md) に委譲する。
 
-Issue、Discussion、pull request への編集、コメント、close、merge、review、GitHub Actions の rerun、cancel、delete は対象外である。
+Issue、Discussion、Conversation comment、即時公開 review comment、review submit、thread resolve、pull request の close、merge、ready 化、GitHub Actions の rerun、cancel、delete は対象外である。
 
 ## 共通の判断規則
 
@@ -30,15 +32,21 @@ Issue、Discussion、pull request への編集、コメント、close、merge、
 
 JSON 全体を取得してから必要な値を探す方法は取らない。
 
-`gh api graphql` は read-only query に限る。
+`gh api graphql` の mutation は、[pending review](references/pending-reviews.md) に記載した4種類だけを完全一致する形で使う。
 
-GraphQL mutation、`gh api` の更新系 HTTP method、書き込み系の `gh` subcommand は実行しない。
+`submitPullRequestReview`、`resolveReviewThread`、`unresolveReviewThread`、即時公開 comment を作る mutation は実行しない。
+
+その他の GraphQL mutation、`gh api` の更新系 HTTP method、書き込み系の `gh` subcommand は実行しない。
 
 Draft pull request の作成前には、対象 branch が push 済みであることを `git-usage` で確認する。
 
 `gh pr create` には `--head`、`--base`、`--title`、`--body-file`、`--draft` を明示する。
 
 この指定により、`gh pr create` が branch を push または fork する対話へ進むことを避ける。
+
+`gh stack link` は、個別作成と検証を終えた既存 Draft pull request の URL だけを bottom から top の順で渡す。
+
+`--open` は指定しない。
 
 ## ヘルプのフォールバック
 
