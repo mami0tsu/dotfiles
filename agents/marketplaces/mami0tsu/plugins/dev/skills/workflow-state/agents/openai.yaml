@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow State"
+  short_description: "複数 worktree で共有する workflow 状態を安全に管理する"
+  default_prompt: "Use $workflow-state to initialize or resume a repository workflow safely."
