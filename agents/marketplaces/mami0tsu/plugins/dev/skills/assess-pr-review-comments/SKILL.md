@@ -29,7 +29,7 @@ stack に属する場合は、bottom から top の順に並べた pull request 
 
 Agent が記録済み pending review に追加した comment と、その pending review 本体の review body は評価対象から除く。
 
-inline feedback は thread を一つの対象とし、thread 内の全 comment を評価根拠として読む。
+inline feedback は thread ごとに対象とし、thread 内の全 comment を評価根拠として読む。
 
 各対象に安定した key を付ける。
 
@@ -59,7 +59,7 @@ inline feedback は thread を一つの対象とし、thread 内の全 comment �
 
 Agent の推奨と異なる判断も、そのまま人間の判断として扱う。
 
-一つでも判断がない対象があれば、修正を始めず状態を保持して停止する。
+判断のない対象が1つでもあれば、修正を始めず状態を保持して停止する。
 
 新しい feedback を検出した場合は対象へ追加し、その対象の判断を得るまで停止する。
 

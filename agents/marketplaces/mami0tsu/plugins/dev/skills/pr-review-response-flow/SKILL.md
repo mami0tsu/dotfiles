@@ -41,7 +41,7 @@ workflow state に記録がなく、認証利用者の pending review が存在�
 
 stacked PR では `gh-usage` で stack を取得し、bottom から top の順に処理する。
 
-一つの PR について pending reply まで完了してから次の PR へ進む。
+1つの PR について pending reply まで完了してから次の PR へ進む。
 
 下層 branch の変更を反映するために upstack を rebase した場合は、rebase 前後の merge-base と tree diff を比較する。
 
@@ -63,7 +63,7 @@ stacked PR では `gh-usage` で stack を取得し、bottom から top の順�
 
 `change` の対象だけを修正する。
 
-同じ `changeGroupId` の対象は一つの論理的修正として実装し、同じ commit を共有できる。
+同じ `changeGroupId` の対象は1つの論理的修正として実装し、同じ commit を共有できる。
 
 独立した `changeGroupId` は別々に通常検証し、`git-usage` で関心別に commit する。
 
@@ -135,4 +135,4 @@ stacked PR では bottom から top の順に push し、各 PR の head OID を
 
 stack の全 PR が条件を満たした場合だけ `workflow-state` を complete する。
 
-一つでも未完了、判断待ち、外部変更、認証失敗がある場合は state を保持して停止する。
+1つでも未完了、判断待ち、外部変更、認証失敗がある場合は state を保持して停止する。
