@@ -6,7 +6,7 @@ description: 承認済み design-flow 成果物を、一つの PR と一つの�
 # Ticket Flow
 
 承認済み設計の ticket 案を、再解釈せず provider の正本へ反映する。
-一つの実装 ticket は、一つの branch、worktree、PR に対応する。
+1つの実装 ticket は、1つの branch、worktree、PR に対応する。
 
 ## 入力を照合する
 
@@ -97,7 +97,7 @@ relation は現在集合と期待集合の差分だけを[ticket-usage](../ticke
 blockedBy の削除は反映計画へ明示し、人間が graph 全体を承認した場合だけ実行する。
 成果物から期待値を導出できない既存 blocks は更新対象に含めない。
 
-provider が要求された field または relation を一回の操作で表現できない場合は、近い構成へ置き換えず、書き込み前に停止する。
+provider が要求された field または relation を1回の操作で表現できない場合は、近い構成へ置き換えず、書き込み前に停止する。
 書き込み後の再取得結果が期待値と異なる場合は`partial-write`として停止し、自動 rollback を試みない。
 
 ## 参照を具体化する
@@ -121,7 +121,7 @@ provider が要求された field または relation を一回の操作で表現
 ## 完了する
 
 root とすべての実装 ticket を relation 付きで再取得する。
-一つの PR と一つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に具体化済み branch、base、受け入れ条件、blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
+1つの PR と1つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に具体化済み branch、base、受け入れ条件、blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
 ticket system の正本と同一の実装 ticket では、正本本文が不変であり、具体化済み branch と base が workflow state の対応結果にあることを確認する。
 
 検証後に、成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、具体化済み branch と base、graph の検証結果を`ticket-flow` namespace へ記録する。
@@ -132,7 +132,7 @@ ticket system の正本と同一の実装 ticket では、正本本文が不変�
 
 次の場合は状態を保持して停止する。
 
-- 成果物、正本、承認範囲、二つの SHA-256のいずれかを照合できない。
+- 成果物、正本、承認範囲、2つの SHA-256のいずれかを照合できない。
 - workflow ID がない、または保存済み workflow の識別情報と一致しない。
 - root ticket 案または反映計画が人間に承認されていない。
 - PR 境界、ticket 関係、stack 順序を補完または再解釈しなければ反映できない。

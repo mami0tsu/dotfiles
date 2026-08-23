@@ -24,7 +24,7 @@ ticket system の`proposal:root`を正本にする場合も試した。
 
 root 配下に三件の PR を置き、二件目と三件目が直前の PR に block される成果物を入力した。
 各 ticket の作成と正本 ID の保存を先に完了し、全 ID の解決後に parent と block 関係を確定した。
-各実装 ticket が一つの PR、branch、base と対応することを確認した。
+各実装 ticket が1つの PR、branch、base と対応することを確認した。
 
 成果物外 ticket への既存 blocks も入力した。
 成果物内の`blocked_by`から導出できる逆辺だけを検証し、未指定の blocks を保持することを確認した。
@@ -46,7 +46,7 @@ root 直下の候補を提示し、人間が operation key と正本 ID を対�
 
 ## provider の制約
 
-複数 parent、未解決の blocker、作成と relation 設定を一回で表現できない provider を入力した。
+複数 parent、未解決の blocker、作成と relation 設定を1回で表現できない provider を入力した。
 近い relation への置換や部分的な書き込みを行わず、`unsupported-relation`または`unsupported-field`として停止した。
 
 ## 正本の変更
