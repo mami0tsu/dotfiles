@@ -16,6 +16,10 @@ root ticket を`proposal:root`とする場合も試した。
 成果物内の container、title、description、assignee、state だけで root ticket を一件作成し、その正本 ID を PR の ticket 参照へ使うことを確認した。
 作成後に branch と base を具体化した最終 description へ更新し、受け入れ条件と正本参照を再取得本文から検証した。
 
+ticket system の`proposal:root`を正本にする場合も試した。
+作成前は承認済み root description の digest を照合し、作成と ID 保存の直後に正本 description を再取得した。
+同じ root を実装 ticket として使う単一 PR では正本本文を更新せず、具体化済み branch と base を workflow state と反映結果に記録した。
+
 ## 複数 PR
 
 root 配下に三件の PR を置き、二件目と三件目が直前の PR に block される成果物を入力した。
@@ -49,3 +53,4 @@ root 直下の候補を提示し、人間が operation key と正本 ID を対�
 
 repository blob、ticket description、Wiki 本文を正本種別ごとに再取得し、UTF-8 本文の SHA-256を成果物と照合した。
 承認後に本文が変わった正本と、取得できない revision は、ticket への書き込み前に停止した。
+ticket system の正本と実装 ticket が同一の場合は、完了時にも正本本文の digest が変わっていないことを確認した。

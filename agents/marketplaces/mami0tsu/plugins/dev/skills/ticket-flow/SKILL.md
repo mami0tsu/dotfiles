@@ -19,6 +19,10 @@ repository では`canonical.revision`の`canonical.path`にある blob、ticket 
 取得した UTF-8 本文の SHA-256が`canonical.content_sha256`と一致することを確認する。
 正本を再取得できない場合、revision または path が実在しない場合、digest が異なる場合は反映計画へ進まない。
 
+ticket system の`canonical.target_ref`が`proposal:root`の場合だけ、作成前の再取得対象は存在しない。
+この場合は承認済み`root_ticket.description`の UTF-8 本文の SHA-256を`canonical.content_sha256`と照合する。
+root ticket の作成と正本 ID の保存直後に description を再取得し、同じ digest と一致するまで他の provider 書き込みへ進まない。
+
 既存 root ticket を成果物が参照する場合は、[ticket-usage](../ticket-usage/SKILL.md) で本文、担当者、状態、親、block 関係、正本 URL を取得する。
 `proposal:root`の場合は、成果物の`root_ticket`にある title、description、container、assignee、state を作成案として人間へ提示する。
 いずれかの field が未定義なら補完せず停止する。
@@ -103,7 +107,10 @@ provider が要求された field または relation を一回の操作で表現
 `base_ref: pr:<key>`は、対応する blocker ticket の具体化済み branch へ解決する。
 
 具体化した branch と base を使い、固定形式から各実装 ticket の最終 description を生成する。
-単一 PR の`proposal:root`も root ticket を作成した後に同じ処理へ含める。
+ただし、ticket system の正本 object と実装 ticket が同一の場合は、承認済み設計の description を変更しない。
+その ticket では成果物内の purpose、acceptance criteria、branch または branch template、base を検証し、具体化した branch と base は workflow state と反映結果に記録する。
+正本 description の SHA-256が`canonical.content_sha256`のままであることを完了時にも確認する。
+正本ではない単一 PR の`proposal:root`は、root ticket を作成した後に最終 description の更新対象へ含める。
 各更新前に、現在 description の SHA-256と期待する最終 description の SHA-256を pending operation として workflow state へ保存する。
 再開時は現在 description を再取得し、pre-state digest なら未更新、期待する digest なら更新済み、どちらとも異なる場合は`stale-ticket`として扱う。
 未更新の場合だけ最終 description へ更新し、再取得した本文の SHA-256、具体化済み branch、base、受け入れ条件、正本参照を検証する。
@@ -115,6 +122,7 @@ provider が要求された field または relation を一回の操作で表現
 
 root とすべての実装 ticket を relation 付きで再取得する。
 一つの PR と一つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に具体化済み branch、base、受け入れ条件、blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
+ticket system の正本と同一の実装 ticket では、正本本文が不変であり、具体化済み branch と base が workflow state の対応結果にあることを確認する。
 
 検証後に、成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、具体化済み branch と base、graph の検証結果を`ticket-flow` namespace へ記録する。
 呼び出し元へ正本 URL と具体化結果を返す。
