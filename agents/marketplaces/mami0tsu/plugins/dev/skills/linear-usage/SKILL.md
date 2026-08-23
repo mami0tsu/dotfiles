@@ -15,7 +15,8 @@ provider 固有の object を呼び出し元 flow へ渡さない。
 
 URL 入力は `https://linear.app/<workspace>/issue/<identifier>/<slug>`の形だけを受理する。
 `issue`直後の path segment を identifier として取り出し、percent decode や slug から ID を推測しない。
-取得後は返された正本 URL も同じ規則で解析し、workspace と identifier が入力 URL と一致することを確認する。
+取得後は返された正本 URL も同じ規則で解析する。
+workspace、identifier が入力 URL の値と一致することを確認する。
 返された `id`は後続の Linear MCP 入力に使う provider identifier とし、URL の identifier や内部 UUID との一致を要求しない。
 形式が異なる URL は `ambiguous`として停止する。
 

@@ -40,7 +40,7 @@ adapter は次の操作を提供する。
 
 - **get**：正本 ID または正本 URL から一件を取得する。
 - **list-children**：親 ID を指定し、直下の ticket を列挙する。
-- **create**：container、title、description、assignee、state、parent、blockedBy、blocks を指定し、一回の provider 書き込みで一件作成する。
+- **create**：container、title、description、assignee、state、parent、blockedBy、blocks を指定し、1回の provider 書き込みで一件作成する。
 - **update**：取得済み ID を指定し、明示された field だけを更新する。
 - **set-relations**：parent、blockedBy、blocks を期待する集合へ一致させる。
 
@@ -71,7 +71,7 @@ provider が条件付き更新を提供しない場合、読み取りと書き�
 - **unsupported-relation**：provider が要求された relation を表現できない。
 - **stale-ticket**：再取得した現在値が呼び出し元の期待と異なる。
 - **partial-write**：API の一部だけが成功し、再取得結果が期待値と異なる。
-- **unsupported-field**：adapter が provider の field を共通 contract へ取得または正規化できない、あるいは要求された field または値を一回の provider 操作で表現できない。
+- **unsupported-field**：adapter が provider の field を共通 contract へ取得または正規化できない、あるいは要求された field または値を1回の provider 操作で表現できない。
 
 `partial-write`では自動 rollback を試みない。
 取得した現在値と成功した操作を報告し、人間の判断を待つ。

@@ -54,7 +54,7 @@ Jira status の category key を contract の `status.type`へ次のように正
 
 description が tool schema 上の文字列なら Markdown として扱う。
 Atlassian Document Format などの構造化値しか取得または保存できない場合は、Markdown と可逆に変換できる実装が提供されている場合だけ変換する。
-可逆性を保証できない場合は、読み取りも書き込みも `unsupported-field`として停止し、field 名と provider 表現を報告する。
+可逆性を保証できない場合は、読み書きを `unsupported-field`として停止し、field 名と provider 表現を報告する。
 provider 固有 object、`null`、未取得扱いの値へ置き換えて継続しない。
 
 ## issue を作成または更新する
@@ -66,7 +66,7 @@ project、issue type、必須 field、parent field の可用性を確認する�
 実際の MCP tool schema を呼び出し直前に確認し、文書にない引数を推測しない。
 作成 response の issue key は、他の書き込みへ進む前に workflow state へ保存する。
 
-create では、要求された state を `createJiraIssue`の一回の書き込みで設定できる場合だけ作成する。
+create では、要求された state を `createJiraIssue`の1回の書き込みで設定できる場合だけ作成する。
 要求 state が issue type の初期状態と一致することを metadata から確定できる場合は、明示指定なしの作成を許容する。
 それ以外は `unsupported-field`として書き込み前に停止し、作成後の transition で補わない。
 

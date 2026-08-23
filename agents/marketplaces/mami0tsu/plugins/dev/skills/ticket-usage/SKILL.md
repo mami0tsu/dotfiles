@@ -29,7 +29,7 @@ git config --local agent.ticket.provider <linear-or-jira>
 
 repository local config は Git common directory で共有されるため、linked worktree ごとに保存し直さない。
 設定値は空白を補正せず、`linear`または`jira`との完全一致だけを受理する。
-空または未設定なら人間確認へ進み、それ以外は provider 名と設定 key を含む `unsupported-provider`として停止する。
+値が空か未設定なら人間確認へ進み、それ以外は provider 名と設定 key を含む `unsupported-provider`として停止する。
 provider を特定できない URL でも停止する。
 別 provider へ自動で切り替えない。
 
