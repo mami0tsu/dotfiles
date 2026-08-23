@@ -33,8 +33,13 @@ repository の remote と default branch は `git-usage`で取得する。
 ticket は `ticket-usage`で relation を含めて取得し、`blockedBy`を実行順序として扱う。
 親子関係から blocker を推測しない。
 
-各 blocker ticket について、対応する pull request を head branch から一件に確定し、state、base、head、merge commit、stack 所属を取得する。
-対応する branch または pull request がない blocker は、未実装の依存として待機する。
+各 blocker ticket について、workflow state に保存済みの pull request URL を優先する。
+保存値がない場合は、正本 ticket URL を本文に含む pull request を repository 内の全 state から列挙する。
+候補の body にある `Ticket`欄が正本 ticket URL と完全一致し、head branch が ticket ID を含むことを確認して一件に確定する。
+
+候補が0件なら未実装の依存として待機する。
+候補が複数ある場合、`Ticket`欄がない場合、URL または ticket ID が一致しない場合は停止する。
+確定後に state、base、head、merge commit、stack 所属を取得する。
 
 base branch は次の規則で一件に決める。
 
@@ -80,9 +85,10 @@ push 後に remote head OID が local HEAD と一致することを確認する�
 repository の pull request template を優先する。
 template がなければ [assets/pull_request_template.md](assets/pull_request_template.md) を使う。
 複数の repository template があり、選択が承認済み成果物にない場合は停止する。
+body file の `Ticket`欄には正本 ticket URL を一件だけ記載する。
 
 `gh-usage`で既存 pull request がないことを確認し、base、head、title、body file、Draft を明示して一件作成する。
-作成直後に Draft 状態、base、head、title、body、URLを再取得し、期待値と比較する。
+作成直後に Draft 状態、base、head、title、body、URLを再取得し、`Ticket`欄を含む期待値と比較する。
 
 base が default branch なら standalone pull request として扱い、stack 操作は行わない。
 base が blocker branch なら、blocker pull request から作成した pull request までの URL を bottom から top の順へ並べ、`gh stack link`で既存 Draft pull request を stack 化する。
@@ -97,10 +103,14 @@ stack 化後は各 pull request の base、head、Draft 状態、stack ID、順�
 各 remote branch の OID を fetch 後に記録する。
 
 stack の rebase 後に公開済み branch を更新できるのは、人間が履歴変更を明示的に承認した場合だけである。
+各 branch について、rebase 後の新しい base と target を完全な commit OID で固定し、通常検証と `pre-push-review`を完了する。
+検証済み base、target と active stack identity が現在値に一致する branch だけを bottom から top の順に push する。
+
 push には記録済み remote OID を指定した `--force-with-lease=<branch>:<expected-oid>`を使う。
 引数なしの `--force-with-lease`、`--force`、active stack 外の branch、取得後に OID が変わった branchへの force push は拒否する。
 
-下位 branch の OID が期待値と異なれば、上位 branch の push も停止する。
+各 push 後に remote OID が local target OID と一致することを確認する。
+下位 branch の push が失敗した場合、または remote OID が期待値と異なる場合は、上位 branch を push せず残りを停止する。
 更新後はすべての remote OID と pull request の base、head、stack 順序を再取得する。
 
 ## 振り返りと完了

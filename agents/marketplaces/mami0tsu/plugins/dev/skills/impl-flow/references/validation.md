@@ -9,12 +9,17 @@
 
 ## Agent シナリオ試験
 
+- 実行日：2026-08-23
+- 実行者：Codex sub-agent `/root/pre_push_review`
+- 実行方法：各 ticket graph、pull request identity、stack state、remote OID を入力し、`impl-flow`の判断と停止理由を独立に照合した。
+
 ### standalone pull request
 
 - ticket graph：blocker なし。
 - GitHub 状態：head branch に対応する pull request なし。default branch は `main`。
 - 期待する判断：`origin/main`の OID から専用 branch と worktree を作り、base `main`の Draft pull request を一件作成する。`gh stack link`は実行しない。
 - 拒否条件：同じ head branch の pull request が複数ある場合、または ticket、branch、worktree の対応が保存済み state と異なる場合は停止する。
+- 観測結果：未実行。
 
 ### stack 最下層の pull request
 
@@ -22,6 +27,7 @@
 - GitHub 状態：この ticket の head branch に対応する pull request なし。
 - 期待する判断：base `main`の Draft pull request を作成する。この時点では URL が一件だけなので stack 化しない。後続 ticket の `impl-flow`が二件目の Draft pull request を作成したあと、bottom URL と top URL を `gh stack link`へ渡す。
 - 拒否条件：merge 済み blocker の pull request が default branch 以外へ merge されている場合は、default branch に依存が含まれることを確認できるまで停止する。
+- 観測結果：未実行。
 
 ### stack 上位の pull request
 
@@ -29,15 +35,18 @@
 - GitHub 状態：`P-1`と`P-2`は検証済み Draft pull request で同じ stack に属する。
 - 期待する判断：最上位 blocker `P-2`の head branch を base にする。対象 Draft pull request の作成後、三件の URL を bottom から top の順に `gh stack link`へ渡し、base、head、Draft 状態、stack ID、順序を再検証する。
 - 拒否条件：未merge blocker が別 stack に分かれる場合、blocker pull request が非 Draft の場合、既存 base が期待順と異なり変更が承認範囲にない場合は停止する。
+- 観測結果：未実行。
 
 ### force push の境界
 
 - active stack：workflow state に branch、ticket、pull request、base、head、remote OID が保存されている線形 stack。
 - 期待する判断：人間が rebase と履歴変更を承認し、fetch 後の remote OID が保存値と一致するときだけ、branch と期待 OID を明示した `--force-with-lease`を許可する。
-- 拒否条件：active stack 外、引数なしの lease、期待 OID の不一致、下位 branch の検証失敗では push しない。
+- 拒否条件：rebase 後 commit の `pre-push-review`未完了、active stack 外、引数なしの lease、期待 OID の不一致、下位 branch の検証または push 失敗では push しない。
+- 観測結果：未実行。
 
 ### identity の不一致
 
 - 入力：保存済み ticket と現在 branch の pull request が別 ticket を参照する。
 - 期待する判断：既存 pull request を再利用せず、workflow state も上書きせず停止する。
 - 同じ拒否を適用する対象：base、head、worktree path、pull request URL、stack ID の不一致。
+- 観測結果：未実行。
