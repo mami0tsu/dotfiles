@@ -30,7 +30,8 @@ ticket URL がある場合は、[ticket-usage](../ticket-usage/SKILL.md) で本�
 
 repository を選ぶ場合は、既存文書との関係、対象 path、設計文書を含める PR を同時に確定する。
 
-Agent が直接書き込める保存先は、repository と、[ticket-usage](../ticket-usage/SKILL.md) の provider adapter が本文更新に対応する ticket system に限定する。
+Agent が直接書き込める保存先は、repository と ticket system に限る。
+ticket system への書き込みには、[ticket-usage](../ticket-usage/SKILL.md) の provider adapter が本文更新をサポートしていることを必要とする。
 未対応 Wiki が選ばれた場合は、承認済み本文を人間へ渡して停止する。
 人間が保存した正本 URL を受け取ったら、同じ workflow state と本文を照合して再開する。
 
