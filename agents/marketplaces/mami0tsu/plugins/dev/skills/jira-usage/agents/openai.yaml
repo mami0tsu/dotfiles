@@ -1,0 +1,12 @@
+interface:
+  display_name: "Jira Usage"
+  short_description: "Atlassian MCP で Jira ticket を安全に操作する"
+  default_prompt: "Use $jira-usage to read or update Jira tickets through the shared ticket contract."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "atlassian"
+      description: "Jira issue の取得、検索、作成、更新、transition 操作"
+      transport: "streamable_http"
+      url: "https://mcp.atlassian.com/v1/mcp/authv2"
