@@ -23,7 +23,7 @@ durable pending state は provider を問わず、Agent が可変な外部正本
 dev plugin の README に利用例を追加する生の要求を入力した。
 repository を正本に選び、専用の設計文書 path と1件の PR を指定した。
 
-成果物は`proposal:root`、`branch_template`、`branch:default`、受け入れ条件ごとの検証方法を生成した。
+成果物は`proposal:root`、root ticket の作成情報、`branch_template`、`branch:default`、受け入れ条件ごとの検証方法を生成した。
 初回検証では、ticket 作成前の branch 名と、構造化成果物と repository blob の digest が混同されていた。
 
 branch を ticket ID 入り template とし、成果物と正本本文の digest を分けた。

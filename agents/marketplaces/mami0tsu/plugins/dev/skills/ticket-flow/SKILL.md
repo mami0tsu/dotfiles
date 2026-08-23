@@ -15,12 +15,13 @@ description: 承認済み design-flow 成果物を、一つの PR と一つの�
 成果物の field を補完したり、PR 境界、受け入れ条件、親子関係、block 関係、stack 順序を再解釈したりしない。
 
 既存 root ticket を成果物が参照する場合は、[ticket-usage](../ticket-usage/SKILL.md) で本文、担当者、状態、親、block 関係、正本 URL を取得する。
-`proposal:root`の場合は、title、description、container、担当者、初期状態を含む作成案を人間へ提示する。
+`proposal:root`の場合は、成果物の`root_ticket`にある title、description、container、assignee、state を作成案として人間へ提示する。
+いずれかの field が未定義なら補完せず停止する。
 root ticket 案を承認されるまで provider へ書き込まない。
 
 呼び出し元の [workflow-state](../workflow-state/SKILL.md) workflow ID を必須にする。
 同じ状態の`ticket-flow` namespace だけを更新し、別のトップレベル状態を作らない。
-成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、作成と更新の完了結果だけを保存する。
+成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、正規化した pre-state、作成と更新の完了結果だけを保存する。
 ticket 本文、設計本文、review 本文は保存しない。
 
 ## 反映計画を確定する
@@ -29,7 +30,7 @@ provider へ書き込む前に、次の反映計画を成果物から機械的�
 
 - 作成または更新する root ticket
 - PR key ごとの実装 ticket、受け入れ条件、branch、base
-- 各 ticket の parent、blockedBy、blocks の期待集合
+- 各 ticket の parent、blockedBy、成果物内の`blocked_by`から導出できる blocks の期待集合
 - repository の設計文書を含める ticket
 - 実行する書き込み順序
 
@@ -50,6 +51,8 @@ ticket system または Wiki が正本の場合は、すべての`includes_desig
 
 作成予定の各 ticket に、安定した operation key を`root`または`pull_requests[].key`から割り当てる。
 operation key、期待する現在値、期待する作成後の graph を`ticket-flow` namespace へ保存してから最初の provider 書き込みへ進む。
+pre-state は description の UTF-8 byte 列の SHA-256、assignee ID、status の name と type、parent ID、blockedBy ID 集合、管理対象の blocks ID 集合へ正規化する。
+本文そのものは保存しない。
 
 再開時は、保存済みの成果物 SHA-256が入力と一致することを確認する。
 保存済み ID がある operation は、その ID を[ticket-usage](../ticket-usage/SKILL.md) で再取得し、期待値との差分だけを更新する。
@@ -63,15 +66,22 @@ root ticket が proposal の場合は最初に作成する。
 作成 response の正本 ID と URL を、他の provider 書き込みより先に workflow state へ保存する。
 作成後は relation を含めて再取得し、担当者、状態、本文、正本 URL を期待値と比較する。
 
-複数 PR の実装 ticket は、blocker の ID をすべて解決できる順に一件ずつ作成する。
-parent、blockedBy、blocks は作成時の同じ provider 操作へ渡す。
+複数 PR の実装 ticket は成果物の順に一件ずつ作成する。
+作成時は parent と、すでに正本 ID を解決できた blockedBy だけを同じ provider 操作へ渡す。
+未作成 ticket の ID を必要とする blocks は作成時に渡さない。
 各作成 response の正本 ID と URL を、次の ticket 作成より先に保存する。
-作成後は relation を含めて再取得し、本文、担当者、状態、parent、blockedBy、blocks、正本 URL を検証する。
+作成後は relation を含めて再取得し、本文、担当者、状態、parent、作成時点の blockedBy、正本 URL を検証する。
+
+すべての正本 ID を保存した後、各 ticket の parent と blockedBy を成果物の期待集合へ一致させる。
+成果物内の blockedBy の逆辺として導出できる blocks だけを管理対象にする。
+成果物に記載されていない既存 blocks と、成果物外 ticket への blocks は保持し、削除しない。
+relation 更新後にすべての ticket を再取得し、parent、blockedBy、管理対象の blocks を検証する。
 
 既存 ticket の更新前には対象を再取得する。
-担当者、状態、本文、parent、blockedBy、blocks の現在値が反映計画の pre-state と異なる場合は`stale-ticket`として停止する。
+担当者、状態、本文の SHA-256、parent、blockedBy、管理対象の blocks の現在値が反映計画の正規化済み pre-state と異なる場合は`stale-ticket`として停止する。
 relation は現在集合と期待集合の差分だけを[ticket-usage](../ticket-usage/SKILL.md)で更新する。
-承認済み成果物の期待集合にない relation の削除も反映計画へ明示し、人間が graph 全体を承認した場合だけ実行する。
+blockedBy の削除は反映計画へ明示し、人間が graph 全体を承認した場合だけ実行する。
+成果物から期待値を導出できない既存 blocks は更新対象に含めない。
 
 provider が要求された field または relation を一回の操作で表現できない場合は、近い構成へ置き換えず、書き込み前に停止する。
 書き込み後の再取得結果が期待値と異なる場合は`partial-write`として停止し、自動 rollback を試みない。
