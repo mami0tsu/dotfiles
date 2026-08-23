@@ -25,12 +25,12 @@ ticket URL がある場合は、[ticket-usage](../ticket-usage/SKILL.md) で本�
 設計を始める前に、保存先候補と根拠を提示して人間に1つ選んでもらう。
 
 - プロダクトのコード、データ、外部 interface を規定する設計は repository を第一候補にする。
-- 開発手順、ticket 構成、review 運用を規定する設計は Linear を第一候補にする。
+- 開発手順、ticket 構成、review 運用を規定する設計は、入力 ticket を管理する system を第一候補にする。
 - 既存の外部 Wiki が正本である場合は、その Wiki を候補にできる。
 
 repository を選ぶ場合は、既存文書との関係、対象 path、設計文書を含める PR を同時に確定する。
 
-初期対応する書き込み先は repository と Linear に限定する。
+Agent が直接書き込める保存先は、repository と、[ticket-usage](../ticket-usage/SKILL.md) の provider adapter が本文更新に対応する ticket system に限定する。
 未対応 Wiki が選ばれた場合は、承認済み本文を人間へ渡して停止する。
 人間が保存した正本 URL を受け取ったら、同じ workflow state と本文を照合して再開する。
 
@@ -80,13 +80,14 @@ repository を正本にする場合は、対象 path と設計文書を含める
 Agent が可変な外部正本へ書き込む場合は、provider を問わず workflow ID を必須にする。
 正本種別、対象 object と field、`expected_pre_content_sha256`、`desired_content_sha256`、成果物の SHA-256を pending operation として外部書き込み前に記録する。
 
-Linear の既存 issue が正本の場合は、承認済みの`target_ref`と`target_field`だけを [ticket-usage](../ticket-usage/SKILL.md) で更新する。
+既存 ticket が正本の場合は、承認済みの`target_ref`と`target_field`だけを [ticket-usage](../ticket-usage/SKILL.md) で更新する。
+provider adapter が対象 field の取得と更新に対応しない場合は、未対応 Wiki と同じ人間保存の手順へ進む。
 書き込み直前の本文 digest が pending operation の pre-state と一致しなければ停止する。
 承認済み本文を保存した後に同じ対象を再取得する。
 再取得した本文の SHA-256が承認済み正本本文と一致しなければ停止する。
 
-生の要求で作成予定の Linear root issue を正本にする場合は、この flow では書き込まない。
-`proposal:root`と`description`を保存先として成果物へ含め、後続の ticket 作成へ引き渡す。
+生の要求で作成予定の root ticket を正本にする場合は、この flow では書き込まない。
+`proposal:root`と`ticket-usage`共通 contract の`description`を保存先として成果物へ含め、後続の ticket 作成へ引き渡す。
 作成後の URL と本文 digest を受け取ったら同じ成果物で再開し、正本を再取得して照合する。
 
 repository が正本の場合、設計文書の書き込みはこの flow では行わない。
@@ -110,7 +111,7 @@ workflow ID を受け取っている場合は、保存後に正本 URLまたは�
 
 承認済み成果物、正本の識別情報、成果物と正本本文の SHA-256を呼び出し元へ返す。
 この flow は ticket の作成、分割、状態、親子関係、block 関係を更新しない。
-承認された既存 Linear issue の`description`を正本として更新する場合だけ、保存手順の範囲で本文を更新する。
+承認された既存 ticket の本文 field を正本として更新する場合だけ、保存手順の範囲で本文を更新する。
 後続の ticket 操作には成果物を再解釈させず、root ticket 案、各 PR の ticket 参照、親子関係、block 関係をそのまま反映させる。
 
 ## 停止条件

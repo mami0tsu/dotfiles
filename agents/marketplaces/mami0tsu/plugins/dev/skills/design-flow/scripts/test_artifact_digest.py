@@ -19,7 +19,7 @@ class ArtifactDigestTest(unittest.TestCase):
     def test_digest_excludes_mutable_canonical_identity(self) -> None:
         artifact = {
             "canonical": {
-                "kind": "linear",
+                "kind": "ticket",
                 "url": None,
                 "revision": None,
                 "content_sha256": hashlib.sha256(b"design\n").hexdigest(),
@@ -28,7 +28,7 @@ class ArtifactDigestTest(unittest.TestCase):
             "summary": "example",
         }
         first = MODULE.artifact_digest(artifact)
-        artifact["canonical"]["url"] = "https://linear.example/issue/TEST-1"
+        artifact["canonical"]["url"] = "https://tickets.example/items/TEST-1"
         artifact["canonical"]["revision"] = "revision-1"
         artifact["artifact_sha256"] = first
         self.assertEqual(first, MODULE.artifact_digest(artifact))

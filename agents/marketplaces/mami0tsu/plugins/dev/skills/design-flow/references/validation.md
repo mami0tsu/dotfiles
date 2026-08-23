@@ -13,9 +13,10 @@ textlint、yamllint、JSON parser、`git diff --check`で、Markdown、YAML、pl
 development plugin と skills 配下を`rg -F '$dig'`で検索し、Codex 固有の呼び出し表記が残っていないことを確認した。
 Codex と Claude Code の固有記述は、sub-agent の起動方法を分ける adapter 内だけに置いた。
 
-`Linear.*workflow`、`workflow.*Linear`、`Linear.*pending`、`pending.*Linear`を development plugin の skills 配下で検索した。
-durable pending state を Linear だけに要求する記述は残っていない。
-Linear 固有の記述は、初期対応する正本 adapter の object と field を定義する箇所だけに置いた。
+特定の ticket service 名を design-flow 配下で検索し、正本種別、保存手順、成果物 contract、検証シナリオに残っていないことを確認した。
+ticket system の取得と更新は`ticket-usage`の provider adapter に委譲し、成果物では共通 field の`description`だけを使う。
+provider 固有の本文 field 名は adapter の外へ出さない。
+durable pending state は provider を問わず、Agent が可変な外部正本へ書き込む場合に要求する。
 
 ## 単一 PR
 
@@ -31,7 +32,7 @@ branch を ticket ID 入り template とし、成果物と正本本文の digest
 ## 複数 PR
 
 既存 root ticket 配下で、DB schema、API、frontend を3件の PR に分ける要求を入力した。
-Linear を正本に選び、`db-schema`、`api`、`frontend`の順で stack を指定した。
+入力 ticket を管理する system を正本に選び、`db-schema`、`api`、`frontend`の順で stack を指定した。
 
 成果物は各 PR に proposal ticket、親、block 関係、branch template、`base_ref`、検証方法を生成した。
 独立検証で、API の failure contract、rolling compatibility、cross-component test、dual-read、dual-write、旧 API からの更新伝播が不足していると判明した。

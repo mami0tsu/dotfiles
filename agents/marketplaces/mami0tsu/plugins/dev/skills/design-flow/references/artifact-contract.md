@@ -55,20 +55,21 @@ ticket 作成後は template の`{ticket_id}`を正本 ID に置き換え、成�
 
 ## 正本
 
-`canonical.kind`は`repository`、`linear`、`wiki`のいずれかにする。
+`canonical.kind`は`repository`、`ticket`、`wiki`のいずれかにする。
 repository への保存前は`url`と`revision`を`null`にできるが、承認済みの`path`を必須にする。
 `target_ref`と`target_field`は`null`にする。
 commit 後は immutable commit の file URL と commit OID を記録する。
 
-Linear では`path`を`null`にし、`target_ref`を既存の`ticket:<provider-id>`または`proposal:root`にする。
-`target_field`は`description`にする。
-既存 issue の URL は承認前に記録し、proposal の URL は作成後に記録する。
+ticket system では`path`を`null`にし、`target_ref`を既存の`ticket:<provider-id>`または`proposal:root`にする。
+`target_field`は`ticket-usage`共通 contract の`description`に固定する。
+provider 固有の field への変換は adapter 内に閉じる。
+既存 ticket の URL は承認前に記録し、proposal の URL は作成後に記録する。
 
 Wiki では`path`、`target_ref`、`target_field`を`null`にし、保存後の URL と revision を記録する。
 API が immutable revision を返さない場合は、再取得した本文の SHA-256を revision の代わりに使う。
 
 `canonical.content_sha256`は、正本へ保存する Markdown 本文の UTF-8 byte 列から計算する。
-repository の blob、Linear の再取得本文、Wiki の再取得本文はこの値と照合する。
+repository の blob、ticket system の再取得本文、Wiki の再取得本文はこの値と照合する。
 
 `artifact_sha256`は、`artifact_sha256`、`canonical.url`、`canonical.revision`を除く成果物を key 順の canonical JSON と末尾 LF に正規化し、UTF-8 byte 列から計算する。
 初回は digest helper の`--compute`で計算し、値を設定した後は`--compute`なしで一致を検証する。
@@ -84,7 +85,7 @@ repository の blob、Linear の再取得本文、Wiki の再取得本文はこ�
 `blocked_by`は既存の外部依存だけを持ち、`base_ref`は`branch:default`にする。
 
 repository が正本の場合だけ`includes_design_document`を`true`にする。
-Linear または Wiki が正本の場合は、すべての PR で`false`にする。
+ticket system または Wiki が正本の場合は、すべての PR で`false`にする。
 
 ## 複数 PR
 
@@ -98,7 +99,7 @@ Linear または Wiki が正本の場合は、すべての PR で`false`にす�
 
 repository が正本の場合、`includes_design_document`を`true`にする項目は1件だけにする。
 stack がある場合は最下層、独立した複数 PR の場合は設計を成立させる最初の PR に置く。
-Linear または Wiki が正本の場合は、すべての項目で`false`にする。
+ticket system または Wiki が正本の場合は、すべての項目で`false`にする。
 
 ## 承認可能性
 
