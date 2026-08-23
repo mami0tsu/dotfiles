@@ -45,6 +45,7 @@ merge を実行せず人間待ちを返し、再実行時に merge、base、head
 
 `dev-flow`の workflow ID と pull request URL を`pr-review-response-flow`へ渡す。
 別のトップレベル状態を作らず、同じ状態の`pr-review-response-flow` namespace だけを更新することを確認する。
+pending reply の作成後もトップレベル状態を complete せず、review submit、thread resolve、merge 待ちへ戻ることを確認する。
 
 ### 範囲外 blocker
 

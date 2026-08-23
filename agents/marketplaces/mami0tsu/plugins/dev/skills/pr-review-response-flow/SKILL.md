@@ -137,6 +137,9 @@ stacked PR では bottom から top の順に push し、各 PR の head OID を
 - 全 target に pending reply object ID がある。
 - pending review が `PENDING` のままで canonical digest が一致する。
 
-stack の全 PR が条件を満たした場合だけ `workflow-state` を complete する。
+stack の全 PR が条件を満たし、親 workflow ID がある場合は、`pr-review-response-flow` namespace に完了結果を記録して呼び出し元へ返す。
+トップレベル状態は完了せず、呼び出し元が後続の review submit、thread resolve、merge 待ちを管理する。
+
+standalone で初期化した workflow だけは、stack の全 PR が条件を満たした場合に`workflow-state`を complete する。
 
 1つでも未完了、判断待ち、外部変更、認証失敗がある場合は state を保持して停止する。
