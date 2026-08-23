@@ -29,6 +29,9 @@
 - 拒否条件：merge 済み blocker の pull request が default branch 以外へ merge されている場合は、default branch に依存が含まれることを確認できるまで停止する。
 - 観測結果：すべての blocker が default branch へ merge 済みなので base `main`を選び、後続 ticket が上位 pull request を作成するまで stack 化しないと判断した。PASS。
 
+後続 ticket の `impl-flow`では、stack 未所属の最下層 pull request 自身を bottom とする。
+最下層と新規 pull request の二件を `gh stack link`へ渡すと判断した。PASS。
+
 ### stack 上位の pull request
 
 - ticket graph：順序が `P-1`、`P-2`の既存 stack があり、対象 ticket の direct blocker は最上位の `P-2`一件。
