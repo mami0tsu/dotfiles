@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR レビューコメント評価"
+  short_description: "PR feedback の妥当性と対応候補を整理する"
+  default_prompt: "Use $assess-pr-review-comments to evaluate every feedback item on my pull request before changing code."

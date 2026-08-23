@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR レビュー対応フロー"
+  short_description: "PR feedback の判断から修正と pending 返信まで進める"
+  default_prompt: "Use $pr-review-response-flow to assess and address feedback on my pull request with human decisions before edits."
