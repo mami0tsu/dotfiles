@@ -11,13 +11,14 @@
 
 ### 目的
 
-個別に作成済みの Draft pull request を、依存順が明示された一つの stack にする。
+個別に作成済みの Draft pull request を、依存順が明示された1つの stack にする。
 
 ### 前提条件
 
 各 pull request は [pull request](pull-requests.md) の手順で template 付き Draft として作成し、title、body、base、head、Draft 状態を検証する。
 
-各 pull request URL と、ticket の block 関係から確定した bottom から top への線形順序を取得する。
+各 pull request URL を取得する。
+さらに、ticket の block 関係を使い、bottom から top への線形順序を確定する。
 
 複数の blocker stack へ分岐する場合は実行しない。
 

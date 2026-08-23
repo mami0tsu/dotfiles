@@ -261,7 +261,8 @@ mutation の返却 object から review ID と state を取得し、記録済み
 
 `gh pr comment`、`gh pr review`、REST API の review comment endpoint は使わない。
 
-canonical digest が workflow state の期待値と異なる場合は、人間が編集した可能性があるため、追加と更新を行わない。
+canonical digest が workflow state の期待値と異なる場合は、人間による編集の可能性がある。
+追加と更新を止める。
 
 ### 代表的な失敗
 
