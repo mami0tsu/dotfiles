@@ -27,7 +27,7 @@ stack に属する場合は、bottom から top の順に並べた pull request 
 
 本文が同じでも object ID または URL が異なる対象を統合しない。
 
-Agent が記録済み pending review に追加した comment は評価対象から除く。
+Agent が記録済み pending review に追加した comment と、その pending review 本体の review body は評価対象から除く。
 
 inline feedback は thread を一つの対象とし、thread 内の全 comment を評価根拠として読む。
 
@@ -69,15 +69,19 @@ Agent の推奨と異なる判断も、そのまま人間の判断として扱�
 
 ```json
 {
-  "feedbackHeadCommitOid": "<oid>",
-  "pullRequestUrl": "<url>",
-  "targets": [
+  "pullRequests": [
     {
-      "changeGroupId": "change-1",
-      "decision": "change",
-      "objectId": "<github-object-id>",
-      "targetKey": "thread:<thread-id>",
-      "url": "<url>"
+      "feedbackHeadCommitOid": "<oid>",
+      "pullRequestUrl": "<url>",
+      "targets": [
+        {
+          "changeGroupId": "change-1",
+          "decision": "change",
+          "objectId": "<github-object-id>",
+          "targetKey": "thread:<thread-id>",
+          "url": "<url>"
+        }
+      ]
     }
   ]
 }
@@ -87,11 +91,15 @@ Agent の推奨と異なる判断も、そのまま人間の判断として扱�
 
 `decision` は人間が判断するまで `null` にする。
 
-配列は `targetKey` の byte 順で並べる。
+`pullRequests` は stack の bottom から top の順に保持し、現在の PR entry だけを更新する。
+
+別の PR の entry を削除または上書きしない。
+
+`targets` は `targetKey` の byte 順で並べる。
 
 comment 本文、review 本文、返信案、credential は保存しない。
 
-判断を集めている間の再開では pull request URL、feedback head commit OID、全 target key と object ID を GitHub の現在値へ照合する。
+判断を集めている間の再開では、stack 内の全 entry について pull request URL、feedback head commit OID、全 target key と object ID を GitHub の現在値へ照合する。
 
 判断完了前に head commit または対象集合が変わった場合は再評価し、既存判断を自動で新しい対象へ移さない。
 
@@ -101,4 +109,4 @@ comment 本文、review 本文、返信案、credential は保存しない。
 
 ## 完了条件
 
-全対象に人間の判断があり、`change` の全対象に `changeGroupId` があり、namespace の保存内容を外部状態へ照合できた場合だけ完了する。
+stack 内の全 PR の全対象に人間の判断があり、`change` の全対象に `changeGroupId` があり、namespace の保存内容を外部状態へ照合できた場合だけ完了する。

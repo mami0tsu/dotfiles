@@ -70,16 +70,20 @@ Conversation comment への回答は、元 comment の URL と返信案を pendi
 
 ```json
 {
-  "validatedHeadCommitOid": "<oid>",
-  "pendingReviewDigest": "<sha256>",
-  "pendingReviewId": "<review-id>",
-  "pullRequestUrl": "<url>",
-  "replies": [
+  "pullRequests": [
     {
-      "category": "CHANGED",
-      "commitOid": "<oid>",
-      "replyObjectId": "<github-object-id>",
-      "targetKey": "thread:<thread-id>"
+      "pendingReviewDigest": "<sha256>",
+      "pendingReviewId": "<review-id>",
+      "pullRequestUrl": "<url>",
+      "replies": [
+        {
+          "category": "CHANGED",
+          "commitOid": "<oid>",
+          "replyObjectId": "<github-object-id>",
+          "targetKey": "thread:<thread-id>"
+        }
+      ],
+      "validatedHeadCommitOid": "<oid>"
     }
   ]
 }
@@ -87,7 +91,11 @@ Conversation comment への回答は、元 comment の URL と返信案を pendi
 
 `commitOid` は `CHANGED` だけに設定し、その他では `null` にする。
 
-配列は `targetKey` の byte 順で並べる。
+`pullRequests` は stack の bottom から top の順に保持し、現在の PR entry だけを更新する。
+
+別の PR の entry を削除または上書きしない。
+
+`replies` は `targetKey` の byte 順で並べる。
 
 comment 本文、review 本文、返信案、credential は保存しない。
 
@@ -97,4 +105,4 @@ mutation が成功したら、その object ID と更新後 digest を次の mut
 
 ## 完了条件
 
-全 target key に対応する reply object ID があり、pending review が `PENDING` のままで、保存済み digest と GitHub の現在値が一致した場合だけ完了する。
+stack 内の全 PR の全 target key に対応する reply object ID があり、各 pending review が `PENDING` のままで、保存済み digest と GitHub の現在値が一致した場合だけ完了する。
