@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pre-push Review"
+  short_description: "commit 済み差分を push 前に検証する"
+  default_prompt: "Use $pre-push-review to validate committed changes through adversarial and human review before push."
