@@ -36,7 +36,7 @@ repository を選ぶ場合は、既存文書との関係、対象 path、設計�
 
 ## 設計を作る
 
-承認済み設計がない場合は `$dig` を必ず使う。
+承認済み設計がない場合は、実行環境で利用できる `dig` skill を必ず使う。
 各質問の前に repository と ticket の関連箇所を調べ、調査で確定できる内容を人間へ聞かない。
 
 設計は [成果物 contract](references/artifact-contract.md) のすべての field を満たすまで具体化する。
@@ -76,8 +76,8 @@ repository を正本にする場合は、対象 path と設計文書を含める
 承認前に正本へ保存する Markdown 本文を確定し、[成果物 contract](references/artifact-contract.md) の除外規則に従って成果物の SHA-256を求める。
 正本本文の SHA-256と成果物の SHA-256は [digest helper](scripts/artifact_digest.py) で計算する。
 
-Linear の既存 issue を正本にする場合は、workflow ID を必須にする。
-正本種別、対象 issue と field、`expected_pre_content_sha256`、`desired_content_sha256`、成果物の SHA-256を pending operation として外部書き込み前に記録する。
+Agent が可変な外部正本へ書き込む場合は、provider を問わず workflow ID を必須にする。
+正本種別、対象 object と field、`expected_pre_content_sha256`、`desired_content_sha256`、成果物の SHA-256を pending operation として外部書き込み前に記録する。
 
 Linear の既存 issue が正本の場合は、承認済みの`target_ref`と`target_field`だけを [ticket-usage](../ticket-usage/SKILL.md) で更新する。
 書き込み直前の本文 digest が pending operation の pre-state と一致しなければ停止する。
@@ -125,6 +125,6 @@ workflow ID を受け取っている場合は、保存後に正本 URLまたは�
 - 未対応 Wiki への保存後 URL を確認できない。
 - 正本本文の SHA-256を`canonical.content_sha256`と照合できない。
 - 外部書き込みの成否が曖昧である。
-- Linear の既存 issue を更新する workflow ID がない。
+- Agent が可変な外部正本を更新する workflow ID がない。
 
 構造検査とシナリオ試験の結果は [検証記録](references/validation.md) に残す。
