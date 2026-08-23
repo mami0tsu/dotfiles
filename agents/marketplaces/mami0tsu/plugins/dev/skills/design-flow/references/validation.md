@@ -8,6 +8,15 @@
 textlint、yamllint、JSON parser、`git diff --check`で、Markdown、YAML、plugin manifest、差分を検証した。
 `test_artifact_digest.py`で、正本 identity の追記に対する安定性、正本本文 digest の拘束、不一致本文の拒否を検証した。
 
+## runtime と provider の横断監査
+
+development plugin と skills 配下を`rg -F '$dig'`で検索し、Codex 固有の呼び出し表記が残っていないことを確認した。
+Codex と Claude Code の固有記述は、sub-agent の起動方法を分ける adapter 内だけに置いた。
+
+`Linear.*workflow`、`workflow.*Linear`、`Linear.*pending`、`pending.*Linear`を development plugin の skills 配下で検索した。
+durable pending state を Linear だけに要求する記述は残っていない。
+Linear 固有の記述は、初期対応する正本 adapter の object と field を定義する箇所だけに置いた。
+
 ## 単一 PR
 
 dev plugin の README に利用例を追加する生の要求を入力した。
