@@ -23,6 +23,8 @@ GitHub 上の head commit と検証済み target commit が異なる場合は、
 
 全 feedback を再取得し、評価済み target key と object ID が現在も存在することを確認する。
 
+Agent が記録済み pending review に追加した comment と、その pending review 本体の review body は再取得した feedback から除外する。
+
 新しい feedback がある場合は、上位 flow へ追加対象の評価と人間判断を要求する。
 
 ## 返信案を作る
