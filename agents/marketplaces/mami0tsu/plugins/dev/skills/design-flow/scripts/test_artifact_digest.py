@@ -47,6 +47,50 @@ class ArtifactDigestTest(unittest.TestCase):
     def test_cli_accepts_matching_content_digest(self) -> None:
         content = b"design\n"
         artifact = {
+            "canonical": {},
+            "summary": "example",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifact_path = root / "artifact.json"
+            content_path = root / "design.md"
+            artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+            content_path.write_bytes(content)
+            computed = subprocess.run(
+                [
+                    sys.executable,
+                    str(MODULE_PATH),
+                    str(artifact_path),
+                    "--content",
+                    str(content_path),
+                    "--compute",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            computed_output = json.loads(computed.stdout)
+            artifact["canonical"]["content_sha256"] = computed_output["contentSha256"]
+            artifact["artifact_sha256"] = computed_output["artifactSha256"]
+            artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+            verified = subprocess.run(
+                [
+                    sys.executable,
+                    str(MODULE_PATH),
+                    str(artifact_path),
+                    "--content",
+                    str(content_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            output = json.loads(verified.stdout)
+            self.assertEqual(hashlib.sha256(content).hexdigest(), output["contentSha256"])
+
+    def test_cli_rejects_missing_artifact_digest(self) -> None:
+        content = b"design\n"
+        artifact = {
             "canonical": {"content_sha256": hashlib.sha256(content).hexdigest()},
             "summary": "example",
         }
@@ -64,12 +108,38 @@ class ArtifactDigestTest(unittest.TestCase):
                     "--content",
                     str(content_path),
                 ],
-                check=True,
                 capture_output=True,
                 text=True,
             )
-            output = json.loads(result.stdout)
-            self.assertEqual(hashlib.sha256(content).hexdigest(), output["contentSha256"])
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("must be present", result.stderr)
+
+    def test_cli_rejects_mismatched_artifact_digest(self) -> None:
+        content = b"design\n"
+        artifact = {
+            "canonical": {"content_sha256": hashlib.sha256(content).hexdigest()},
+            "artifact_sha256": "wrong",
+            "summary": "example",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifact_path = root / "artifact.json"
+            content_path = root / "design.md"
+            artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+            content_path.write_bytes(content)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(MODULE_PATH),
+                    str(artifact_path),
+                    "--content",
+                    str(content_path),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("does not match artifact", result.stderr)
 
     def test_cli_rejects_mismatched_content_digest(self) -> None:
         artifact = {"canonical": {"content_sha256": "wrong"}, "summary": "example"}

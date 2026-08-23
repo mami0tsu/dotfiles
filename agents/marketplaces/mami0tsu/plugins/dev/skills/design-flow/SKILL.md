@@ -74,7 +74,8 @@ repository を正本にする場合は、対象 path と設計文書を含める
 ## 保存を準備する
 
 承認前に正本へ保存する Markdown 本文を確定し、[成果物 contract](references/artifact-contract.md) の除外規則に従って成果物の SHA-256を求める。
-正本本文の SHA-256と成果物の SHA-256は [digest helper](scripts/artifact_digest.py) で計算する。
+まず [digest helper](scripts/artifact_digest.py) の`--compute`で正本本文と成果物の SHA-256を計算し、成果物へ設定する。
+次に`--compute`なしで同じ helper を実行し、成果物の宣言値と再計算値が一致することを検証する。
 
 Agent が可変な外部正本へ書き込む場合は、provider を問わず workflow ID を必須にする。
 正本種別、対象 object と field、`expected_pre_content_sha256`、`desired_content_sha256`、成果物の SHA-256を pending operation として外部書き込み前に記録する。

@@ -71,6 +71,7 @@ API が immutable revision を返さない場合は、再取得した本文の S
 repository の blob、Linear の再取得本文、Wiki の再取得本文はこの値と照合する。
 
 `artifact_sha256`は、`artifact_sha256`、`canonical.url`、`canonical.revision`を除く成果物を key 順の canonical JSON と末尾 LF に正規化し、UTF-8 byte 列から計算する。
+初回は digest helper の`--compute`で計算し、値を設定した後は`--compute`なしで一致を検証する。
 保存後に正本の識別情報を追加しても、承認済み設計の digest は変えない。
 `canonical.content_sha256`を計算対象へ含めるため、承認済み成果物は正本本文の digest を拘束する。
 2つの digest 自体は目的が異なるため、一致を要求しない。
