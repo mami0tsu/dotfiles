@@ -15,7 +15,11 @@ Agent は review を submit せず、thread を resolve せず、merge せず、
 
 認証利用者が author でなければ停止する。
 
-worktree が clean な状態で、`workflow-state` を次の identity により初期化する。
+呼び出し元からトップレベル workflow ID を受け取った場合は、保存済み workflow identity と対象 pull request を照合する。
+別の状態を初期化せず、同じ状態の`pr-review-response-flow` namespace だけを更新する。
+namespace には pull request URL ごとの開始 commit OID、pending review ID、判断状態、検証済み target OID を保存する。
+
+standalone で呼び出され、トップレベル workflow ID がない場合だけ、worktree が clean な状態で`workflow-state`を次の identity により初期化する。
 
 ```sh
 python3 <workflow-state-skill-dir>/scripts/workflow_state.py init \
@@ -25,11 +29,11 @@ python3 <workflow-state-skill-dir>/scripts/workflow_state.py init \
   --subject <canonical-pr-url>
 ```
 
-中断後は保存済み branch と開始 commit を外部状態へ照合して再開する。
+中断後は、親 workflow または standalone workflow に保存した branch と開始 commit を外部状態へ照合して再開する。
 
 comment 本文、review 本文、返信案、credential は workflow state に保存しない。
 
-各 PR について `gh-usage` の「pending review を識別する」を read-only で実行する。
+各 PR について`gh-usage`の「pending review を識別する」を read-only で実行する。
 
 workflow state に記録がなく、認証利用者の pending review が存在する場合は、人間が作成したものとして、repository の worktree file、Git index、commit、GitHub 上の object を変更する前に停止する。
 

@@ -23,13 +23,20 @@ blocker の状態と対応する pull request を待機条件として記録し�
 
 ticket がない生の要求では、`design-flow`に root ticket 案を含む設計を作らせる。
 人間が root ticket 案と設計成果物を承認するまで provider へ書き込まない。
-承認後は`ticket-flow`に root ticket の作成と実装 ticket graph の反映を委譲し、返された正本 root ticket URL を以後の workflow identity にする。
+承認後は、provider、`proposal-root`、承認済み成果物の SHA-256 の先頭16桁を連結した workflow ID を作る。
+subject kind `ticket`、subject `proposal:root:<artifact-sha256>`でトップレベル状態を初期化してから、`ticket-flow`に root ticket の作成と実装 ticket graph の反映を委譲する。
+返された正本 root ticket URL は`dev-flow` namespace に保存し、以後の外部照合に使う。
 
 ## workflow state を管理する
 
-root ticket の正本 URL が確定したら、`workflow-state`を使い、provider と root ticket ID を含む workflow ID、workflow `dev-flow`、subject kind `ticket`でトップレベル状態を初期化する。
-生の要求から開始した場合は、`design-flow`と`ticket-flow`が root ticket の正本 ID を確定するまで、その承認済み成果物と各下位 flow の再開情報を引き継ぐ。
-正本 URL が確定した直後にトップレベル状態を初期化し、下位 flow の完了記録を同じ状態の namespace へ関連付ける。
+既存 root ticket から始める場合は、`workflow-state`を使い、provider と root ticket ID を含む workflow ID、workflow `dev-flow`、subject kind `ticket`、subject に正本 URL を指定してトップレベル状態を初期化する。
+生の要求では、承認済み root ticket 案を`proposal:root:<artifact-sha256>`として一時的な subject に使う。
+この proposal identity は正本 ticket の代用ではなく、作成の pending operation を root ticket の正本 ID 保存前から保護するために使う。
+root ticket 作成後も identity を書き換えず、`dev-flow` namespace の root ticket ID と正本 URL を照合する。
+
+人間が root ticket を指定して再実行した場合は、provider と ticket ID から通常の workflow ID を確認する。
+見つからなければ Git common directory にある active `dev-flow` state の identity と namespace 名だけを`workflow-state show`で列挙し、`dev-flow` namespace の root ticket ID と正本 URL が完全一致する proposal workflow を一件に確定する。
+候補が0件または複数なら推測せず停止する。
 
 `dev-flow` namespace には次の調整情報だけを保存する。
 
@@ -46,7 +53,10 @@ root ticket の正本 URL が確定したら、`workflow-state`を使い、provi
 
 再実行時は保存値だけで工程を決めない。
 root ticket と子孫、block 関係、pull request の base、head、Draft、merge、review、stack の状態を provider と GitHub から再取得する。
-保存済み identity と外部状態が一致しない場合は、状態を上書きせず差分を報告して停止する。
+provider、root ticket、repository、ticket と pull request の対応など、不変 identity が外部状態と一致しない場合は、状態を上書きせず差分を報告して停止する。
+保存済みの人間待ちに対応する review submit、thread resolve、merge は期待済み transition として扱う。
+操作対象と遷移前の状態が保存値に一致し、外部状態が期待する遷移後の値になった場合だけ、その待機を完了へ更新して工程を選び直す。
+待機へ記録していない変更、対象 identity の変更、期待する遷移以外の変更は予期しない外部変更として停止する。
 
 ## 現在状態から工程を選ぶ
 
@@ -91,6 +101,7 @@ pull request が Draft であり、ticket が root 配下にあり、base が ti
 
 root 配下の実装 pull request と stack を`gh-usage`で再取得する。
 未処理 feedback がある pull request だけを`pr-review-response-flow`へ渡す。
+トップレベル workflow ID、root ticket ID、対象 pull request URL を渡し、同じ状態の`pr-review-response-flow` namespace だけを更新させる。
 
 stacked pull request は bottom から top の順で処理する。
 下層 pull request の response、検証、push、pending reply が完了するまで上層へ進まない。
@@ -108,6 +119,7 @@ Draft 状態、required review、必須 check、未解決 thread、base pull req
 条件を満たした pull request は merge 待ちとして人間へ提示する。
 stack では bottom の merge を確認してから次の pull request の base、head、差分、check を再検証する。
 merge 後の branch 更新や base 変更により保存済み identity と差が出た場合は、その差を解消する下位 flow を選び直す。
+ただし、merge 待ちとして記録した pull request の未mergeからmerge済みへの遷移と、それに伴う stack 上層の base、head、check の変化だけを期待済み transition とする。
 
 ## 完了する
 
@@ -130,6 +142,6 @@ root ticket の完了状態への変更は、人間が承認した別の ticket 
 - ticket、branch、pull request、stack の対応が一件に定まらない。
 - 下位 flow が人間の判断または外部操作を待っている。
 - review submit、thread resolve、merge が必要である。
-- 再取得した外部状態が保存済み identity と異なる。
+- 再取得した不変 identity が保存値と異なる、または外部状態が記録済みの人間待ちから導出できない形で変化した。
 
 構造検査と再開シナリオは[検証記録](references/validation.md)に残す。

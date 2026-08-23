@@ -12,7 +12,8 @@
 ### 生の要求
 
 ticket がない要求を入力する。
-`design-flow`が root ticket 案を含む承認済み設計を返し、`ticket-flow`が正本 root ticket と実装 ticket graph を確定するまで、実装へ進まないことを確認する。
+`design-flow`が root ticket 案を含む承認済み設計を返した後、artifact digest に結び付いた proposal workflow を初期化することを確認する。
+`ticket-flow`が同じ状態へ正本 root ticket と実装 ticket graph を記録するまで、実装へ進まないことを確認する。
 
 ### 既存 root ticket
 
@@ -38,6 +39,12 @@ stack の下層と上層に未処理 feedback がある状態を入力する。
 
 全 check と review を満たした未merge pull request を入力する。
 merge を実行せず人間待ちを返し、再実行時に merge、base、head、stack を再取得することを確認する。
+記録済み pull request の merge と、それに伴う上層の base、head、check の変化は期待済み transition として受理し、工程を再選択することを確認する。
+
+### 親 workflow の review response
+
+`dev-flow`の workflow ID と pull request URL を`pr-review-response-flow`へ渡す。
+別のトップレベル状態を作らず、同じ状態の`pr-review-response-flow` namespace だけを更新することを確認する。
 
 ### 範囲外 blocker
 
