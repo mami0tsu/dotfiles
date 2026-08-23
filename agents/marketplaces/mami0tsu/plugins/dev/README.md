@@ -14,6 +14,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 | `linear-usage` | Linear MCP で ticket と依存関係を操作する provider adapter |
 | `pr-review-response-flow` | PR feedback の評価、修正、検証、pending reply を統括するフロー |
 | `ticket-usage` | provider 非依存の契約で ticket と依存関係を操作する共通 adapter |
+| `ticket-flow` | 承認済み設計を一 PR 単位の実装 ticket と依存関係へ反映するフロー |
 | `pre-push-review` | commit 済み差分の敵対的検証と difit 人間レビューを反復するフロー |
 | `reply-to-pr-review-comments` | 承認済み返信案を記録済み pending review に追加するフロー |
 | `review-pr` | 他人の PR を複数の専門 sub-agent で静的検証し、pending review を作るフロー |

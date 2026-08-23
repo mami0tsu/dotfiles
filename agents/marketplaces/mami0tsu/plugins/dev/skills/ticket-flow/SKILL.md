@@ -1,0 +1,111 @@
+---
+name: ticket-flow
+description: 承認済み design-flow 成果物を、一つの PR と一つの実装 ticket が対応する構成へ反映し、親子関係、block 関係、branch、正本を含む ticket を確定する。
+---
+
+# Ticket Flow
+
+承認済み設計の ticket 案を、再解釈せず provider の正本へ反映する。
+一つの実装 ticket は、一つの branch、worktree、PR に対応する。
+
+## 入力を照合する
+
+[design-flow の成果物 contract](../design-flow/references/artifact-contract.md) を満たす承認済み成果物、正本の識別情報、成果物と正本本文の SHA-256を受け取る。
+`unresolved`が空であり、`artifact_sha256`と`canonical.content_sha256`が design-flow の完了記録または承認記録と一致することを確認する。
+成果物の field を補完したり、PR 境界、受け入れ条件、親子関係、block 関係、stack 順序を再解釈したりしない。
+
+既存 root ticket を成果物が参照する場合は、[ticket-usage](../ticket-usage/SKILL.md) で本文、担当者、状態、親、block 関係、正本 URL を取得する。
+`proposal:root`の場合は、title、description、container、担当者、初期状態を含む作成案を人間へ提示する。
+root ticket 案を承認されるまで provider へ書き込まない。
+
+呼び出し元の [workflow-state](../workflow-state/SKILL.md) workflow ID を必須にする。
+同じ状態の`ticket-flow` namespace だけを更新し、別のトップレベル状態を作らない。
+成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、作成と更新の完了結果だけを保存する。
+ticket 本文、設計本文、review 本文は保存しない。
+
+## 反映計画を確定する
+
+provider へ書き込む前に、次の反映計画を成果物から機械的に作り、人間へ提示する。
+
+- 作成または更新する root ticket
+- PR key ごとの実装 ticket、受け入れ条件、branch、base
+- 各 ticket の parent、blockedBy、blocks の期待集合
+- repository の設計文書を含める ticket
+- 実行する書き込み順序
+
+単一 PR では、root ticket 自体を実装 ticket として使う。
+既存 root ticket に成果物の受け入れ条件、branch、正本参照を反映し、子 ticket を作らない。
+`proposal:root`では root ticket を一件だけ作成し、その ID を PR の`ticket_ref`にも使う。
+
+複数 PR では、root 配下に`pull_requests`の項目と同数の実装 ticket を作る。
+各 ticket の description には、その PR の purpose、受け入れ条件と verification、branch または branch template、base を記録する。
+`parent_ref`を作業範囲の包含として、`blocked_by`を実行順序として別々に反映する。
+
+`canonical.kind`が`repository`の場合は、`includes_design_document: true`の PR が一件だけ存在することを確認する。
+その PR に対応する ticket の description へ、承認済み path、正本本文の SHA-256、設計文書をこの PR に含めることを記録する。
+stack ではこの ticket が最下層でなければ停止する。
+ticket system または Wiki が正本の場合は、すべての`includes_design_document`が`false`であることを確認する。
+
+## 書き込み前の状態を保存する
+
+作成予定の各 ticket に、安定した operation key を`root`または`pull_requests[].key`から割り当てる。
+operation key、期待する現在値、期待する作成後の graph を`ticket-flow` namespace へ保存してから最初の provider 書き込みへ進む。
+
+再開時は、保存済みの成果物 SHA-256が入力と一致することを確認する。
+保存済み ID がある operation は、その ID を[ticket-usage](../ticket-usage/SKILL.md) で再取得し、期待値との差分だけを更新する。
+保存済み ID がない operation で、前回の作成が成功した可能性を否定できない場合は再作成しない。
+root の候補、または root 直下の子 ticket を列挙し、operation key と一件を人間に対応づけてもらう。
+title の一致だけで作成済み ticket を選ばない。
+
+## ticket graph を反映する
+
+root ticket が proposal の場合は最初に作成する。
+作成 response の正本 ID と URL を、他の provider 書き込みより先に workflow state へ保存する。
+作成後は relation を含めて再取得し、担当者、状態、本文、正本 URL を期待値と比較する。
+
+複数 PR の実装 ticket は、blocker の ID をすべて解決できる順に一件ずつ作成する。
+parent、blockedBy、blocks は作成時の同じ provider 操作へ渡す。
+各作成 response の正本 ID と URL を、次の ticket 作成より先に保存する。
+作成後は relation を含めて再取得し、本文、担当者、状態、parent、blockedBy、blocks、正本 URL を検証する。
+
+既存 ticket の更新前には対象を再取得する。
+担当者、状態、本文、parent、blockedBy、blocks の現在値が反映計画の pre-state と異なる場合は`stale-ticket`として停止する。
+relation は現在集合と期待集合の差分だけを[ticket-usage](../ticket-usage/SKILL.md)で更新する。
+承認済み成果物の期待集合にない relation の削除も反映計画へ明示し、人間が graph 全体を承認した場合だけ実行する。
+
+provider が要求された field または relation を一回の操作で表現できない場合は、近い構成へ置き換えず、書き込み前に停止する。
+書き込み後の再取得結果が期待値と異なる場合は`partial-write`として停止し、自動 rollback を試みない。
+
+## 参照を具体化する
+
+すべての作成 ID を保存した後、成果物の proposal 参照を正本 ID へ対応づける。
+`branch_template`の`{ticket_id}`は対応する正本 ID へ一度だけ置き換え、完全な branch 名として記録する。
+`base_ref: pr:<key>`は、対応する blocker ticket の具体化済み branch へ解決する。
+
+具体化した PR key、ticket ID、ticket URL、branch、base、parent、blockedBy、blocks、`includes_design_document`を反映結果として返す。
+承認済み成果物自体は書き換えず、proposal と正本 ID の対応を別の結果として保持する。
+
+## 完了する
+
+root とすべての実装 ticket を relation 付きで再取得する。
+一つの PR と一つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に受け入れ条件と blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
+
+検証後に、成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、具体化済み branch と base、graph の検証結果を`ticket-flow` namespace へ記録する。
+呼び出し元へ正本 URL と具体化結果を返す。
+トップレベル workflow の状態は完了しない。
+
+## 停止条件
+
+次の場合は状態を保持して停止する。
+
+- 成果物、正本、承認範囲、二つの SHA-256のいずれかを照合できない。
+- workflow ID がない、または保存済み workflow の識別情報と一致しない。
+- root ticket 案または反映計画が人間に承認されていない。
+- PR 境界、ticket 関係、stack 順序を補完または再解釈しなければ反映できない。
+- repository の設計文書を含める PR が一件に決まらない、または stack の最下層ではない。
+- 作成成功後に正本 ID を保存できたか判断できない。
+- provider が要求された field または relation を表現できない。
+- 書き込み前の ticket が反映計画の pre-state と異なる。
+- 書き込み後の ticket graph が期待値と異なる。
+
+構造検査とシナリオ試験の結果は[検証記録](references/validation.md)に残す。
