@@ -168,9 +168,11 @@ finding が0件でも review body を空にしない。
 
 ## pending review を引き渡す
 
-作成後に `gh-usage` で現在の base と head の OID を再取得する。
+作成後に `gh-usage` で現在の PR state、認証利用者、author、base と head の OID を再取得する。
 
-両方が検証対象と一致することを確認する。
+PR が `OPEN`、認証利用者が author と異なる、両方の OID が検証対象と一致することを確認する。
+
+いずれかを確認できない場合は `awaiting-human-submit` へ遷移せず、作成途中の state を保持して停止する。
 
 review が `PENDING`、author が認証利用者、commit OID が検証対象の head であることも確認する。
 
@@ -194,6 +196,7 @@ review 本文や thread 本文を応答へ複製しない。
 - 作成途中の pending review が現在の base または head と一致しない。
 - mutation を再開する時点で認証利用者が PR author である、または PR が open でない。
 - mutation の直前または成功後に認証利用者が PR author へ変わる、または PR が open でなくなる。
+- 人間への引き渡し直前に認証利用者が PR author へ変わる、または PR が open でなくなる。
 - 人間が作成または編集した pending review と競合する。
 - inline thread の位置を現在の diff に一意に結び付けられない。
 

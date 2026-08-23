@@ -31,6 +31,7 @@
 - 再開時の account 変更：現在の認証利用者が PR author なら mutation 前に停止する。
 - 作成途中の close または merge：submit 待ち以外では mutation を再開せず、state を保持する。
 - mutation 中の account または PR state 変更：各 mutation の前後で再照合し、次の書き込みを止める。
+- 引き渡し直前の account または PR state 変更：`awaiting-human-submit` へ遷移せず、作成途中の state を保持する。
 
 初回試験では、base OID の再照合、mutation ごとの OID 確認、pending 中の state 保持、Claude Code sub-agent の tool 禁止が不足していた。
 
