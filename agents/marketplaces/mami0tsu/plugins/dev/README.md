@@ -21,7 +21,7 @@ Codex CLI と Claude Code で共通利用する開発用 plugin です。
 | `retrospective` | AI の振る舞いと権限設定の改善候補を YAML で記録するフロー |
 | `workflow-state` | 複数 worktree と人間待ちをまたぐ workflow 状態を管理する共通基盤 |
 | `design-flow` | 要求から承認済み設計と PR 分割計画を作る上位フロー |
-| `dev-flow` | チケットに沿った実装、検証、レビュー、Draft PR、振り返りの上位フロー |
+| `dev-flow` | root ticket 配下の設計、ticket 反映、実装、review response、人間による merge 待ちを調整する最上位 coordinator |
 
 ## MCP サーバー
 

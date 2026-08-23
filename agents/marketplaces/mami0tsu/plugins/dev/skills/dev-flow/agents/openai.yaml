@@ -1,4 +1,4 @@
 interface:
-  display_name: "Development Flow"
-  short_description: "実装から Draft PR と振り返りまでの上位フロー"
-  default_prompt: "Use $dev-flow to run a reviewed plan through implementation, adversarial validation, human review, a draft PR, and a local retrospective."
+  display_name: "Development Coordinator"
+  short_description: "root ticket 配下の開発工程を調整して merge まで追跡"
+  default_prompt: "Use $dev-flow to coordinate design, ticket application, implementation, review responses, and human merge waits for a root ticket until every implementation pull request is merged."

@@ -13,6 +13,9 @@ allowed-tools: >-
 ## 状態を初期化する
 
 worktree が clean であり、ticket または PR の正本 URL が確定してから初期化する。
+承認済み root ticket 案を provider へ作成する前だけは、subject kind `ticket`、subject `proposal:root:<artifact-sha256>`で初期化できる。
+この例外では workflow ID に provider、`proposal-root`、成果物 SHA-256 の先頭16桁を含める。
+作成した正本 ticket の ID と URL は、provider の次の書き込みより先に呼び出し元 flow の namespace へ保存する。
 
 ```sh
 python3 <skill-dir>/scripts/workflow_state.py init \
@@ -30,6 +33,10 @@ script は repository、現在の branch、開始 commit を記録し、Git comm
 保存済みの識別情報を外部状態と照合してから再開する。
 
 中断後に識別情報を失った場合は、本文を表示しない `show`で取得する。
+
+人間が正本 root ticket だけを指定して proposal workflow を再開する場合は、Git common directory の`agent-workflows/`にある state ID を列挙する。
+各候補へ`show`を実行して workflow と namespace 名だけを確認し、呼び出し元 flow の namespace に保存された root ticket ID と正本 URLを`get`で照合する。
+一件に確定できない場合は停止する。
 
 ```sh
 python3 <skill-dir>/scripts/workflow_state.py show --workflow-id <workflow-id>
