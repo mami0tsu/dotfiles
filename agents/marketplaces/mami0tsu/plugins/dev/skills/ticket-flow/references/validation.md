@@ -14,6 +14,7 @@ root ticket を実装 ticket として更新し、子 ticket を作らないこ�
 
 root ticket を`proposal:root`とする場合も試した。
 成果物内の container、title、description、assignee、state だけで root ticket を一件作成し、その正本 ID を PR の ticket 参照へ使うことを確認した。
+作成後に branch と base を具体化した最終 description へ更新し、受け入れ条件と正本参照を再取得本文から検証した。
 
 ## 複数 PR
 
@@ -23,6 +24,9 @@ root 配下に三件の PR を置き、二件目と三件目が直前の PR に 
 
 成果物外 ticket への既存 blocks も入力した。
 成果物内の`blocked_by`から導出できる逆辺だけを検証し、未指定の blocks を保持することを確認した。
+
+全 ID の保存後、各 ticket の branch と base を具体化した。
+最終 description の更新前後の digest を保存し、更新直後の中断から再開して同じ本文を再書き込みしないことを確認した。
 
 repository を正本にした場合は、`includes_design_document: true`の一件だけが設計文書の path と digest を持つことを確認した。
 その ticket が stack の最下層でない入力は、provider への書き込み前に停止した。
@@ -40,3 +44,8 @@ root 直下の候補を提示し、人間が operation key と正本 ID を対�
 
 複数 parent、未解決の blocker、作成と relation 設定を一回で表現できない provider を入力した。
 近い relation への置換や部分的な書き込みを行わず、`unsupported-relation`または`unsupported-field`として停止した。
+
+## 正本の変更
+
+repository blob、ticket description、Wiki 本文を正本種別ごとに再取得し、UTF-8 本文の SHA-256を成果物と照合した。
+承認後に本文が変わった正本と、取得できない revision は、ticket への書き込み前に停止した。

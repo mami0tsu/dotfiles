@@ -14,6 +14,11 @@ description: 承認済み design-flow 成果物を、一つの PR と一つの�
 `unresolved`が空であり、`artifact_sha256`と`canonical.content_sha256`が design-flow の完了記録または承認記録と一致することを確認する。
 成果物の field を補完したり、PR 境界、受け入れ条件、親子関係、block 関係、stack 順序を再解釈したりしない。
 
+正本を現在の識別情報から再取得する。
+repository では`canonical.revision`の`canonical.path`にある blob、ticket system では`canonical.target_ref`の description、Wiki では`canonical.url`と revision が指す本文を取得する。
+取得した UTF-8 本文の SHA-256が`canonical.content_sha256`と一致することを確認する。
+正本を再取得できない場合、revision または path が実在しない場合、digest が異なる場合は反映計画へ進まない。
+
 既存 root ticket を成果物が参照する場合は、[ticket-usage](../ticket-usage/SKILL.md) で本文、担当者、状態、親、block 関係、正本 URL を取得する。
 `proposal:root`の場合は、成果物の`root_ticket`にある title、description、container、assignee、state を作成案として人間へ提示する。
 いずれかの field が未定義なら補完せず停止する。
@@ -41,6 +46,11 @@ provider へ書き込む前に、次の反映計画を成果物から機械的�
 複数 PR では、root 配下に`pull_requests`の項目と同数の実装 ticket を作る。
 各 ticket の description には、その PR の purpose、受け入れ条件と verification、branch または branch template、base を記録する。
 `parent_ref`を作業範囲の包含として、`blocked_by`を実行順序として別々に反映する。
+
+description は、purpose、acceptance criteria、branch、base、canonical の順に固定した Markdown から生成する。
+acceptance criteria は criterion と verification の組を成果物の順序どおりに記録する。
+canonical には正本 URL または repository path、revision、正本本文の SHA-256を記録する。
+この形式以外の説明を補わない。
 
 `canonical.kind`が`repository`の場合は、`includes_design_document: true`の PR が一件だけ存在することを確認する。
 その PR に対応する ticket の description へ、承認済み path、正本本文の SHA-256、設計文書をこの PR に含めることを記録する。
@@ -92,13 +102,19 @@ provider が要求された field または relation を一回の操作で表現
 `branch_template`の`{ticket_id}`は対応する正本 ID へ一度だけ置き換え、完全な branch 名として記録する。
 `base_ref: pr:<key>`は、対応する blocker ticket の具体化済み branch へ解決する。
 
+具体化した branch と base を使い、固定形式から各実装 ticket の最終 description を生成する。
+単一 PR の`proposal:root`も root ticket を作成した後に同じ処理へ含める。
+各更新前に、現在 description の SHA-256と期待する最終 description の SHA-256を pending operation として workflow state へ保存する。
+再開時は現在 description を再取得し、pre-state digest なら未更新、期待する digest なら更新済み、どちらとも異なる場合は`stale-ticket`として扱う。
+未更新の場合だけ最終 description へ更新し、再取得した本文の SHA-256、具体化済み branch、base、受け入れ条件、正本参照を検証する。
+
 具体化した PR key、ticket ID、ticket URL、branch、base、parent、blockedBy、blocks、`includes_design_document`を反映結果として返す。
 承認済み成果物自体は書き換えず、proposal と正本 ID の対応を別の結果として保持する。
 
 ## 完了する
 
 root とすべての実装 ticket を relation 付きで再取得する。
-一つの PR と一つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に受け入れ条件と blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
+一つの PR と一つの実装 ticket が対応し、単一 PR に子 ticket がなく、複数 PR の各 ticket に具体化済み branch、base、受け入れ条件、blocker の期待集合があり、設計文書を含める ticket が明示されていることを確認する。
 
 検証後に、成果物の SHA-256、root ticket ID、PR key と ticket ID の対応、具体化済み branch と base、graph の検証結果を`ticket-flow` namespace へ記録する。
 呼び出し元へ正本 URL と具体化結果を返す。
