@@ -91,7 +91,8 @@ body file の `Ticket`欄には正本 ticket URL を一件だけ記載する。
 作成直後に Draft 状態、base、head、title、body、URLを再取得し、`Ticket`欄を含む期待値と比較する。
 
 base が default branch なら standalone pull request として扱い、stack 操作は行わない。
-base が blocker branch なら、blocker pull request から作成した pull request までの URL を bottom から top の順へ並べ、`gh stack link`で既存 Draft pull request を stack 化する。
+base が blocker branch なら、base に選んだ blocker pull request の stack を bottom まで取得する。
+既存 stack の全 URL と作成した pull request の URL を bottom から top の順へ並べ、`gh stack link`で既存 Draft pull request を stack 化する。
 二件未満の URL を `gh stack link`へ渡さない。
 
 stack 化後は各 pull request の base、head、Draft 状態、stack ID、順序を再取得する。

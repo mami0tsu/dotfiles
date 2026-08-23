@@ -31,11 +31,11 @@
 
 ### stack 上位の pull request
 
-- ticket graph：未merge blocker が同じ stack に二件あり、順序は `P-1`、`P-2`。対象 ticket は `P-2`に block されている。
+- ticket graph：順序が `P-1`、`P-2`の既存 stack があり、対象 ticket の direct blocker は最上位の `P-2`一件。
 - GitHub 状態：`P-1`と`P-2`は検証済み Draft pull request で同じ stack に属する。
 - 期待する判断：最上位 blocker `P-2`の head branch を base にする。対象 Draft pull request の作成後、三件の URL を bottom から top の順に `gh stack link`へ渡し、base、head、Draft 状態、stack ID、順序を再検証する。
 - 拒否条件：未merge blocker が別 stack に分かれる場合、blocker pull request が非 Draft の場合、既存 base が期待順と異なり変更が承認範囲にない場合は停止する。
-- 観測結果：最上位 blocker `P-2`の head branch を base に選び、新規 pull request を加えた URL を bottom から top の順で stack 化し、identity と順序を再取得すると判断した。PASS。
+- 観測結果：最上位 blocker `P-2`の head branch を base に選び、既存 stack を bottom まで取得した。`P-1`、`P-2`、新規 pull request の URL を順に渡して stack 化し、identity と順序を再取得すると判断した。PASS。
 
 ### force push の境界
 
