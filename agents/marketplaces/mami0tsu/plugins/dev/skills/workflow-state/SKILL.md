@@ -7,7 +7,7 @@ allowed-tools: >-
 
 # Workflow State
 
-トップレベルの workflow ごとに一つの状態を持つ。
+トップレベルの workflow ごとに1つの状態を持つ。
 下位 flow は別の状態ファイルを作らず、同じ状態の namespace を更新する。
 
 ## 状態を初期化する
