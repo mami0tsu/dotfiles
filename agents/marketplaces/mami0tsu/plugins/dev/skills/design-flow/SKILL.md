@@ -11,14 +11,14 @@ description: 生の要求または既存 ticket から、保存先を確定し�
 ## 入力を確定する
 
 ticket URL がある場合は、[ticket-usage](../ticket-usage/SKILL.md) で本文、状態、親、block 関係、正本 URL を取得する。
-生の要求だけがある場合は、要求を設計の入力にする。
+生の要求だけがある場合は、要求を設計の入力にし、root ticket の作成案を成果物に含める。
 
 既存の承認済み設計を使う場合は、正本 URL、承認者が確定した範囲、承認後の変更の有無を確認する。
 いずれかを確認できなければ未承認として扱う。
 
 呼び出し元が [workflow-state](../workflow-state/SKILL.md) の workflow ID を渡した場合は、識別情報を照合して同じ状態を再開する。
 下位 flow として `design-flow` namespace だけを更新し、別のトップレベル状態を作らない。
-外部 object は URL、ID、commit OID、判断結果だけで参照し、要求本文、設計本文、review 本文は保存しない。
+外部 object は URL、ID、commit OID、判断結果、承認済み成果物と正本本文の SHA-256だけで参照し、要求本文、設計本文、review 本文は保存しない。
 
 ## 正本を選ぶ
 
@@ -27,6 +27,8 @@ ticket URL がある場合は、[ticket-usage](../ticket-usage/SKILL.md) で本�
 - プロダクトのコード、データ、外部 interface を規定する設計は repository を第一候補にする。
 - 開発手順、ticket 構成、review 運用を規定する設計は Linear を第一候補にする。
 - 既存の外部 Wiki が正本である場合は、その Wiki を候補にできる。
+
+repository を選ぶ場合は、既存文書との関係、対象 path、設計文書を含める PR を同時に確定する。
 
 初期対応する書き込み先は repository と Linear に限定する。
 未対応 Wiki が選ばれた場合は、承認済み本文を人間へ渡して停止する。
@@ -62,18 +64,53 @@ finding は根拠と再検証条件を添えて重複排除する。
 ## 人間の承認を得る
 
 検証済み成果物を [成果物 contract](references/artifact-contract.md) の形で提示する。
-人間には少なくとも、設計判断、受け入れ条件、PR 分割、親子関係、block 関係、stack 順序、repository の設計文書を含める PR を承認してもらう。
+人間には正本へ保存する Markdown 本文も提示する。
+少なくとも、設計判断、受け入れ条件と検証方法、PR 分割、親子関係、block 関係、branch、base、stack 順序、正本本文を承認してもらう。
+repository を正本にする場合は、対象 path と設計文書を含める PR も承認対象にする。
 
 訂正または未解決の疑問が返った場合は `dig`へ戻し、同じ sub-agent で再検証する。
 明示的な承認が得られるまで ticket の作成、分割、更新へ進まない。
 
-## 正本へ保存する
+## 保存を準備する
 
-repository が正本の場合は、設計文書を単一 PR または stack 最下層の PR にだけ含める。
-Linear が正本の場合は [ticket-usage](../ticket-usage/SKILL.md) で、書き込み直前の状態を確認し、書き込み後に検証する。
+承認前に正本へ保存する Markdown 本文を確定し、[成果物 contract](references/artifact-contract.md) の除外規則に従って成果物の SHA-256を求める。
+正本本文の SHA-256と成果物の SHA-256は [digest helper](scripts/artifact_digest.py) で計算する。
 
-workflow ID を受け取っている場合は、保存後に正本 URL、承認済み成果物の種別、PR 数、設計文書を含める PR を `design-flow` namespace へ記録する。
-後続の `ticket-flow` には正本 URLと承認済み成果物を渡し、設計を再解釈させない。
+Linear の既存 issue を正本にする場合は、workflow ID を必須にする。
+正本種別、対象 issue と field、`expected_pre_content_sha256`、`desired_content_sha256`、成果物の SHA-256を pending operation として外部書き込み前に記録する。
+
+Linear の既存 issue が正本の場合は、承認済みの`target_ref`と`target_field`だけを [ticket-usage](../ticket-usage/SKILL.md) で更新する。
+書き込み直前の本文 digest が pending operation の pre-state と一致しなければ停止する。
+承認済み本文を保存した後に同じ対象を再取得する。
+再取得した本文の SHA-256が承認済み正本本文と一致しなければ停止する。
+
+生の要求で作成予定の Linear root issue を正本にする場合は、この flow では書き込まない。
+`proposal:root`と`description`を保存先として成果物へ含め、後続の ticket 作成へ引き渡す。
+作成後の URL と本文 digest を受け取ったら同じ成果物で再開し、正本を再取得して照合する。
+
+repository が正本の場合、設計文書の書き込みはこの flow では行わない。
+承認済み本文、対象 path、成果物と正本本文の SHA-256を、単一 PR または stack 最下層の実装計画へ含める。
+後続 flow が対象 branch と worktree を確定し、書き込み前の path と base commit を照合してから文書を commit する。
+commit 後に blob と正本本文の SHA-256を照合し、その commit の file URL を正本 URL にする。
+
+未対応 Wiki では人間から保存後 URL を受け取り、本文を再取得できる場合は SHA-256を照合する。
+本文を再取得できない場合は、保存者による本文一致の明示的な確認と、承認済み正本本文の SHA-256を要求する。
+immutable revision だけでは完了扱いにしない。
+
+再開時に pending operation がある場合は正本を再取得する。
+分岐は [resume helper](scripts/resume_decision.py) と同じ判定にする。
+現在本文が`desired_content_sha256`と一致する場合は書き込み済みと判断し、現在 revision を取得できる場合は`post_revision`として完了記録へ進む。
+現在本文 digest が`expected_pre_content_sha256`のままなら未書き込みと判断し、書き込み直前に再取得して同じ digest であることを確認した後、承認済み本文だけを書き込む。
+どちらにも一致しない場合は、再書き込みせず停止する。
+
+workflow ID を受け取っている場合は、保存後に正本 URLまたは対象 repository path、正本 revision、成果物と正本本文の SHA-256、PR 数、設計文書を含める PR を `design-flow` namespace へ記録し、pending operation を完了扱いにする。
+
+## 成果物を引き渡す
+
+承認済み成果物、正本の識別情報、成果物と正本本文の SHA-256を呼び出し元へ返す。
+この flow は ticket の作成、分割、状態、親子関係、block 関係を更新しない。
+承認された既存 Linear issue の`description`を正本として更新する場合だけ、保存手順の範囲で本文を更新する。
+後続の ticket 操作には成果物を再解釈させず、root ticket 案、各 PR の ticket 参照、親子関係、block 関係をそのまま反映させる。
 
 ## 停止条件
 
@@ -86,5 +123,8 @@ workflow ID を受け取っている場合は、保存後に正本 URL、承認�
 - actionable finding が残っている。
 - 人間が成果物全体を承認していない。
 - 未対応 Wiki への保存後 URL を確認できない。
+- 正本本文の SHA-256を`canonical.content_sha256`と照合できない。
+- 外部書き込みの成否が曖昧である。
+- Linear の既存 issue を更新する workflow ID がない。
 
 構造検査とシナリオ試験の結果は [検証記録](references/validation.md) に残す。

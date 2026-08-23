@@ -6,26 +6,41 @@
 
 `quick_validate.py`で、skill 名、frontmatter、description の形式を検証した。
 textlint、yamllint、JSON parser、`git diff --check`で、Markdown、YAML、plugin manifest、差分を検証した。
+`test_artifact_digest.py`で、正本 identity の追記に対する安定性、正本本文 digest の拘束、不一致本文の拒否を検証した。
 
 ## 単一 PR
 
-dev plugin の README に利用例を追加する要求を入力した。
-sub-agent は repository と Linear を保存先候補として提示し、repository を推奨した。
-保存先が未承認のため、`dig`、設計案、ticket 更新へ進まず停止した。
+dev plugin の README に利用例を追加する生の要求を入力した。
+repository を正本に選び、専用の設計文書 path と1件の PR を指定した。
 
-repository の承認後に生成する成果物は、`pull_requests`を1件だけ持つ。
-その項目は root ticket、default branch、設計文書を含む PR に対応する。
+成果物は`proposal:root`、`branch_template`、`branch:default`、受け入れ条件ごとの検証方法を生成した。
+初回検証では、ticket 作成前の branch 名と、構造化成果物と repository blob の digest が混同されていた。
+
+branch を ticket ID 入り template とし、成果物と正本本文の digest を分けた。
+同じ2つの sub-agent で再検証し、finding 0件で人間承認の境界まで到達した。
 
 ## 複数 PR
 
-DB schema、API、frontend を段階的に変更する要求を入力した。
-sub-agent はコード、データ、外部 interface を規定するため repository を推奨し、Linear も候補として提示した。
-保存先が未承認のため、PR 分割案を先に作らず停止した。
+既存 root ticket 配下で、DB schema、API、frontend を3件の PR に分ける要求を入力した。
+Linear を正本に選び、`db-schema`、`api`、`frontend`の順で stack を指定した。
 
-repository の承認後に生成する成果物は、各 PR の目的、受け入れ条件、親 ticket、block 関係、base branch を持つ。
-設計文書は stack 最下層の PR だけに置く。
+成果物は各 PR に proposal ticket、親、block 関係、branch template、`base_ref`、検証方法を生成した。
+独立検証で、API の failure contract、rolling compatibility、cross-component test、dual-read、dual-write、旧 API からの更新伝播が不足していると判明した。
+
+`dig`へ戻り、expand-only migration、transactional dual-write、旧 column から新 column への trigger、failure code と UI の対応、version 付き fixture、stack 全体の E2E test を追加した。
+同じ2つの sub-agent で再検証し、finding 0件で人間承認の境界まで到達した。
+
+## 外部保存の再開
+
+外部書き込み前に pending operation、`expected_pre_content_sha256`、`desired_content_sha256`を記録する。
+外部書き込み後、状態更新前に中断した場合を3分岐で試験した。
+
+- 現在本文が desired digest と一致する場合：再書き込みせず、取得できた現在 revision を post-revision として完了する。
+- 現在本文 digest が pre-state と一致する場合：書き込み直前に再取得し、同じ digest なら承認済み本文だけを書き込む。
+- どちらにも一致しない場合または取得不能の場合：再書き込みせず停止する。
 
 ## 未対応 Wiki
 
 未対応 Wiki が選ばれた場合は、承認済み本文を渡して保存を人間へ委ねる。
-保存後の正本 URL を確認するまで、ticket の作成、分割、更新へ進まない。
+保存後の URL、保存者による本文一致の確認、正本本文の digest を確認するまで、成果物を後続 flow へ渡さない。
+immutable revision だけでは完了扱いにしない。
