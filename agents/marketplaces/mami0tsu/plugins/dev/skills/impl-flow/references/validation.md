@@ -19,7 +19,7 @@
 - GitHub 状態：head branch に対応する pull request なし。default branch は `main`。
 - 期待する判断：`origin/main`の OID から専用 branch と worktree を作り、base `main`の Draft pull request を一件作成する。`gh stack link`は実行しない。
 - 拒否条件：同じ head branch の pull request が複数ある場合、または ticket、branch、worktree の対応が保存済み state と異なる場合は停止する。
-- 観測結果：default branch の remote OID を base に選び、base `main`の Draft pull request を作成し、stack 操作を行わないと判断した。PASS。
+- 観測結果：default branch の remote OID を base に選び、base `main`の Draft pull request を作成し、stack を操作しないと判断した。PASS。
 
 ### stack 最下層の pull request
 

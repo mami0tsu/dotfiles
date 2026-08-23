@@ -1,14 +1,14 @@
 ---
 name: impl-flow
-description: 一つの実装 ticket を専用 worktree、branch、commit、push、Draft PR、振り返りまで進め、ticket の blocker 関係から standalone または stacked PR の base を決める開発フロー。承認済み ticket を実装するときに使う。
+description: 1つの実装 ticket を専用 worktree、branch、commit、push、Draft PR、振り返りまで進め、ticket の blocker 関係から standalone または stacked PR の base を決める開発フロー。承認済み ticket を実装するときに使う。
 ---
 
 # Implementation Flow
 
 承認済みの実装 ticket を一件だけ受け取る。
-一つの ticket、branch、worktree、pull request を一対一に対応させ、ticket の block 関係を pull request の依存順へ写す。
+1つの ticket、branch、worktree、pull request を一対一に対応させ、ticket の block 関係を pull request の依存順へ写す。
 
-受け入れ条件または実装範囲が不足している場合は実装しない。
+受け入れ条件か実装範囲が不足している場合は実装しない。
 呼び出し元へ不足を返し、設計または ticket の更新後に再開する。
 
 ## workflow state
@@ -53,7 +53,7 @@ blocker pull request の head branch、ticket の blocker、stack 順序が互�
 
 ## worktree と branch
 
-`git-usage`を使い、ticket ID を含む専用 branch と専用 worktree を一つ用意する。
+`git-usage`を使い、ticket ID を含む専用 branch と専用 worktree を1つ用意する。
 新しい branch は、確認済みの base branch の remote OID を起点にする。
 
 既存 worktree を再利用できるのは、次の条件をすべて満たす場合だけである。
@@ -68,7 +68,7 @@ dirty な worktree を自動で stash しない。
 
 ## 実装と commit
 
-ticket の範囲内だけを実装し、対象変更に必要な test、lint、build、文書検査を実行する。
+ticket の範囲内だけを実装し、対象変更に必要な test、lint、build、文書を検査する。
 呼び出し元が `git-usage`で変更を関心別に commit する。
 
 worktree が clean になったら、base と target を完全な commit OID で `pre-push-review`へ渡す。
@@ -116,7 +116,7 @@ push には記録済み remote OID を指定した `--force-with-lease=<branch>:
 ## 振り返りと完了
 
 Draft pull request の作成と検証が終わった直後に `retrospective`を実行する。
-`.agent/`が Git の除外対象であり、追跡もstageもされていないことを確認する。
+`.agent/`が Git の除外対象であり、追跡およびstageの対象外であることを確認する。
 
 `retrospective`には ticket ID、作業履歴、実際に求めた実行許可を渡す。
 pull request URL と振り返りの検証結果を workflow state に記録し、呼び出し元へ返す。
