@@ -26,7 +26,9 @@
 - 既存 pending review：workflow state と一致しない review を変更しない。
 - 人間の submit 待ち：pending の間は workflow state を保持し、同じ review ID を再開時に照合する。
 - submit 後の merge または close：PR の状態にかかわらず、同じ review ID の submit を read-only で確認して state を完了する。
+- 作成途中の再開：identity、OID、review ID、digest を照合し、再構成した review との差分だけを続ける。
+- outdated partial review：base または head の不一致を検出し、review を削除せず state を保持する。
 
 初回試験では、base OID の再照合、mutation ごとの OID 確認、pending 中の state 保持、Claude Code sub-agent の tool 禁止が不足していた。
 
-再試験では、sub-agent の全 tool 禁止と submit 後に PR が merge または close された経路を追加で修正した。
+再試験では、sub-agent の全 tool 禁止、submit 後に PR が merge または close された経路、作成途中の再開経路を追加で修正した。
