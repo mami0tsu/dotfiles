@@ -77,6 +77,8 @@ head branch、base branch、title、body file、対象 repository を取得す�
 
 repository に pull request template がある場合は、それを本文の基礎にする。
 
+複数の template があり、呼び出し元が使用する template を指定していない場合は停止する。
+
 template がない場合は、呼び出し元が指定した fallback template を body file に保存する。
 
 作成前に既存の pull request がないことを確認する。
@@ -107,8 +109,12 @@ ticket ID の直前は半角スペース 1 文字で区切る。
 
 ```sh
 gh pr view <created-url> --repo <owner>/<repo> \
-  --json number,isDraft,baseRefName,headRefName,title,url
+  --json number,isDraft,baseRefName,headRefName,title,body,url
 ```
+
+返却された body を、作成に使った body file の内容と比較する。
+
+GitHub が末尾の改行だけを正規化した場合は同一として扱い、それ以外の差異があれば成功としない。
 
 ### 停止条件
 
