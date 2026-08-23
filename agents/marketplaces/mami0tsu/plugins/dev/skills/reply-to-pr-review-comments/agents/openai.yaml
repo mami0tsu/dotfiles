@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR レビュー返信"
+  short_description: "承認済み返信案を pending review に安全に追加する"
+  default_prompt: "Use $reply-to-pr-review-comments to add approved replies to the recorded pending review without submitting it."
