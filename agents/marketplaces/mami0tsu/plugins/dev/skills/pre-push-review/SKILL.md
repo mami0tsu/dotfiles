@@ -133,7 +133,10 @@ python3 <skill-dir>/scripts/pre_push_review.py run \
 
 helper は Agent comment の識別情報と raw transcript を private file に保存する。
 
-helper は difit を `--keep-alive` で起動し、browser disconnect を検出したあと SIGINT でコメント出力を取得する。
+helper は difit を `--keep-alive` で起動し、browser disconnect を検出したあと、1秒間にわたって localhost の endpoint を繰り返し読み取る。
+proxy と redirect は使わず、最終応答を transcript に記録してから process group を終了する。
+
+endpoint が HTTP 200 の空本文を返した場合だけ、コメント0件として扱う。
 
 ブラウザが閉じて process が終了するまで待つ。
 

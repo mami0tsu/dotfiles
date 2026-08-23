@@ -16,15 +16,31 @@ import sys
 import tempfile
 import time
 from typing import Any
+import urllib.error
+import urllib.parse
+import urllib.request
 
 
 STATE_NAME = "pre-push-review-state.json"
 SCHEMA_VERSION = 1
 REPLY_RE = re.compile(r"^Reply ([1-9][0-9]*) \((.*)\)$")
+EMPTY_COMMENTS_OUTPUT = (
+    "\n📝 Comments from review session:\n"
+    + "=" * 50
+    + "\n\n"
+    + "=" * 50
+    + "\nTotal comments: 0\n"
+)
 
 
 class ReviewError(RuntimeError):
     pass
+
+
+class CommentsCollectionError(ReviewError):
+    def __init__(self, message: str, partial: str) -> None:
+        super().__init__(message)
+        self.partial = partial
 
 
 def git(*args: str, check: bool = True) -> str:
@@ -471,6 +487,51 @@ def new_transcript_path() -> Path:
     return Path(name)
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def fetch_comments_output(server_url: str) -> str:
+    try:
+        parsed = urllib.parse.urlsplit(server_url)
+        port = parsed.port
+    except ValueError as error:
+        raise ReviewError(f"invalid difit server URL: {error}") from error
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname != "localhost"
+        or port is None
+        or parsed.path not in ("", "/")
+        or parsed.query
+        or parsed.fragment
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise ReviewError("invalid difit server URL")
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    try:
+        with opener.open(f"{server_url}/api/comments-output", timeout=5) as response:
+            if response.status != 200:
+                raise ReviewError(f"difit comments endpoint returned HTTP {response.status}")
+            value = response.read().decode("utf-8")
+    except (OSError, UnicodeDecodeError, urllib.error.URLError) as error:
+        raise ReviewError(f"cannot fetch difit comments output: {error}") from error
+    return value
+
+
+def collect_comments_output(server_url: str) -> str:
+    deadline = time.monotonic() + 1.0
+    latest = fetch_comments_output(server_url)
+    try:
+        while time.monotonic() < deadline:
+            time.sleep(0.1)
+            latest = fetch_comments_output(server_url)
+    except BaseException as error:
+        raise CommentsCollectionError(str(error), latest) from error
+    return latest or EMPTY_COMMENTS_OUTPUT
+
+
 def command_run(args: argparse.Namespace) -> None:
     require_clean()
     state = read_state()
@@ -531,6 +592,8 @@ def command_run(args: argparse.Namespace) -> None:
     return_code: int | None = None
     process: subprocess.Popen[str] | None = None
     disconnect_handled = False
+    controlled_shutdown = False
+    server_url: str | None = None
     try:
         with transcript.open("w", encoding="utf-8") as output:
             process = subprocess.Popen(
@@ -549,15 +612,42 @@ def command_run(args: argparse.Namespace) -> None:
                 sys.stdout.flush()
                 output.write(line)
                 output.flush()
+                url_match = re.search(r"difit server started on (http://localhost:[0-9]+)", line)
+                if url_match:
+                    server_url = url_match.group(1)
                 if (
                     not disconnect_handled
                     and "Client disconnected, but server is staying alive" in line
                 ):
                     disconnect_handled = True
-                    time.sleep(0.25)
-                    os.killpg(process.pid, 2)
-            return_code = process.wait()
-    except BaseException:
+                    if server_url is None:
+                        raise ReviewError("difit disconnect occurred before the server URL was known")
+                    try:
+                        comments_output = collect_comments_output(server_url)
+                    except CommentsCollectionError as error:
+                        if error.partial:
+                            output.write(error.partial)
+                            output.flush()
+                        raise
+                    output.write(comments_output)
+                    output.flush()
+                    sys.stdout.write(comments_output)
+                    sys.stdout.flush()
+                    controlled_shutdown = True
+                    os.killpg(process.pid, 15)
+                    break
+            process.stdout.close()
+            try:
+                return_code = process.wait(timeout=5 if controlled_shutdown else None)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, 9)
+                return_code = process.wait()
+            if controlled_shutdown:
+                try:
+                    os.killpg(process.pid, 9)
+                except ProcessLookupError:
+                    pass
+    except BaseException as error:
         if process is not None and process.poll() is None:
             try:
                 os.killpg(process.pid, 15)
@@ -571,17 +661,26 @@ def command_run(args: argparse.Namespace) -> None:
                 except ProcessLookupError:
                     pass
                 process.wait()
+        if process is not None:
+            try:
+                os.killpg(process.pid, 9)
+            except ProcessLookupError:
+                pass
+        if process is not None and process.stdout is not None:
+            process.stdout.close()
         transcript_text = transcript.read_text(encoding="utf-8")
         state["currentTranscript"]["sha256"] = hashlib.sha256(
             transcript_text.encode("utf-8")
         ).hexdigest()
         state["currentTranscript"]["status"] = "interrupted"
         write_state(state)
-        raise
+        raise ReviewError(f"difit interrupted: {error}; transcript: {transcript}") from error
     transcript_text = transcript.read_text(encoding="utf-8")
     state["currentTranscript"]["sha256"] = hashlib.sha256(
         transcript_text.encode("utf-8")
     ).hexdigest()
+    if controlled_shutdown and return_code == -15:
+        return_code = 0
     state["currentTranscript"]["status"] = "completed" if return_code == 0 else "failed"
     if return_code != 0:
         write_state(state)

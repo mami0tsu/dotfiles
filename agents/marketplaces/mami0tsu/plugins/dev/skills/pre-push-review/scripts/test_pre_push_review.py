@@ -11,7 +11,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 
 SCRIPT = Path(__file__).with_name("pre_push_review.py")
@@ -740,14 +742,14 @@ OUTPUT
             "discard-transcript", "--transcript", str(transcript), "--allow-incomplete"
         )
 
-    def test_keep_alive_disconnect_collects_comments_via_sigint(self) -> None:
+    def run_keep_alive_disconnect(self, comments_output: str):
         initialized = self.initialize_committed_change()
         selection = json.loads(self.run_review("next").stdout)
         self.record_validation()
         self.fake_difit.write_text(
             "#!/bin/sh\n"
             "if [ \"$1\" = \"--version\" ]; then echo 4.0.5; exit 0; fi\n"
-            "trap 'printf \"\\n📝 Comments from review session:\\n==================================================\\n==================================================\\nTotal comments: 0\\n\"; exit 0' INT\n"
+            "echo '🚀 difit server started on http://localhost:4966'\n"
             "echo 'Client disconnected, but server is staying alive (--keep-alive)'\n"
             "while :; do sleep 1; done\n",
             encoding="utf-8",
@@ -756,17 +758,164 @@ OUTPUT
         comments = self.temporary_root / "comments.json"
         comments.write_text("[]\n", encoding="utf-8")
         comments.chmod(0o600)
-        run = self.run_review(
-            "run", "--target", selection["target"], "--base", selection["base"],
-            "--comments", str(comments), "--clean",
-        )
-        transcript = Path(json.loads(run.stdout.splitlines()[-1])["transcript"])
+        previous_directory = Path.cwd()
+        try:
+            os.chdir(self.root)
+            with mock.patch.dict(os.environ, self.environment, clear=True), mock.patch.object(
+                REVIEW_MODULE,
+                "collect_comments_output",
+                return_value=comments_output or REVIEW_MODULE.EMPTY_COMMENTS_OUTPUT,
+            ):
+                REVIEW_MODULE.command_run(
+                    SimpleNamespace(
+                        target=selection["target"],
+                        base=selection["base"],
+                        comments=comments,
+                        clean=True,
+                    )
+                )
+        finally:
+            os.chdir(previous_directory)
         state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
         self.assertEqual(state["currentTranscript"]["status"], "completed")
+        transcript = Path(state["currentTranscript"]["path"])
         extracted = json.loads(
             self.run_review("extract", "--transcript", str(transcript)).stdout
         )
+        return extracted
+
+    def test_keep_alive_disconnect_collects_empty_endpoint_output(self) -> None:
+        extracted = self.run_keep_alive_disconnect("")
         self.assertEqual(extracted["candidates"], [])
+
+    def test_keep_alive_disconnect_collects_human_endpoint_output(self) -> None:
+        extracted = self.run_keep_alive_disconnect(
+            "\n📝 Comments from review session:\n"
+            "==================================================\n"
+            "document.md:L1\n"
+            "人間の指摘\n"
+            "==================================================\n"
+            "Total comments: 1\n"
+        )
+        self.assertEqual(len(extracted["candidates"]), 1)
+        self.assertEqual(extracted["candidates"][0]["body"], "人間の指摘")
+
+    def test_fetch_comments_output_uses_local_direct_http_only(self) -> None:
+        class Response:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self):
+                return b"review output"
+
+        opener = mock.Mock()
+        opener.open.return_value = Response()
+        with mock.patch.object(
+            REVIEW_MODULE.urllib.request, "build_opener", return_value=opener
+        ) as build_opener:
+            result = REVIEW_MODULE.fetch_comments_output("http://localhost:4966")
+        self.assertEqual(result, "review output")
+        handlers = build_opener.call_args.args
+        self.assertTrue(any(isinstance(item, REVIEW_MODULE.urllib.request.ProxyHandler) for item in handlers))
+        self.assertTrue(any(isinstance(item, REVIEW_MODULE.NoRedirect) for item in handlers))
+        self.assertEqual(handlers[0].proxies, {})
+
+    def test_fetch_comments_output_rejects_invalid_or_redirected_urls(self) -> None:
+        for url in ("https://localhost:4966", "http://example.com:4966", "http://localhost:999999"):
+            with self.subTest(url=url), self.assertRaises(REVIEW_MODULE.ReviewError):
+                REVIEW_MODULE.fetch_comments_output(url)
+        opener = mock.Mock()
+        opener.open.side_effect = REVIEW_MODULE.urllib.error.HTTPError(
+            "http://localhost:4966/api/comments-output", 302, "redirect", {}, None
+        )
+        with mock.patch.object(
+            REVIEW_MODULE.urllib.request, "build_opener", return_value=opener
+        ), self.assertRaises(REVIEW_MODULE.ReviewError):
+            REVIEW_MODULE.fetch_comments_output("http://localhost:4966")
+
+    def test_collect_comments_preserves_last_response_when_poll_fails(self) -> None:
+        with mock.patch.object(
+            REVIEW_MODULE, "fetch_comments_output",
+            side_effect=["first", "final comment", REVIEW_MODULE.ReviewError("temporary failure")],
+        ), mock.patch.object(
+            REVIEW_MODULE.time, "monotonic", side_effect=[0.0, 0.0, 0.5]
+        ), mock.patch.object(REVIEW_MODULE.time, "sleep"):
+            with self.assertRaises(REVIEW_MODULE.CommentsCollectionError) as raised:
+                REVIEW_MODULE.collect_comments_output("http://localhost:4966")
+        self.assertEqual(raised.exception.partial, "final comment")
+
+    def test_poll_failure_persists_partial_transcript_as_interrupted(self) -> None:
+        initialized = self.initialize_committed_change()
+        selection = json.loads(self.run_review("next").stdout)
+        self.record_validation()
+        self.fake_difit.write_text(
+            "#!/bin/sh\n"
+            "if [ \"$1\" = \"--version\" ]; then echo 4.0.5; exit 0; fi\n"
+            "echo '🚀 difit server started on http://localhost:4966'\n"
+            "echo 'Client disconnected, but server is staying alive (--keep-alive)'\n"
+            "while :; do sleep 1; done\n",
+            encoding="utf-8",
+        )
+        self.fake_difit.chmod(0o755)
+        comments = self.temporary_root / "comments.json"
+        comments.write_text("[]\n", encoding="utf-8")
+        comments.chmod(0o600)
+        partial = "partial private review output\n"
+        previous_directory = Path.cwd()
+        try:
+            os.chdir(self.root)
+            with mock.patch.dict(os.environ, self.environment, clear=True), mock.patch.object(
+                REVIEW_MODULE, "collect_comments_output",
+                side_effect=REVIEW_MODULE.CommentsCollectionError("temporary failure", partial),
+            ), self.assertRaises(REVIEW_MODULE.ReviewError) as raised:
+                    REVIEW_MODULE.command_run(
+                        SimpleNamespace(
+                            target=selection["target"], base=selection["base"],
+                            comments=comments, clean=True,
+                        )
+                    )
+        finally:
+            os.chdir(previous_directory)
+        state = json.loads(Path(initialized["state"]).read_text(encoding="utf-8"))
+        current = state["currentTranscript"]
+        transcript = Path(current["path"])
+        self.assertIn(transcript.name, str(raised.exception))
+        contents = transcript.read_text(encoding="utf-8")
+        self.assertIn(partial, contents)
+        self.assertEqual(current["status"], "interrupted")
+        self.assertEqual(current["sha256"], hashlib.sha256(contents.encode()).hexdigest())
+        extract = self.run_review("extract", "--transcript", str(transcript), check=False)
+        self.assertNotEqual(extract.returncode, 0)
+        self.run_review(
+            "discard-transcript", "--transcript", str(transcript), "--allow-incomplete"
+        )
+
+    def test_collect_comments_preserves_partial_on_keyboard_interrupt(self) -> None:
+        with mock.patch.object(
+            REVIEW_MODULE, "fetch_comments_output", return_value="human review"
+        ), mock.patch.object(
+            REVIEW_MODULE.time, "monotonic", side_effect=[0.0, 0.0]
+        ), mock.patch.object(
+            REVIEW_MODULE.time, "sleep", side_effect=KeyboardInterrupt
+        ):
+            with self.assertRaises(REVIEW_MODULE.CommentsCollectionError) as raised:
+                REVIEW_MODULE.collect_comments_output("http://localhost:4966")
+        self.assertEqual(raised.exception.partial, "human review")
+
+    def test_collect_comments_preserves_partial_when_deadline_check_is_interrupted(self) -> None:
+        with mock.patch.object(
+            REVIEW_MODULE, "fetch_comments_output", return_value="human review"
+        ), mock.patch.object(
+            REVIEW_MODULE.time, "monotonic", side_effect=[0.0, KeyboardInterrupt]
+        ):
+            with self.assertRaises(REVIEW_MODULE.CommentsCollectionError) as raised:
+                REVIEW_MODULE.collect_comments_output("http://localhost:4966")
+        self.assertEqual(raised.exception.partial, "human review")
 
     def test_matching_init_resumes_before_reopening_a_reviewed_range(self) -> None:
         initialized = self.initialize_committed_change()
