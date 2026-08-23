@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Flow"
+  short_description: "ticket の依存順から Draft PR を構築する"
+  default_prompt: "Use $impl-flow to implement one approved ticket, derive its pull request base from blockers, complete pre-push review, create a draft PR, link its stack when needed, and record a retrospective."
