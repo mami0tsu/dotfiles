@@ -25,7 +25,8 @@
 - mutation 中の head 更新：次の mutation または引き渡し前に OID の不一致で停止する。
 - 既存 pending review：workflow state と一致しない review を変更しない。
 - 人間の submit 待ち：pending の間は workflow state を保持し、同じ review ID を再開時に照合する。
+- submit 後の merge または close：PR の状態にかかわらず、同じ review ID の submit を read-only で確認して state を完了する。
 
 初回試験では、base OID の再照合、mutation ごとの OID 確認、pending 中の state 保持、Claude Code sub-agent の tool 禁止が不足していた。
 
-修正後、同じ sub-agent が全シナリオと最新差分を再検証する。
+再試験では、sub-agent の全 tool 禁止と submit 後に PR が merge または close された経路を追加で修正した。

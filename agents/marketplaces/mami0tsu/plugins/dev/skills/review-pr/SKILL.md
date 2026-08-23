@@ -25,11 +25,21 @@ PR 番号、branch、現在の directory から対象を推測しない。
 
 `gh-usage` で認証利用者、repository、PR の URL、author、base、head、base commit OID、head commit OID、状態を取得する。
 
-認証利用者と author の login を大文字小文字を区別せず比較し、同一なら書き込み前に停止する。
+正本 URL に対応する保存済み workflow state の有無を確認する。
 
-PR が open でない場合も停止する。
+`awaiting-human-submit` の state がある場合は、PR の open、closed、merged を問わず、記録済み review ID と author を read-only で照合する。
 
-正本 URL を subject とし、`workflow-state` で `github-review-pr-<owner>-<repo>-<number>` を初期化または照合する。
+同じ review ID が submit 済みなら、追加 mutation を実行せず `workflow-state` を完了する。
+
+同じ review が `PENDING` なら state を保持し、人間の submit 待ちを報告する。
+
+review を識別できない場合は、人間による破棄を推測せず state を保持する。
+
+保存済み state がない初回実行では、認証利用者と author の login を大文字小文字を区別せず比較し、同一なら停止する。
+
+初回実行で PR が open でない場合も停止する。
+
+正本 URL を subject とし、`workflow-state` で `github-review-pr-<owner>-<repo>-<number>` を初期化する。
 
 workflow state の `review-pr` namespace には PR と pending review の URL、ID、base と head の OID、canonical digest、判断結果だけを保存する。
 
@@ -134,7 +144,7 @@ finding が0件でも review body を空にしない。
 
 ## pending review を引き渡す
 
-作成後に `gh-usage` で現在の base と head の OIDを再取得する。
+作成後に `gh-usage` で現在の base と head の OID を再取得する。
 
 両方が検証対象と一致することを確認する。
 
@@ -148,15 +158,11 @@ PR URL、検証した base と head の OID、選定理由、静的検証範囲�
 
 review 本文や thread 本文を応答へ複製しない。
 
-再開時に同じ review ID が submit 済みであることを確認できた場合だけ、追加 mutation を実行せず `workflow-state` を完了する。
-
-review が削除されて識別できない場合は、人間による破棄を推測せず state を保持する。
-
 ## 停止条件
 
 - PR URL が明示されていない、または複数指定されている。
 - 認証利用者が PR author である。
-- PR が open でない。
+- 初回実行で PR が open でない。
 - base、head、base commit OID、head commit OID を確定できない。
 - 複数の専門 sub-agent を利用できない。
 - PR 内のコードを実行しなければ検証できない。
