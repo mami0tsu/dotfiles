@@ -45,7 +45,7 @@ base または target を branch 名、tag、暗黙の HEAD から推測しな�
 
 ## 通常検証と敵対的検証を行う
 
-最初に、対象変更へ通常必要な test、lint、build、文書検査を実行する。
+最初に、test、lint、build、文書検査のうち、対象変更に必要なものを行う。
 
 通常リスクでは、1つの専門 sub-agent を選ぶ。
 
@@ -82,7 +82,8 @@ python3 <skill-dir>/scripts/pre_push_review.py validated \
 
 呼び出し元が修正を commit した後、同じ sub-agent に新しい target と検証結果を渡して再検証する。
 
-初回 target を review 済みとして記録する前に修正 commit が必要になった場合は、transcript を確認して破棄した後、新しい target を明示する。
+初回 target を review 済みとして記録する前に、修正 commit が必要になる場合がある。
+その場合は、transcript の確認と破棄を終えてから、新しい target を明示する。
 
 ```sh
 python3 <skill-dir>/scripts/pre_push_review.py retarget --target <target-commit>
