@@ -105,4 +105,6 @@ mutation が成功したら、その object ID と更新後 digest を次の mut
 
 ## 完了条件
 
-stack 内の全 PR の全 target key に対応する reply object ID があり、各 pending review が `PENDING` のままで、保存済み digest と GitHub の現在値が一致した場合だけ完了する。
+現在処理している PR の全 target key に対応する reply object ID があり、その pending review が `PENDING` のままで、保存済み digest と GitHub の現在値が一致した場合だけ完了する。
+
+未処理の upstack PR は、この Skill の現在の呼び出しを完了する条件に含めない。
