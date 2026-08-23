@@ -17,6 +17,10 @@ root_ticket:
   ref: ticket:ROOT-1
   mode: existing
   title: null
+  container: null
+  description: null
+  assignee: null
+  state: null
 decisions:
   - decision: 採用する設計
     rationale: この設計を選ぶ根拠
@@ -50,8 +54,10 @@ ticket 作成後は template の`{ticket_id}`を正本 ID に置き換え、成�
 作成前の依存 PR は`pr:<pull-request-key>`で参照し、ticket と branch の具体化後に対応する branch へ解決する。
 `parent_ref`と`blocked_by`は ticket 参照だけを持ち、PR key や branch 名を混ぜない。
 
-生の要求では、`root_ticket.mode`を`proposed`、`ref`を`proposal:root`にし、作成する title を持たせる。
-既存 ticket では、`mode`を`existing`、`ref`を正本 ID にし、title は`null`にする。
+生の要求では、`root_ticket.mode`を`proposed`、`ref`を`proposal:root`にする。
+`title`、ticket の作成先を表す`container`、共通 contract の`description`、`assignee`、`state`を持たせ、成果物全体と一緒に承認する。
+担当者または初期状態を設定しない場合は、`assignee`または`state`を明示的に`null`にする。
+既存 ticket では、`mode`を`existing`、`ref`を正本 ID にし、`title`、`container`、`description`、`assignee`、`state`は`null`にする。
 
 ## 正本
 

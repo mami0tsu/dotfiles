@@ -41,6 +41,7 @@ ticket system への書き込みには、[ticket-usage](../ticket-usage/SKILL.md
 各質問の前に repository と ticket の関連箇所を調べ、調査で確定できる内容を人間へ聞かない。
 
 設計は [成果物 contract](references/artifact-contract.md) のすべての field を満たすまで具体化する。
+root ticket を提案する場合は、title だけでなく、container、description、assignee、state も承認対象として確定する。
 未決事項、相互に矛盾する受け入れ条件、根拠のない PR 境界が残っている間は検証へ進まない。
 
 ## 独立に検証する

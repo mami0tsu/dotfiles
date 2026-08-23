@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ticket Flow"
+  short_description: "承認済み設計を一 PR 単位の ticket graph へ反映する"
+  default_prompt: "Use $ticket-flow to apply an approved design artifact to implementation tickets without reinterpreting it."
