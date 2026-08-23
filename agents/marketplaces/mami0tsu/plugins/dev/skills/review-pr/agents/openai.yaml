@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR の敵対的レビュー"
+  short_description: "他人の PR を専門 sub-agent で静的検証する"
+  default_prompt: "$review-pr を使って、指定した GitHub PR の pending review を作成してください。"
