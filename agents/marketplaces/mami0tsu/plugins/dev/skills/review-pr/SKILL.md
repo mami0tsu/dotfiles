@@ -134,17 +134,21 @@ binary、生成物、取得できない file は未検証範囲として記録�
 
 ## pending review を作る
 
-書き込み直前に PR の base commit OID と head commit OID を再取得する。
+書き込み直前に PR の state、base commit OID、head commit OID、認証利用者、author を再取得する。
 
-どちらかの OID が検証対象と異なる場合は書き込まず、最新差分で専門 sub-agent の選定からやり直す。
+PR が open でない場合、認証利用者が author と同一の場合、どちらかの OID が検証対象と異なる場合は書き込まない。
+
+OID だけが変わった場合は、最新差分で専門 sub-agent の選定からやり直す。
+
+それ以外の場合は state を保持して停止する。
 
 `gh-usage` の pending review 手順で、認証利用者の既存 review と workflow state を照合する。
 
 workflow state にない認証利用者の pending review がある場合は変更せず停止する。
 
-各 mutation の直前と成功後に base と head の OID、review ID、canonical digest を照合する。
+各 mutation の直前と成功後に PR state、認証利用者、author、base と head の OID、review ID、canonical digest を照合する。
 
-いずれかが期待値と異なる場合は次の mutation へ進まず、workflow state を保持する。
+PR が `OPEN` でない場合、認証利用者が author と同一の場合、またはいずれかが期待値と異なる場合は次の mutation へ進まず、workflow state を保持する。
 
 記録済み pending review にだけ inline thread と review body を追加する。
 
@@ -189,6 +193,7 @@ review 本文や thread 本文を応答へ複製しない。
 - 検証後または mutation 中に base commit OID か head commit OID が変わった。
 - 作成途中の pending review が現在の base または head と一致しない。
 - mutation を再開する時点で認証利用者が PR author である、または PR が open でない。
+- mutation の直前または成功後に認証利用者が PR author へ変わる、または PR が open でなくなる。
 - 人間が作成または編集した pending review と競合する。
 - inline thread の位置を現在の diff に一意に結び付けられない。
 

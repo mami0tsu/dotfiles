@@ -30,7 +30,8 @@
 - outdated partial review：base または head の不一致を検出し、review を削除せず state を保持する。
 - 再開時の account 変更：現在の認証利用者が PR author なら mutation 前に停止する。
 - 作成途中の close または merge：submit 待ち以外では mutation を再開せず、state を保持する。
+- mutation 中の account または PR state 変更：各 mutation の前後で再照合し、次の書き込みを止める。
 
 初回試験では、base OID の再照合、mutation ごとの OID 確認、pending 中の state 保持、Claude Code sub-agent の tool 禁止が不足していた。
 
-再試験では、sub-agent の全 tool 禁止、submit 後に PR が merge または close された経路、作成途中の再開と再認証の経路を追加で修正した。
+再試験では、sub-agent の全 tool 禁止、submit 後に PR が merge または close された経路、作成途中の再開と mutation 境界の再認証を追加で修正した。
