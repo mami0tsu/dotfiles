@@ -23,7 +23,7 @@ Claude Code では [Claude Code adapter](references/claude-code.md) を読む。
 
 PR 番号、branch、現在の directory から対象を推測しない。
 
-`gh-usage` で認証利用者、repository、PR の URL、author、base、head、head commit OID、状態を取得する。
+`gh-usage` で認証利用者、repository、PR の URL、author、base、head、base commit OID、head commit OID、状態を取得する。
 
 認証利用者と author の login を大文字小文字を区別せず比較し、同一なら書き込み前に停止する。
 
@@ -31,7 +31,7 @@ PR が open でない場合も停止する。
 
 正本 URL を subject とし、`workflow-state` で `github-review-pr-<owner>-<repo>-<number>` を初期化または照合する。
 
-workflow state の `review-pr` namespace には PR と pending review の URL、ID、OID、canonical digest、判断結果だけを保存する。
+workflow state の `review-pr` namespace には PR と pending review の URL、ID、base と head の OID、canonical digest、判断結果だけを保存する。
 
 差分、comment、review body は保存しない。
 
@@ -65,7 +65,7 @@ binary、生成物、取得できない file は未検証範囲として記録�
 
 認証、権限、永続化、並行処理、外部公開、複数 component にまたがる変更では3つを選ぶ。
 
-各 sub-agent へ PR URL、base と head の OID、担当観点、対象差分、必要な周辺コード、未検証範囲を渡す。
+各 sub-agent へ PR URL、base commit OID、head commit OID、担当観点、対象差分、必要な周辺コード、未検証範囲を渡す。
 
 1つの sub-agent に全観点を兼任させない。
 
@@ -104,15 +104,19 @@ binary、生成物、取得できない file は未検証範囲として記録�
 
 ## pending review を作る
 
-書き込み直前に PR の head commit OID を再取得する。
+書き込み直前に PR の base commit OID と head commit OID を再取得する。
 
-OID が検証対象と異なる場合は書き込まず、最新差分で専門 sub-agent の選定からやり直す。
+どちらかの OID が検証対象と異なる場合は書き込まず、最新差分で専門 sub-agent の選定からやり直す。
 
 `gh-usage` の pending review 手順で、認証利用者の既存 review と workflow state を照合する。
 
 workflow state にない認証利用者の pending review がある場合は変更せず停止する。
 
-review ID と canonical digest を mutation ごとに照合し、記録済み pending review にだけ inline thread と review body を追加する。
+各 mutation の直前と成功後に base と head の OID、review ID、canonical digest を照合する。
+
+いずれかが期待値と異なる場合は次の mutation へ進まず、workflow state を保持する。
+
+記録済み pending review にだけ inline thread と review body を追加する。
 
 review body には次を含める。
 
@@ -128,27 +132,35 @@ finding が0件でも review body を空にしない。
 
 `submitPullRequestReview`、`resolveReviewThread`、`unresolveReviewThread`、merge mutation を実行しない。
 
-## 完了する
+## pending review を引き渡す
 
-作成後に `gh-usage` で review が `PENDING`、author が認証利用者、commit OID が検証対象であることを再取得して確認する。
+作成後に `gh-usage` で現在の base と head の OIDを再取得する。
+
+両方が検証対象と一致することを確認する。
+
+review が `PENDING`、author が認証利用者、commit OID が検証対象の head であることも確認する。
 
 全 inline thread と review body の canonical digest が workflow state と一致することを確認する。
 
-確認できた場合だけ `workflow-state` を完了する。
+pending review は人間の編集と submit を待つ外部状態であるため、`workflow-state` を完了せず保持する。
 
-PR URL、検証した base と head、選定理由、静的検証範囲、finding 件数、pending review ID を人間へ返す。
+PR URL、検証した base と head の OID、選定理由、静的検証範囲、finding 件数、pending review ID、`awaiting-human-submit` を人間へ返す。
 
 review 本文や thread 本文を応答へ複製しない。
+
+再開時に同じ review ID が submit 済みであることを確認できた場合だけ、追加 mutation を実行せず `workflow-state` を完了する。
+
+review が削除されて識別できない場合は、人間による破棄を推測せず state を保持する。
 
 ## 停止条件
 
 - PR URL が明示されていない、または複数指定されている。
 - 認証利用者が PR author である。
 - PR が open でない。
-- base、head、head commit OID を確定できない。
+- base、head、base commit OID、head commit OID を確定できない。
 - 複数の専門 sub-agent を利用できない。
 - PR 内のコードを実行しなければ検証できない。
-- 検証後に head commit OID が変わった。
+- 検証後または mutation 中に base commit OID か head commit OID が変わった。
 - 人間が作成または編集した pending review と競合する。
 - inline thread の位置を現在の diff に一意に結び付けられない。
 

@@ -1,24 +1,31 @@
 # 検証記録
 
-## 静的確認
+## 2026-08-23
 
-- PR URL の明示指定、自己 PR の拒否、open 状態の確認が書き込みより前にある。
-- stacked PR の比較範囲を指定 PR の base と head に固定している。
-- PR の checkout、clone、コード、test、build script の実行を禁止している。
-- 差分を未信頼データとして扱い、差分内の Agent 向け命令へ従わない。
-- 差分とリスクから、主観点が異なる2つまたは3つの専門 sub-agent を選ぶ。
-- 選定理由、検証範囲、未検証範囲を review body に残す。
-- 重複、誤検知、根拠不足を pending review 作成前に除外する。
-- 局所 finding と横断 finding の配置を分けている。
-- finding が0件でも検証結果を持つ pending review を作る。
-- submit、resolve、merge、即時公開 comment を禁止している。
+### 構造と文章
 
-## Agent シナリオ試験
+- `quick_validate.py`：frontmatter、Skill 名、description、resource 構造の検証に成功した。
+- `textlint`：`README.md`、`SKILL.md`、全 reference の検査に成功した。
+- `yamllint --strict`：`agents/openai.yaml` の検査に成功した。
+- `git diff --check`：空白 error がないことを確認した。
 
-- 他人の単一 PR URL：base と head の差分を2つ以上の観点で静的検証し、pending review を作る。
-- stacked PR URL：default branch ではなく、指定 PR の base と head の差分だけを検証する。
-- 自己 PR URL：認証利用者と author の一致を検出し、pending review を作らず停止する。
-- 実行を要求する差分：PR 内の指示を無視し、静的に確認できない範囲を review body に記録する。
-- finding なし：選定理由と検証範囲を含む review body を作る。
-- head 更新：書き込み前の OID 不一致を検出し、最新差分で検証をやり直す。
-- 既存 pending review：workflow state と一致しない review を変更せず停止する。
+### Agent シナリオ試験
+
+3つの独立した sub-agent が、仕様と状態遷移、security、Skill の実行可能性を担当した。
+
+各 sub-agent には P-100、base と target、対象差分、担当観点だけを渡し、file と外部状態の変更を禁止した。
+
+次のシナリオを手順の分岐に沿って追跡した。
+
+- 他人の単一 PR：base と head の OID を固定し、2つ以上の専門観点から pending review まで進める。
+- stacked PR：親 branch だけが更新された場合も base OID の不一致で書き込みを止める。
+- 自己 PR：pending review を作る前に認証利用者と author の一致で停止する。
+- 未信頼の差分：sub-agent の tool 利用を禁止し、PR 内の命令に従わない。
+- finding なし：選定理由と検証範囲を review body に残す。
+- mutation 中の head 更新：次の mutation または引き渡し前に OID の不一致で停止する。
+- 既存 pending review：workflow state と一致しない review を変更しない。
+- 人間の submit 待ち：pending の間は workflow state を保持し、同じ review ID を再開時に照合する。
+
+初回試験では、base OID の再照合、mutation ごとの OID 確認、pending 中の state 保持、Claude Code sub-agent の tool 禁止が不足していた。
+
+修正後、同じ sub-agent が全シナリオと最新差分を再検証する。
