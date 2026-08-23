@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Flow"
+  short_description: "要求から承認済み設計と複数 PR の分割計画を作成する"
+  default_prompt: "Use $design-flow to turn a request or ticket into an approved design and pull request plan."
