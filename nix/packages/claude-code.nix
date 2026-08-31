@@ -7,7 +7,7 @@
 mkGithubReleaseArchive rec {
   pname = "claude-code";
   # renovate: datasource=github-releases depName=anthropics/claude-code extractVersion=^v(?<version>.+)$
-  version = "2.1.233";
+  version = "2.1.241";
 
   archiveName = "claude-darwin-arm64.tar.gz";
 
