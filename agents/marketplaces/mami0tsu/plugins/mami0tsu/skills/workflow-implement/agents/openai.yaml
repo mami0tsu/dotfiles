@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Workflow"
+  short_description: "IssueまたはDocumentからDraft PRまでの工程を進行する"
+  default_prompt: "Use $workflow-implement to turn an Issue or Document into a Draft PR."

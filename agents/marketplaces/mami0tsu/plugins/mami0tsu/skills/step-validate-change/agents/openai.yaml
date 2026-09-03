@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validate Change"
+  short_description: "commit済みの変更を自動確認と人間レビューで検証する"
+  default_prompt: "Use $step-validate-change to validate a committed change through automated and human review."

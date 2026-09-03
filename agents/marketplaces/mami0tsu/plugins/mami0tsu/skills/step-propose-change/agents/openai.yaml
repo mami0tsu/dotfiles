@@ -1,0 +1,4 @@
+interface:
+  display_name: "Propose Change"
+  short_description: "検証済みのcommitを整理してpushし、Draft PRを作成する"
+  default_prompt: "Use $step-propose-change to organize and push a validated change, then create a Draft PR."
