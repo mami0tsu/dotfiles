@@ -22,7 +22,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 修正が必要な指摘が残っている場合は停止する。
+- 修正が必要な指摘を残したまま進めない。
 - 入力の対象commitが現在のbranchの最新commitと一致しない場合は停止する。
 - commitしていない変更が残っている場合は停止する。
 - remoteへ公開済みのcommitを書き換えない。
@@ -47,7 +47,7 @@ remote branchが存在する場合はcommitを整理せず停止する。
 
 ### 4. Commit messageを確認する
 
-各commitが一つの関心だけを含むことを確認する。
+各commitが1つの関心だけを含むことを確認する。
 各commit messageの1行目が`<type>[optional scope][!]: <description>`の形式であることを確認する[^conventional-commits]。
 typeとscopeが英小文字であり、description、body、footerの説明文が日本語であることを確認する。
 Issueに基づく作業では、各commit messageの1行目がIssue IDで終わることを確認する。

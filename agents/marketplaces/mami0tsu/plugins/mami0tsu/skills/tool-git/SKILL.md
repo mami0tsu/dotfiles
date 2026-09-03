@@ -30,8 +30,8 @@ allowed-tools: >-
 
 ## 制約
 
-- 一つの操作ごとに、対応するreferenceを1つだけ読む。
-- referenceにない操作を実行しない。
+- 1つの操作ごとに、対応するreferenceを1つだけ読む。
+- referenceにない操作はしない。
 - worktreeの操作には`git wt`を使い、`git worktree`へ切り替えない[^git-wt]。
 - dirtyなworktreeを自動でstashしない。
 - submodule、stash、cherry-pick、reset、mergeは扱わない。

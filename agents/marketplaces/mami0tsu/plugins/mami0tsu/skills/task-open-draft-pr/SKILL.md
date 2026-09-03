@@ -11,7 +11,7 @@ allowed-tools: >-
 
 # task-open-draft-pr
 
-整理済みの変更を説明するDraft PRを一つ作成する。
+整理済みの変更を説明するDraft PRを1つ作成する。
 同じhead branchのpull requestがすでにある場合は、重複して作成しない。
 
 ## 入力

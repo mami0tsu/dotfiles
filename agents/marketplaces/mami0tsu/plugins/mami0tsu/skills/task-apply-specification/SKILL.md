@@ -29,7 +29,7 @@ allowed-tools: >-
 ## 制約
 
 - 入力で指定されたbranchとworktreeだけを使う。
-- IssueまたはDocumentの範囲を超える変更を行わない。
+- IssueまたはDocumentの範囲を超えて変更しない。
 - リポジトリ内の指示と既存の書き方に従う。
 - commitを作らない。
 - 作業開始前から存在する変更を上書きしない。

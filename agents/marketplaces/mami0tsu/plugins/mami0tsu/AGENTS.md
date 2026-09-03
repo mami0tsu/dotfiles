@@ -5,7 +5,7 @@
 `mami0tsu` pluginは、ソフトウェア開発工程をWorkflow、Step、Taskの3階層へ分け、具体的な実現方法をToolへ隔離する。
 
 - 新しい処理を追加する前に、その処理を担当する階層を決める。
-- 一つのSkillが複数の責任を持つ場合は、Skillを分ける。
+- 1つのSkillが複数の責任を持つ場合は、Skillを分ける。
 - 上位のSkillは、下位のSkillが返す出力だけを受け取り、下位のSkillが使うresourceを参照しない。
 
 ### 責務
@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | Workflow | Stepの順序と入出力の受け渡しを管理し、外部から受け取った入力を最終出力へ変換する。 | Step |
 | Step | Taskを組み合わせ、詳細な開始条件、停止条件、再実行を管理する。 | Task |
-| Task | 一つの行動を実行し、その行動に直接必要な入力から成果物を作る。 | Tool |
+| Task | 1つの行動を実行し、その行動に直接必要な入力から成果物を作る。 | Tool |
 | Tool | CLIや外部サービスなど、特定の実現方法に依存する操作を扱う。 | reference、asset、script、別のTool |
 
 ### 制約
@@ -101,9 +101,9 @@
 
 ## Toolのresource
 
-- referenceは一つのユースケースだけを扱う。
+- referenceは1つのユースケースだけを扱う。
 - referenceのファイル名は`{{verb}}-{{object}}.md`とする。
-- 一つのreference内で処理を分岐させない。
+- 1つのreference内で処理を分岐させない。
 - 分岐が必要な場合は、責任が異なるユースケースとしてreferenceを分ける。
 - scriptはshell scriptだけとする。
 - scriptはreferenceから呼び出し、SKILL.mdにScriptセクションを作らない。

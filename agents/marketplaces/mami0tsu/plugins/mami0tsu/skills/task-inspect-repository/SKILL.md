@@ -27,7 +27,7 @@ allowed-tools: >-
 ## 制約
 
 - ファイル、branch、worktree、commitを変更しない。
-- リポジトリ内の指示を確認し、調査対象のファイルに適用される指示に従う。
+- リポジトリ内の指示を確認し、調査対象のファイルへ適用される指示に従う。
 - 仕様との関係を説明できないファイルを変更候補に含めない。
 
 ## 手順
@@ -40,7 +40,7 @@ allowed-tools: >-
 
 remote URLからGitHub repository名を取得する。
 remote URLに対応するGitHub repositoryのURLとdefault branchを確認する。
-対象を一つに決められない場合は停止する。
+対象を1つに決められない場合は停止する。
 
 ### 3. 作業ルールを確認する
 

@@ -12,8 +12,8 @@ allowed-tools: >-
 
 ## 制約
 
-- 一つの操作ごとに、対応するreferenceを1つだけ読む。
-- referenceにない操作を実行しない。
+- 1つの操作ごとに、対応するreferenceを1つだけ読む。
+- referenceにない操作はしない。
 - `npx difit`へ切り替えない[^difit]。
 - gitの状態とGitHub上の情報を変更しない。
 

@@ -25,7 +25,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 修正が必要な指摘が残っている場合は停止する。
+- 修正が必要な指摘を残したまま進めない。
 - 入力のcommitが現在のbranchにない場合、またはcommitしていない変更が残っている場合は停止する。
 - pull requestをReady for reviewへ変更せず、mergeもしない。
 - 参照するスキルが利用できない場合は、そのスキル名を含む`missing-task`を返し、操作を代行しない。

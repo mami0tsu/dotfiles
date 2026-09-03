@@ -30,8 +30,8 @@ allowed-tools: >-
 
 ## 制約
 
-- 一つの操作ごとに、対応するreferenceを1つだけ読む。
-- referenceにない操作を実行しない。
+- 1つの操作ごとに、対応するreferenceを1つだけ読む。
+- referenceにない操作はしない。
 - branch、commit、rebase、pushは`tool-git`スキルへ委譲する。
 - 書き込みはDraft PR、pending review、stacked PRのreferenceに記載された操作だけに限定する。
 - reviewのsubmit、threadのresolve、pull requestのReady for review、close、mergeを行わない。

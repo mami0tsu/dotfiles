@@ -38,7 +38,7 @@ push後はremote branchの対象commitを確認する。
 ### 2. Push先を確認する
 
 入力とリポジトリの設定から、push先のremoteとbranchを特定する。
-push先を一つに決められない場合は停止する。
+push先を1つに決められない場合は停止する。
 
 ### 3. Remote branchを確認する
 
