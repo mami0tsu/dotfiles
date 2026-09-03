@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit Changes"
+  short_description: "確認済みの変更だけを選び、関心ごとのcommitとして記録する"
+  default_prompt: "Use $task-commit-changes to create focused commits from verified changes."

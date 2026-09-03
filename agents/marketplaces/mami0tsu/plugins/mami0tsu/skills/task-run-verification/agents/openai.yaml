@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Verification"
+  short_description: "指定されたtest、lint、buildを実行して結果を記録する"
+  default_prompt: "Use $task-run-verification to run the required tests, lint, and build."

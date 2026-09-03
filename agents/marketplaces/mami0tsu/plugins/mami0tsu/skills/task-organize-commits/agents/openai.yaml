@@ -1,0 +1,4 @@
+interface:
+  display_name: "Organize Commits"
+  short_description: "レビュー修正commitを関心ごとのcommitへまとめる"
+  default_prompt: "Use $task-organize-commits to organize reviewed changes into concern-based commits before push."

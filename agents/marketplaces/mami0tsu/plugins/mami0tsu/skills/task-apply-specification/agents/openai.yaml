@@ -1,0 +1,4 @@
+interface:
+  display_name: "Apply Specification"
+  short_description: "仕様と調査結果に従ってコード、test、文書を変更する"
+  default_prompt: "Use $task-apply-specification to apply a specification to a repository."

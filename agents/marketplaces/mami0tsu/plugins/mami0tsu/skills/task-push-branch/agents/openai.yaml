@@ -1,0 +1,4 @@
+interface:
+  display_name: "Push Branch"
+  short_description: "整理済みの作業用branchを指定されたremoteへ安全にpushする"
+  default_prompt: "Use $task-push-branch to push an organized working branch."

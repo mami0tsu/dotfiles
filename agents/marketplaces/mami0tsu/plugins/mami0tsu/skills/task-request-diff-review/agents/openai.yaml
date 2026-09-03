@@ -1,0 +1,4 @@
+interface:
+  display_name: "Request Diff Review"
+  short_description: "commit差分をdifitで人間へレビュー依頼する"
+  default_prompt: "Use $task-request-diff-review to request human review of a committed diff."

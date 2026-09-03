@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare Worktree"
+  short_description: "変更作業に使うbranchとworktreeを安全に準備する"
+  default_prompt: "Use $task-prepare-worktree to prepare a branch and worktree for a change."

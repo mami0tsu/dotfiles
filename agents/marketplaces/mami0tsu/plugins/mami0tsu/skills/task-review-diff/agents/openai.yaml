@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Diff"
+  short_description: "commit済みの差分を仕様、既存動作、testの観点で確認する"
+  default_prompt: "Use $task-review-diff to review a committed change against its specification."

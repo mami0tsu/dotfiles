@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read Specification"
+  short_description: "IssueまたはDocumentから実装条件を読み取る"
+  default_prompt: "Use $task-read-specification to read an Issue or Document."
