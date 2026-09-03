@@ -1,0 +1,28 @@
+{
+  "name": "mami0tsu",
+  "version": "0.1.0",
+  "description": "Workflow、Step、Taskの3階層でソフトウェア開発工程を管理するプラグイン",
+  "author": {
+    "name": "mami0tsu"
+  },
+  "repository": "https://github.com/mami0tsu/dotfiles",
+  "license": "MIT",
+  "keywords": [
+    "development",
+    "workflow",
+    "implementation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "mami0tsu",
+    "shortDescription": "ソフトウェア開発工程を階層化して実行する",
+    "longDescription": "Workflow、Step、Taskを組み合わせ、仕様からDraft PRまでのソフトウェア開発工程を実行します。",
+    "developerName": "mami0tsu",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Workflow",
+      "Write"
+    ],
+    "defaultPrompt": "承認済みのIssueまたは設計文書からDraft PRを作成してください。"
+  }
+}
