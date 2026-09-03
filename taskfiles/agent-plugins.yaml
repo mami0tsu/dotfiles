@@ -5,6 +5,7 @@ vars:
   agent_plugin_legacy_marketplace_name: dotfiles
   dev_plugin_ref: 'dev@{{.agent_plugin_marketplace_name}}'
   doc_plugin_ref: 'doc@{{.agent_plugin_marketplace_name}}'
+  mami0tsu_plugin_ref: 'mami0tsu@{{.agent_plugin_marketplace_name}}'
   development_plugin_ref: 'development@{{.agent_plugin_marketplace_name}}'
   documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
   development_plugin_legacy_ref: 'development@{{.agent_plugin_legacy_marketplace_name}}'
@@ -15,71 +16,112 @@ vars:
 
 tasks:
   clean:
-    desc: Unregister the shared agent plugin marketplace from Codex CLI and Claude Code.
+    desc: Uninstall all agent plugins and unregister the shared marketplace from Codex CLI and Claude Code.
     cmds:
-      - task: codex:clean
-      - task: claude:clean
+      - task: clean:dev
+      - task: clean:doc
+      - task: clean:mami0tsu
+      - task: codex:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
+      - task: claude:remove-marketplace-if-configured
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
 
   deploy:
-    desc: Register the shared agent plugin marketplace in Codex CLI and Claude Code.
+    desc: Install all agent plugins in Codex CLI and Claude Code.
     cmds:
-      - task: codex:deploy
-      - task: claude:deploy
+      - task: deploy:dev
+      - task: deploy:doc
+      - task: deploy:mami0tsu
+
+  deploy:dev:
+    desc: Deploy the dev plugin to Codex CLI and Claude Code.
+    cmds:
+      - task: clean:dev
+      - task: deploy-plugin
+        vars:
+          PLUGIN_REF: '{{.dev_plugin_ref}}'
+
+  deploy:doc:
+    desc: Deploy the doc plugin to Codex CLI and Claude Code.
+    cmds:
+      - task: clean:doc
+      - task: deploy-plugin
+        vars:
+          PLUGIN_REF: '{{.doc_plugin_ref}}'
+
+  deploy:mami0tsu:
+    desc: Deploy the mami0tsu plugin to Codex CLI and Claude Code.
+    cmds:
+      - task: clean:mami0tsu
+      - task: deploy-plugin
+        vars:
+          PLUGIN_REF: '{{.mami0tsu_plugin_ref}}'
 
   migrate:
     desc: Remove legacy plugins and deploy the renamed plugins in Codex CLI and Claude Code.
     cmds:
       - task: codex:migrate
       - task: claude:migrate
-      - task: codex:deploy
-      - task: claude:deploy
+      - task: deploy
 
-  claude:clean:
-    internal: true
-    silent: true
+  clean:dev:
+    desc: Remove the dev plugin from Codex CLI and Claude Code.
     cmds:
-      - task: claude:uninstall-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
+      - task: clean-plugin
         vars:
           PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
+      - task: clean-plugin
+        vars:
+          PLUGIN_REF: '{{.development_plugin_ref}}'
+
+  clean:doc:
+    desc: Remove the doc plugin from Codex CLI and Claude Code.
+    cmds:
+      - task: clean-plugin
         vars:
           PLUGIN_REF: '{{.doc_plugin_ref}}'
-      - task: claude:remove-marketplace-if-configured
+      - task: clean-plugin
         vars:
-          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
+          PLUGIN_REF: '{{.documentation_plugin_ref}}'
 
-  claude:deploy:
+  clean:mami0tsu:
+    desc: Remove the mami0tsu plugin from Codex CLI and Claude Code.
+    cmds:
+      - task: clean-plugin
+        vars:
+          PLUGIN_REF: '{{.mami0tsu_plugin_ref}}'
+
+  deploy-plugin:
     internal: true
     silent: true
     cmds:
+      - task: codex:ensure-marketplace
+        vars:
+          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
+          MARKETPLACE_DIR: '{{.agent_plugin_marketplace_dir}}'
       - task: claude:ensure-marketplace
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
           MARKETPLACE_DIR: '{{.agent_plugin_marketplace_dir}}'
-      - task: claude:uninstall-plugin-if-installed
+      - task: codex:add-plugin
         vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: claude:uninstall-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.doc_plugin_ref}}'
+          PLUGIN_REF: '{{.PLUGIN_REF}}'
       - task: claude:install-plugin
         vars:
-          PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: claude:install-plugin
+          PLUGIN_REF: '{{.PLUGIN_REF}}'
+
+  clean-plugin:
+    internal: true
+    silent: true
+    cmds:
+      - task: codex:remove-plugin-if-installed
         vars:
-          PLUGIN_REF: '{{.doc_plugin_ref}}'
+          PLUGIN_REF: '{{.PLUGIN_REF}}'
+      - task: claude:uninstall-plugin-if-installed
+        vars:
+          PLUGIN_REF: '{{.PLUGIN_REF}}'
 
   claude:migrate:
     internal: true
@@ -94,53 +136,6 @@ tasks:
       - task: claude:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_legacy_marketplace_name}}'
-
-  codex:clean:
-    internal: true
-    silent: true
-    cmds:
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.doc_plugin_ref}}'
-      - task: codex:remove-marketplace-if-configured
-        vars:
-          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
-
-  codex:deploy:
-    internal: true
-    silent: true
-    cmds:
-      - task: codex:ensure-marketplace
-        vars:
-          MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
-          MARKETPLACE_DIR: '{{.agent_plugin_marketplace_dir}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.development_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.documentation_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: codex:remove-plugin-if-installed
-        vars:
-          PLUGIN_REF: '{{.doc_plugin_ref}}'
-      - task: codex:add-plugin
-        vars:
-          PLUGIN_REF: '{{.dev_plugin_ref}}'
-      - task: codex:add-plugin
-        vars:
-          PLUGIN_REF: '{{.doc_plugin_ref}}'
 
   codex:migrate:
     internal: true
