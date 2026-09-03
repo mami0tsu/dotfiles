@@ -1,0 +1,4 @@
+interface:
+  display_name: "git Tool"
+  short_description: "gitのbranch、worktree、commit、同期を安全に扱う"
+  default_prompt: "Use $tool-git to perform a supported git operation safely."

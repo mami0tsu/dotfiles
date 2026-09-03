@@ -1,0 +1,4 @@
+interface:
+  display_name: "difit Tool"
+  short_description: "difitでローカルのcommit差分を人間がレビューする"
+  default_prompt: "Use $tool-difit to open a committed diff for human review."

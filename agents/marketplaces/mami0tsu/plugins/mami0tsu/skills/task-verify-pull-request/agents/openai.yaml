@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Pull Request"
+  short_description: "作成したpull requestのDraft状態と対象commitを確認する"
+  default_prompt: "Use $task-verify-pull-request to verify a newly created Draft PR."

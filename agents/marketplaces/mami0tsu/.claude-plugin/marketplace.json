@@ -12,6 +12,10 @@
     {
       "name": "doc",
       "source": "./plugins/doc"
+    },
+    {
+      "name": "mami0tsu",
+      "source": "./plugins/mami0tsu"
     }
   ]
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Produce Change"
+  short_description: "実装準備結果に従ってコード変更とcommitを作成する"
+  default_prompt: "Use $step-produce-change to implement the prepared work and create a commit."

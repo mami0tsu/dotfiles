@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Draft PR"
+  short_description: "検証済みの変更を説明するDraft PRを作成してURLを返す"
+  default_prompt: "Use $task-open-draft-pr to create a Draft PR for a validated change."

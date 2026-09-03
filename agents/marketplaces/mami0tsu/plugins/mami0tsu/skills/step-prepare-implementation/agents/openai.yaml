@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare Implementation"
+  short_description: "IssueまたはDocumentを確認して実装用の作業場所を準備する"
+  default_prompt: "Use $step-prepare-implementation to check an Issue or Document and prepare the workspace."

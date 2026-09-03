@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inspect Repository"
+  short_description: "変更箇所、既存ルール、確認コマンドをリポジトリから調べる"
+  default_prompt: "Use $task-inspect-repository to inspect a repository before making changes."
