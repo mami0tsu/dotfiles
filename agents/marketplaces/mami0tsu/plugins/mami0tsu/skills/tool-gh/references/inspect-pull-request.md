@@ -18,6 +18,8 @@
 - commit
 - review状態
 - merge状態
+- merge commit
+- merge日時
 - 変更規模
 - 変更済みfile
 - check状態
@@ -36,7 +38,7 @@
 
 ```sh
 gh pr view <number-or-url> --repo <owner>/<repo> \
-  --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,changedFiles,additions,deletions,files,statusCheckRollup,url
+  --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,mergeCommit,mergedAt,changedFiles,additions,deletions,files,statusCheckRollup,url
 ```
 
 ### 2. 結果を返す

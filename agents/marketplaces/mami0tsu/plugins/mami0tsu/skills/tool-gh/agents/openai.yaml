@@ -1,4 +1,4 @@
 interface:
   display_name: "GitHub CLI Tool"
-  short_description: "GitHub CLIでPR、Actions、reviewを扱う"
+  short_description: "GitHub CLIでIssue、PR、Actions、reviewを安全に扱う"
   default_prompt: "Use $tool-gh to perform a supported GitHub operation safely."
