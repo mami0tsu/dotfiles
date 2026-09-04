@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validate Design"
+  short_description: "要求整合性と領域別Agentの検証を通して人間の設計承認を得る"
+  default_prompt: "Use $step-validate-design to validate and approve a design before publication."

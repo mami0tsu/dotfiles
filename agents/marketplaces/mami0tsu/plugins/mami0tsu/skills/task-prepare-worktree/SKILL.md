@@ -1,20 +1,20 @@
 ---
 name: task-prepare-worktree
 description: >-
-  仕様の読み取り結果とリポジトリ調査結果に基づき、作業用branchとworktreeを準備するTask。
-  ソフトウェア変更を既存の作業から分離するときに使う。
+  要求の読み取り結果とリポジトリ調査結果に基づき、作業用branchとworktreeを準備するTask。
+  コードまたはGit管理Documentの変更を既存の作業から分離するときに使う。
 allowed-tools: >-
   Skill
 ---
 
 # task-prepare-worktree
 
-ソフトウェア変更に使うbranchとworktreeを安全に準備する。
+Git管理の変更に使うbranchとworktreeを安全に準備する。
 同じ作業に使えるworktreeがすでにある場合は、そのworktreeを再利用する。
 
 ## 入力
 
-- 仕様の読み取り結果
+- 要求の読み取り結果
 - リポジトリ調査結果
 
 ## 出力

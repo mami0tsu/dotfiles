@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Design Work"
+  short_description: "Issue構成、設計正本、対象リポジトリを計画する"
+  default_prompt: "Use $task-plan-design-work to plan the artifacts and destinations for a design effort."

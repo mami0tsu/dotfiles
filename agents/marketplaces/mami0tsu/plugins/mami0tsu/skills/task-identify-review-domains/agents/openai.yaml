@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identify Review Domains"
+  short_description: "設計から独立検証が必要な専門領域と具体的な検証観点を抽出する"
+  default_prompt: "Use $task-identify-review-domains to plan domain-specific independent design reviews."

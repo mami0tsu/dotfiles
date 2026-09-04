@@ -62,7 +62,7 @@ Issueに基づく作業では、1行目を`<type>[optional scope][!]: <descripti
 typeとscopeは英小文字で書く。
 description、body、footerの説明文は日本語で書く。
 固有名詞、path、識別子、footerのtokenは元の表記を保つ。
-Issue IDは仕様の読み取り結果にある表記を変えず、descriptionの末尾へ付ける。
+Issue IDは要求の読み取り結果にある表記を変えず、descriptionの末尾へ付ける。
 破壊的変更はtypeまたはscopeの直後へ`!`を付けるか、`BREAKING CHANGE:` footerで示す。
 bodyやfooterを付ける場合は、直前へ空行を入れる。
 直前のcommit済みの変更がある場合は、各変更がどのcommitの関心に属するか確認する。

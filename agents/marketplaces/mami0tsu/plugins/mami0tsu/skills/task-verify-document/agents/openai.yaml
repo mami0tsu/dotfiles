@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document検証"
+  short_description: "Wiki正本のURL、revision、本文digestを再取得して検証する"
+  default_prompt: "Use $task-verify-document to verify a wiki document against expectations."

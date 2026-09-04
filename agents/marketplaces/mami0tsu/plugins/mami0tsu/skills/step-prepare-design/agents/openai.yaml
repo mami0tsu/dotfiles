@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare Design"
+  short_description: "設計のIssue構成、正本、対象リポジトリを準備する"
+  default_prompt: "Use $step-prepare-design to prepare a resumable design effort."

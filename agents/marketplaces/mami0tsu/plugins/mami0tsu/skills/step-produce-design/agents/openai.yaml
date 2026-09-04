@@ -1,0 +1,4 @@
+interface:
+  display_name: "Produce Design"
+  short_description: "要求から設計本文と実装Issue計画を作成して公開準備を整える"
+  default_prompt: "Use $step-produce-design to create a design and implementation Issue plan."

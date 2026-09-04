@@ -1,0 +1,4 @@
+interface:
+  display_name: "要求読解"
+  short_description: "依頼、Issue、Documentを設計と実装で共有できる要求へ整理する"
+  default_prompt: "Use $task-read-requirements to read and structure the source requirements."

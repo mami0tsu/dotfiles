@@ -6,7 +6,8 @@ description: >-
 allowed-tools: >-
   Skill(mami0tsu:task-inspect-repository)
   Skill(mami0tsu:task-prepare-worktree)
-  Skill(mami0tsu:task-read-specification)
+  Skill(mami0tsu:task-read-issue)
+  Skill(mami0tsu:task-read-requirements)
 ---
 
 # step-prepare-implementation
@@ -32,7 +33,8 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 
 ### 1. 入力を読む
 
-`task-read-specification`スキルを使い、IssueまたはDocumentの内容を取得する。
+Issueが入力の場合は、先に`task-read-issue`スキルで正本を取得する。
+`task-read-requirements`スキルを使い、Issue読取結果またはDocumentの内容を整理する。
 
 ### 2. 実装条件を確認する
 
@@ -41,7 +43,7 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 ### 3. リポジトリを調べる
 
 現在の作業リポジトリを対象リポジトリとする。
-`task-inspect-repository`スキルへ仕様の読み取り結果と対象リポジトリを渡し、変更する場所、既存のルール、実行するtestやlintを調べる。
+`task-inspect-repository`スキルへ要求の読み取り結果と対象リポジトリを渡し、変更する場所、既存のルール、実行するtestやlintを調べる。
 
 ### 4. 作業場所を準備する
 
@@ -49,4 +51,4 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 
 ### 5. 準備結果を返す
 
-IssueまたはDocumentへの参照、Issueの種類とID、仕様の読み取り結果、対象リポジトリのpath、remote、GitHub repository名、base branch、起点commit、確認方法、作業用branch、worktreeを実装準備結果として返す。
+IssueまたはDocumentへの参照、Issueの種類とID、要求の読み取り結果、対象リポジトリのpath、remote、GitHub repository名、base branch、起点commit、確認方法、作業用branch、worktreeを実装準備結果として返す。

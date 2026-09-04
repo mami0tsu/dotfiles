@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read Issue"
+  short_description: "Issueとrelationを取得して共通形式へ変換する"
+  default_prompt: "Use $task-read-issue to read and normalize one Issue without changing it."

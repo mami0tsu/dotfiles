@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document作成"
+  short_description: "承認済み本文をWikiへ一件だけ保存して正本情報を確定する"
+  default_prompt: "Use $task-create-document to create one approved wiki document."

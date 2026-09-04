@@ -1,0 +1,4 @@
+interface:
+  display_name: "Request Design Approval"
+  short_description: "検証済み設計と実装Issue計画を提示し明示的な人間承認を受け取る"
+  default_prompt: "Use $task-request-design-approval to request explicit approval for a validated design."

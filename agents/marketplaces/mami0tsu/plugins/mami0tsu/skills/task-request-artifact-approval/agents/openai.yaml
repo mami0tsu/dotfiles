@@ -1,0 +1,4 @@
+interface:
+  display_name: "Request Artifact Approval"
+  short_description: "外部成果物の対象と変更内容を固定し明示的な人間承認を受け取る"
+  default_prompt: "Use $task-request-artifact-approval to approve one external artifact before mutation."

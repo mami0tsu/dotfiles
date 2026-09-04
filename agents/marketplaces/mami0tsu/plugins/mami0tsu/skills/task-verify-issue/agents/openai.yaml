@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue検証"
+  short_description: "Issueの内容、関係、意味上の状態を正本から読み直して検証する"
+  default_prompt: "Use $task-verify-issue to verify an issue against its expected state."

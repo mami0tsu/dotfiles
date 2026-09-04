@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Implementation"
+  short_description: "設計を一Issue、一リポジトリ、一PRの単位へ分ける"
+  default_prompt: "Use $task-plan-implementation to turn a design into actionable implementation Issue plans."

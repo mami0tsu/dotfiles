@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "mami0tsu",
-  "version": "0.1.0",
-  "description": "Workflow、Step、Taskの3階層でソフトウェア開発工程を管理するプラグイン",
+  "version": "0.2.0",
+  "description": "Workflow、Step、Taskの3階層で設計と実装の開発工程を管理するプラグイン",
   "author": {
     "name": "mami0tsu"
   },
@@ -11,6 +11,9 @@
   "keywords": [
     "development",
     "workflow",
+    "design",
+    "issue",
+    "document",
     "implementation"
   ]
 }

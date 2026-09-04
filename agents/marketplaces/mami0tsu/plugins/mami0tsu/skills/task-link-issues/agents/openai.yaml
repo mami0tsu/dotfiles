@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue関係反映"
+  short_description: "承認済みの親子関係や依存関係だけをIssueへ安全に反映する"
+  default_prompt: "Use $task-link-issues to apply approved relationships between issues."

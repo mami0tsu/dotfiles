@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Design"
+  short_description: "要求整合性と選定した専門領域ごとに独立Agentで設計を検証する"
+  default_prompt: "Use $task-review-design to run independent domain reviews of a design."

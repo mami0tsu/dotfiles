@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Issue"
+  short_description: "承認済みのfield差分だけをIssue1件へ安全に反映して確認する"
+  default_prompt: "Use $task-update-issue to apply an approved update to one Issue."

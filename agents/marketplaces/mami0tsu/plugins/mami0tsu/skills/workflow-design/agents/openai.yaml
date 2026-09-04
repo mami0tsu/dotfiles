@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Workflow"
+  short_description: "要求から検証済み設計正本と着手可能な実装Issue一式を作成する"
+  default_prompt: "Use $workflow-design to turn requirements into a published design and actionable implementation Issues."
