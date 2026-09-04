@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow State"
+  short_description: "Git共通領域の作業stateを原子的に保存し中断後の再開を支える"
+  default_prompt: "Use $tool-workflow-state to manage persistent workflow state safely."
