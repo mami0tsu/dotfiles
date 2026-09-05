@@ -16,6 +16,7 @@ secret_file="$test_root/secret.json"
 invalid_result_file="$test_root/invalid-result.json"
 invalid_digest_file="$test_root/invalid-digest.json"
 invalid_type_file="$test_root/invalid-type.json"
+invalid_url_file="$test_root/invalid-url.json"
 lock_ready="$test_root/lock-ready"
 holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
@@ -59,7 +60,8 @@ jq -n '{payload:{digest:"sha256:555555555555555555555555555555555555555555555555
 jq -n '{result:"confidential full issue body"}' >"$invalid_result_file"
 jq -n '{body_digest:"not-a-digest"}' >"$invalid_digest_file"
 jq -n '{status:1}' >"$invalid_type_file"
-chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file"
+jq -n '{canonical_url:"https://example.invalid/design?access_token=confidential"}' >"$invalid_url_file"
+chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file"
 
 # 要件本文の代わりにdigestをidentityへ固定してstateを初期化する。
 (
@@ -143,7 +145,7 @@ if (
 fi
 
 # metadata schema外のcontainer、本文値、digest形式を拒否することを確かめる。
-for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file"; do
+for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file"; do
   if (
     cd "$repository"
     bash "$state_script" update \

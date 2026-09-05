@@ -36,7 +36,8 @@ allowed-tools: >-
 
 ### 2. Digestを求める
 
-設計本文と実装Issue計画を安定した形式へ正規化し、承認対象digestを求める。
+設計本文を正規化して`design_body_digest`を求める。
+設計本文、実装Issue計画、Issue構成、正本、対象リポジトリを安定した形式へ正規化し、承認全体を表す`approved_design_digest`を求める。
 
 ### 3. 設計を提示する
 
@@ -48,4 +49,4 @@ allowed-tools: >-
 
 ### 5. 結果を返す
 
-承認の有無、承認対象digest、承認範囲、修正指摘を人間の承認結果として返す。
+承認の有無、`design_body_digest`、`approved_design_digest`、承認範囲、修正指摘を人間の承認結果として返す。

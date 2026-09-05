@@ -55,7 +55,7 @@ allowed-tools: >-
 
 ### 1. 公開状態を確認する
 
-`task-verify-state`スキルでWorkflow identity、承認対象digest、完了済み操作、pending operationを確認する。
+`task-verify-state`スキルでWorkflow identity、`design_body_digest`、`approved_design_digest`、完了済み操作、pending operationを確認する。
 外部Objectを再取得し、記録済みの識別情報と一致しない場合は停止する。
 
 ### 2. Issue正本を準備する
@@ -94,7 +94,7 @@ merge済みの正本識別情報と完了したpending operationを、次の外�
 
 ### 6. 最終本文から実装Issueを再計画する
 
-確定した正本本文のdigestが承認対象digestと一致する場合は、承認済みの実装Issue計画を再利用する。
+確定した正本本文のdigestが`design_body_digest`と一致する場合は、承認済みの実装Issue計画を再利用する。
 Digestが異なる場合は、確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
 再計画した場合は`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。

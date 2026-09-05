@@ -7,6 +7,8 @@ allowed-tools: >-
   Read
   Skill
   WebFetch
+  mcp__esa__*
+  mcp__notion__*
 ---
 
 # task-read-requirements

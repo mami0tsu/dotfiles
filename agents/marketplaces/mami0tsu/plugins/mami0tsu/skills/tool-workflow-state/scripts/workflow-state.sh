@@ -41,8 +41,8 @@ validate_identity() {
     [[ "$subject" =~ ^sha256:[a-f0-9]{64}$ ]] || die "requirement subject must be a sha256 digest"
   else
     ((${#subject} <= 2048)) || die "subject is too long"
-    [[ ! "$subject" =~ [[:space:]?\&=] ]] || die "subject must be an identifier or canonical URL without a query"
-    [[ "$subject" =~ ^https://[^[:space:]?\&=]+$ || "$subject" =~ ^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,511}$ ]] || die "invalid subject"
+    [[ ! "$subject" =~ [[:space:]?\&=@] ]] || die "subject must be an identifier or canonical URL without a query or userinfo"
+    [[ "$subject" =~ ^https://[^[:space:]?\&=@]+$ || "$subject" =~ ^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,511}$ ]] || die "invalid subject"
   fi
 }
 
@@ -79,7 +79,7 @@ validate_private_json_object() {
         elif $key | test("(^|_)(digest|digests)$") then
           ($value | type == "string" and test("^sha256:[a-f0-9]{64}$"))
         elif $key | test("(^|_)(url|urls|uri|uris)$") then
-          ($value | type == "string" and length <= 2048 and test("^https://[^[:space:]]+$"))
+          ($value | type == "string" and length <= 2048 and test("^https://[^[:space:]?&=@]+$"))
         elif $key | test("(^|_)(revision|revisions)$") then
           (($value | type == "number" and . >= 0 and floor == .) or ($value | safe_token))
         elif $key | test("(^|_)(number|numbers)$") then
@@ -93,7 +93,7 @@ validate_private_json_object() {
         elif $key | test("(^|_)(path|paths|directory|directories|dir|dirs)$") then
           ($value | type == "string" and length > 0 and length <= 1024 and test("^[^[:cntrl:]]+$"))
         elif $key | test("(^|_)(repository|repositories)$") then
-          ($value | (safe_token or (type == "string" and length <= 2048 and test("^https://[^[:space:]]+$"))))
+          ($value | (safe_token or (type == "string" and length <= 2048 and test("^https://[^[:space:]?&=@]+$"))))
         elif $raw_key | scalar_key then
           ($value | safe_token)
         else
