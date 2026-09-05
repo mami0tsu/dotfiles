@@ -1,7 +1,7 @@
 ---
 name: task-request-document-publication
 description: >-
-  Wikiへ書き込めるMCPがない場合に、承認済み本文の手動保存を人間へ依頼し、正本URLとrevisionを受け取るTask。
+  Wikiへ書き込めるMCPがない場合に、承認済み本文の手動保存を人間へ依頼し、最終本文、正本URL、revisionを受け取るTask。
   esaまたはNotionへの公開を人間へ引き継いで再開するときに使う。
 allowed-tools: >-
   Skill
@@ -36,7 +36,7 @@ provider、保存先、title、承認済み本文、公開範囲、本文digest�
 
 ### 2. 保存を依頼する
 
-本文の保存と、正本URL、revision、保存時の変更点の返却を依頼する。
+本文の保存と、正本URL、revision、保存後の最終本文、保存時の変更点の返却を依頼する。
 
 ### 3. 完了を待つ
 
@@ -44,4 +44,5 @@ provider、保存先、title、承認済み本文、公開範囲、本文digest�
 
 ### 4. 結果を返す
 
-provider、正本URL、revision、人間が保存した本文のdigest、変更点を手動公開結果として返す。
+最終本文を承認時と同じ方法で正規化してdigestを求める。
+provider、正本URL、revision、最終本文、本文digest、変更点を手動公開結果として返す。

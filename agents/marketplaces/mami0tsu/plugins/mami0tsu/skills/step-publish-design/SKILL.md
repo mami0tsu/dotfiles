@@ -70,8 +70,10 @@ Wikiを正本にする場合だけ実行する。
 Documentの保存先と本文を`task-request-artifact-approval`スキルへ渡し、利用可能な操作に応じて`task-create-document`スキルまたは`task-update-document`スキルを使う。
 MCPで書き込む場合は、pending operationをstateへ保存してから作成・更新し、結果の正本IDとURLを次の外部操作より先にstateへ保存する。
 その後、`task-verify-document`スキルで正本URL、revision、本文digestを取得する。
+検証結果と完了したpending operationを、次の外部操作より先に`task-update-state`スキルで保存する。
 利用できるMCPがない場合は、pending operationを保存してから`task-request-document-publication`スキルで人間の保存を待つ。
-この場合は手動公開結果のURL、revision、本文digestを正本値として採用し、利用できない`task-verify-document`スキルを呼び出さない。
+この場合は手動公開結果の最終本文、URL、revision、本文digestを正本値として採用し、利用できない`task-verify-document`スキルを呼び出さない。
+手動公開結果と完了したpending operationも、再開後の次の外部操作より先にstateへ保存する。
 人間が保存した本文は保存結果を最終承認として扱う。
 
 ### 4. Git管理Documentを提案する
@@ -88,12 +90,13 @@ BranchのpushとDraft PR作成を1つの成果物計画として`task-request-ar
 Draft PRを作成した場合は、人間によるReady化とmergeを待って停止する。
 再開時は`task-verify-merged-document`スキルでmerge済みDocumentを取得する。
 pull request上で編集された本文は人間の最終承認として扱い、merge済みrevisionとdigestを正本にする。
+merge済みの正本識別情報と完了したpending operationを、次の外部操作より先に`task-update-state`スキルで保存する。
 
 ### 6. 最終本文から実装Issueを再計画する
 
-Wikiの手動保存やGit管理Documentのmergeで本文digestが承認時から変わった場合は、確定した正本本文を`task-plan-implementation`スキルへ渡す。
-実装Issue計画を最終本文に合わせて置き換えるが、人間が保存した結果やmerge結果を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
-本文digestが変わっていない場合も、実装Issue計画が確定した正本本文と一致することを確認する。
+確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
+Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
+`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
 
 ### 7. Issue群を承認する
 

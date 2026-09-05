@@ -59,9 +59,11 @@ Workflow IDがある場合は`task-verify-state`スキルを使い、保存済�
 
 ### 4. 追跡用Issueを準備する
 
-既存Issueを使わない場合は、`standalone-issue`の1件、または`tracking-issue`と設計IssueからなるIssue群を`task-request-artifact-approval`スキルへ渡す。
-Issue群と、`tracking-issue`を選んだ場合の親子関係を1回だけ承認してもらう。
-各Issueはpending operationをstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
+`standalone-issue`では既存Issueがなければ1件を作成対象にする。
+`tracking-issue`では、親となるtracking Issueと子となる設計Issueの役割を既存Issueへ割り当て、足りないIssueを作成対象にする。
+既存のtracking Issueを親にする場合も、設計Issueを省略しない。
+作成対象のIssue群と、必要な親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
+作成対象がある場合は、各Issueのpending operationをstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
 作成応答を受けたら、次の外部操作より先に正本IDとURLを`task-update-state`スキルで保存し、`task-verify-issue`スキルで確認する。
 すべてのIDが確定したら親子関係のpending operationを保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
 関係の更新結果も、次の外部操作より先にstateへ保存する。
@@ -74,4 +76,4 @@ Issue群と、`tracking-issue`を選んだ場合の親子関係を1回だけ承�
 ### 6. 準備結果を返す
 
 要求の読み取り結果、設計作業計画、Workflow ID、追跡用Issue、対象リポジトリごとの調査結果を設計準備結果として返す。
-まだ保存していない内部の調査結果と完了した操作だけを`task-update-state`スキルで記録する。
+まだ保存していない外部Objectの識別情報、調査結果のdigest、完了マーカーだけを`task-update-state`スキルで記録する。

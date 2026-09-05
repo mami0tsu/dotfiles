@@ -17,6 +17,7 @@ allowed-tools: >-
 - Issue本文、Document本文、comment本文、credentialをstateへ保存しない。
 - 保存禁止情報を別名のfieldへ移して検査を迂回しない。
 - lock取得失敗、revision競合、破損したJSONを手作業で迂回しない。
+- 自動回収できないlockは、表示されたowner tokenと所有者の停止を人間が確認してから[repair-state-lock](references/repair-state-lock.md)で回収する。
 - 完了時もstate fileを削除しない。
 - 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、identity照合、stale lock回収、保存禁止fieldを確認する。
 
@@ -28,5 +29,6 @@ allowed-tools: >-
 | --- | --- |
 | `complete-state` | 完了条件を満たしたstateへ完了結果を記録する。 |
 | `initialize-state` | 新しい作業stateをGit common directoryへ作る。 |
+| [`repair-state-lock`](references/repair-state-lock.md) | 人間がstaleと確認したlockをowner tokenに基づいて回収する。 |
 | `update-state` | 検証済みrevisionの一つのnamespaceを更新する。 |
 | `verify-state` | 保存済みidentityを照合してstateを取得する。 |

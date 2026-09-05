@@ -46,7 +46,7 @@ validate_identity() {
   fi
 }
 
-# private JSONを1回だけ読み、型、所有者、権限、全階層のkeyを検査する。
+# private JSONを1回だけ読み、型、所有者、権限、scalarを持つkeyのallowlistを検査する。
 validate_private_json_object() {
   local file="$1"
   [[ -f "$file" && -r "$file" ]] || die "JSON file must be a readable regular file: $file"
@@ -61,17 +61,17 @@ validate_private_json_object() {
   [[ "$owner_id" == "$(id -u)" ]] || die "JSON file must be owned by the current user"
   (( (8#$permission_mode & 077) == 0 )) || die "JSON file must not be accessible by group or other users"
   validated_json="$(jq -ce 'if type == "object" then . else error("JSON value must be an object") end' "$file")" || die "JSON value must be an object"
-  if jq -en --argjson value "$validated_json" '
-    [$value
-      | paths as $path
-      | $path[]
-      | select(type == "string")
-      | ascii_downcase
-      | gsub("[^a-z0-9]"; "")
-      | select(test("token|password|secret|credential|apikey|authorization|authheader|body|content|description|comment|message|review|text"))]
+  if printf '%s\n' "$validated_json" | jq -e '
+    def normalized_key:
+      ascii_downcase | gsub("[^a-z0-9]+"; "_");
+    def allowed_metadata_key:
+      test("^(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|result|results|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$|_(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|result|results|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$");
+    [paths(scalars) as $path
+      | ($path | map(select(type == "string")) | last // "" | normalized_key)
+      | select(allowed_metadata_key | not)]
     | length > 0
   ' >/dev/null; then
-    die "JSON contains a prohibited field name"
+    die "JSON contains a field outside the state metadata allowlist"
   fi
 }
 
@@ -86,58 +86,118 @@ resolve_repository() {
   state_dir="$common_dir/agent-workflows"
 }
 
-# 検査済みWorkflow IDからstate fileとlock directoryを組み立てる。
+# 検査済みWorkflow IDからstate fileとlock pathを組み立てる。
 state_path_for() {
   state_file="$state_dir/$workflow_id.json"
-  lock_dir="$state_dir/$workflow_id.lock"
-  lock_owner_file="$lock_dir/owner"
+  lock_path="$state_dir/$workflow_id.lock"
 }
 
-# 並行更新を直列化し、強制終了で残った同一hostのlockを安全に回復する。
+# process所有者tokenを使って並行更新を直列化し、終了済み所有者のlockを回復する。
 
-# lockが30秒以上前に作られ、同一hostの所有processが終了済みか、metadataが欠けている場合だけstaleと判定する。
+# Hostname変更の影響を受けないmachine IDを取得する。
+read_machine_id() {
+  local value=""
+  if [[ -r /etc/machine-id ]]; then
+    value="$(tr -d '[:space:]' </etc/machine-id)"
+  elif [[ "$(uname -s)" == "Darwin" && -x /usr/sbin/ioreg ]]; then
+    value="$(/usr/sbin/ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformUUID/{print $(NF-1); exit}')"
+  fi
+  [[ "$value" =~ ^[A-Za-z0-9._-]+$ ]] || die "cannot resolve a stable machine id"
+  printf '%s' "$value"
+}
+
+# 再起動前のlockを区別するboot session IDを取得する。
+read_boot_id() {
+  local value=""
+  if [[ -r /proc/sys/kernel/random/boot_id ]]; then
+    value="$(tr -d '[:space:]' </proc/sys/kernel/random/boot_id)"
+  elif [[ "$(uname -s)" == "Darwin" ]]; then
+    value="$(sysctl -n kern.bootsessionuuid 2>/dev/null || true)"
+  fi
+  [[ "$value" =~ ^[A-Za-z0-9._-]+$ ]] || die "cannot resolve a boot session id"
+  printf '%s' "$value"
+}
+
+# PID再利用を区別するため、process開始時刻をSHA-256へ変換する。
+read_process_start_id() {
+  local process_id="$1" start_value digest_line
+  start_value="$(ps -o lstart= -p "$process_id" 2>/dev/null)" || return 1
+  [[ -n "${start_value//[[:space:]]/}" ]] || return 1
+  digest_line="$(printf '%s' "$start_value" | shasum -a 256)"
+  printf '%s' "${digest_line%% *}"
+}
+
+# 現在processを一意に表すowner tokenを組み立てる。
+build_lock_token() {
+  local process_start_id
+  process_start_id="$(read_process_start_id "$$")" || die "cannot resolve current process start time"
+  lock_token="$(read_machine_id):$(read_boot_id):$$:$process_start_id:$(date '+%s'):$RANDOM"
+}
+
+# atomicなsymlinkにあるowner tokenを検査し、終了済み所有者のlockだけを移動して回収する。
 recover_stale_lock() {
-  local owner_host="" owner_pid="" current_host lock_mtime now stale_lock
-  current_host="$(hostname)"
-  if stat -f '%m' "$lock_dir" >/dev/null 2>&1; then
-    lock_mtime="$(stat -f '%m' "$lock_dir")"
-  else
-    lock_mtime="$(stat -c '%Y' "$lock_dir")"
+  local owner_token owner_machine owner_boot owner_pid owner_start owner_created owner_nonce owner_extra
+  local current_machine current_boot current_start="" stale_lock
+  owner_token="$(readlink "$lock_path" 2>/dev/null)" || return 1
+  IFS=: read -r owner_machine owner_boot owner_pid owner_start owner_created owner_nonce owner_extra <<<"$owner_token"
+  [[ -z "$owner_extra" && "$owner_machine" =~ ^[A-Za-z0-9._-]+$ && "$owner_boot" =~ ^[A-Za-z0-9._-]+$ ]] || return 1
+  [[ "$owner_pid" =~ ^[0-9]+$ && "$owner_start" =~ ^[a-f0-9]{64}$ && "$owner_created" =~ ^[0-9]+$ && "$owner_nonce" =~ ^[0-9]+$ ]] || return 1
+  current_machine="$(read_machine_id)"
+  current_boot="$(read_boot_id)"
+  [[ "$owner_machine" == "$current_machine" ]] || return 1
+  if [[ "$owner_boot" == "$current_boot" ]]; then
+    current_start="$(read_process_start_id "$owner_pid" || true)"
+    [[ -z "$current_start" || "$current_start" != "$owner_start" ]] || return 1
   fi
-  now="$(date '+%s')"
-  (( now - lock_mtime >= 30 )) || return 1
-  if [[ -r "$lock_owner_file" ]]; then
-    read -r owner_host owner_pid <"$lock_owner_file" || return 1
-    [[ "$owner_host" == "$current_host" && "$owner_pid" =~ ^[0-9]+$ ]] || return 1
-    kill -0 "$owner_pid" 2>/dev/null && return 1
-  fi
-  stale_lock="$state_dir/.$workflow_id.stale-lock.$$"
-  mv "$lock_dir" "$stale_lock" 2>/dev/null || return 1
-  rm -rf "$stale_lock"
+  stale_lock="$state_dir/.$workflow_id.stale-lock.$$.$RANDOM"
+  mv "$lock_path" "$stale_lock" 2>/dev/null || return 1
+  [[ "$(readlink "$stale_lock" 2>/dev/null || true)" == "$owner_token" ]] || die "stale lock token changed during recovery"
+  rm -f "$stale_lock"
 }
 
-# Workflow単位のlockを取得し、所有者情報を記録する。
+# Workflow単位のlockをatomicに取得する。
 acquire_lock() {
   mkdir -p "$state_dir"
   chmod 700 "$state_dir"
-  if ! mkdir "$lock_dir" 2>/dev/null; then
-    recover_stale_lock || die "state is locked: $workflow_id"
-    mkdir "$lock_dir" 2>/dev/null || die "state is locked: $workflow_id"
+  build_lock_token
+  if ! ln -s "$lock_token" "$lock_path" 2>/dev/null; then
+    if ! recover_stale_lock; then
+      die "state is locked: $workflow_id (owner token: $(readlink "$lock_path" 2>/dev/null || printf '%s' unknown))"
+    fi
+    ln -s "$lock_token" "$lock_path" 2>/dev/null || die "state is locked: $workflow_id"
   fi
-  printf '%s %s\n' "$(hostname)" "$$" >"$lock_owner_file"
-  chmod 600 "$lock_owner_file"
 }
 
-# 自processが所有するlockだけを解放する。
+# owner tokenが一致する自processのlockだけを解放する。
 release_lock() {
-  local owner_host="" owner_pid=""
-  if [[ -r "${lock_owner_file:-}" ]]; then
-    read -r owner_host owner_pid <"$lock_owner_file" || return
-    if [[ "$owner_host" == "$(hostname)" && "$owner_pid" == "$$" ]]; then
-      rm -f "$lock_owner_file"
-      rmdir "$lock_dir"
-    fi
+  if [[ -L "${lock_path:-}" && "$(readlink "$lock_path" 2>/dev/null || true)" == "${lock_token:-}" ]]; then
+    rm -f "$lock_path"
   fi
+}
+
+# 人間がstaleと確認したforeign lockを、提示済みowner tokenとの一致を条件に回収する。
+repair_state_lock() {
+  local expected_owner_token="" confirmed=""
+  workflow_id=""
+  while (($#)); do
+    case "$1" in
+      --workflow-id) require_value "$1" "${2:-}"; workflow_id="$2"; shift 2 ;;
+      --expected-owner-token) require_value "$1" "${2:-}"; expected_owner_token="$2"; shift 2 ;;
+      --confirmed-stale) confirmed="yes"; shift ;;
+      *) die "unknown option: $1" ;;
+    esac
+  done
+  [[ -n "$workflow_id" && -n "$expected_owner_token" && "$confirmed" == "yes" ]] || die "repair options and explicit stale confirmation are required"
+  validate_workflow_id "$workflow_id"
+  resolve_repository
+  state_path_for
+  [[ -L "$lock_path" ]] || die "state lock not found: $workflow_id"
+  [[ "$(readlink "$lock_path")" == "$expected_owner_token" ]] || die "state lock owner token does not match"
+  local repaired_lock="$state_dir/.$workflow_id.repaired-lock.$$.$RANDOM"
+  mv "$lock_path" "$repaired_lock" 2>/dev/null || die "state lock changed before repair"
+  [[ "$(readlink "$repaired_lock" 2>/dev/null || true)" == "$expected_owner_token" ]] || die "state lock owner token changed during repair"
+  rm -f "$repaired_lock"
+  jq -n --arg workflow_id "$workflow_id" --arg owner_token "$expected_owner_token" '{workflow_id: $workflow_id, repaired: true, owner_token: $owner_token}'
 }
 
 # 同じdirectoryの一時fileへ完全なJSONを書き、renameで原子的に置き換える。
@@ -237,7 +297,7 @@ verify_state() {
 
 # 1つのnamespaceへ差分をdeep mergeし、revisionを1つ進める。
 update_state() {
-  local namespace="" expected_revision="" value_file=""
+  local namespace="" expected_revision="" value_file="" expected_common_dir=""
   workflow_id=""
   workflow=""
   subject_kind=""
@@ -248,18 +308,20 @@ update_state() {
       --workflow) require_value "$1" "${2:-}"; workflow="$2"; shift 2 ;;
       --subject-kind) require_value "$1" "${2:-}"; subject_kind="$2"; shift 2 ;;
       --subject) require_value "$1" "${2:-}"; subject="$2"; shift 2 ;;
+      --repository-common-dir) require_value "$1" "${2:-}"; expected_common_dir="$2"; shift 2 ;;
       --namespace) require_value "$1" "${2:-}"; namespace="$2"; shift 2 ;;
       --expected-revision) require_value "$1" "${2:-}"; expected_revision="$2"; shift 2 ;;
       --value-file) require_value "$1" "${2:-}"; value_file="$2"; shift 2 ;;
       *) die "unknown option: $1" ;;
     esac
   done
-  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$namespace" && -n "$expected_revision" && -n "$value_file" ]] || die "update options are required"
+  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_common_dir" && -n "$namespace" && -n "$expected_revision" && -n "$value_file" ]] || die "update options are required"
   validate_identity
   validate_namespace "$namespace"
   [[ "$expected_revision" =~ ^[0-9]+$ ]] || die "expected revision must be a non-negative integer"
   validate_private_json_object "$value_file"
   resolve_repository
+  [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
   trap release_lock EXIT
@@ -284,7 +346,7 @@ update_state() {
 
 # 完全なidentityとrevisionを照合し、監査用の完了結果を残す。
 complete_state() {
-  local expected_revision="" result_file=""
+  local expected_revision="" result_file="" expected_common_dir=""
   workflow_id=""
   workflow=""
   subject_kind=""
@@ -295,16 +357,18 @@ complete_state() {
       --workflow) require_value "$1" "${2:-}"; workflow="$2"; shift 2 ;;
       --subject-kind) require_value "$1" "${2:-}"; subject_kind="$2"; shift 2 ;;
       --subject) require_value "$1" "${2:-}"; subject="$2"; shift 2 ;;
+      --repository-common-dir) require_value "$1" "${2:-}"; expected_common_dir="$2"; shift 2 ;;
       --expected-revision) require_value "$1" "${2:-}"; expected_revision="$2"; shift 2 ;;
       --result-file) require_value "$1" "${2:-}"; result_file="$2"; shift 2 ;;
       *) die "unknown option: $1" ;;
     esac
   done
-  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_revision" && -n "$result_file" ]] || die "complete options are required"
+  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_common_dir" && -n "$expected_revision" && -n "$result_file" ]] || die "complete options are required"
   validate_identity
   [[ "$expected_revision" =~ ^[0-9]+$ ]] || die "expected revision must be a non-negative integer"
   validate_private_json_object "$result_file"
   resolve_repository
+  [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
   trap release_lock EXIT
@@ -327,10 +391,16 @@ complete_state() {
 
 # 依存commandを確認して、指定されたlifecycle commandだけを実行する。
 main() {
+  require_command awk
   require_command git
-  require_command hostname
   require_command jq
+  require_command ln
+  require_command ps
+  require_command readlink
+  require_command shasum
   require_command stat
+  require_command tr
+  require_command uname
   umask 077
   local command_name="${1:-}"
   [[ -n "$command_name" ]] || die "command is required"
@@ -340,6 +410,7 @@ main() {
     verify) verify_state "$@" ;;
     update) update_state "$@" ;;
     complete) complete_state "$@" ;;
+    repair-lock) repair_state_lock "$@" ;;
     *) die "unknown command: $command_name" ;;
   esac
 }

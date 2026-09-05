@@ -24,7 +24,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 検証済みのWorkflow ID、workflow名、subject kind、subject、state revisionを使う。
+- 検証済みのWorkflow ID、workflow名、subject kind、subject、Git common directory、state revisionを使う。
 - すべての必須成果物について正本ID、URL、revisionまたはdigestを確認する。
 - 未解決の差分、未承認の変更、pending operationがある場合は完了しない。
 - 完了済みstateを再度変更しない。
@@ -42,7 +42,7 @@ allowed-tools: >-
 
 ### 3. Stateを完了する
 
-検証済みのidentityを省略せずにstate完了操作へ渡し、完了時刻と最終結果を記録する。
+検証済みのidentityとGit common directoryを省略せずにstate完了操作へ渡し、完了時刻と最終結果を記録する。
 
 ### 4. 結果を返す
 

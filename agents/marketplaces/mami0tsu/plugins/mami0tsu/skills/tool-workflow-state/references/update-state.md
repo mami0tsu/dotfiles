@@ -9,6 +9,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/skills/tool-workflow-state/scripts/workflow-state.sh
   --workflow <workflow-name> \
   --subject-kind <subject-kind> \
   --subject <subject-identifier-or-digest> \
+  --repository-common-dir <verified-git-common-directory> \
   --namespace <namespace> \
   --expected-revision <revision> \
   --value-file <private-json-file>
