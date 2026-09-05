@@ -26,10 +26,14 @@ create_private_body() {
   umask 077
   private_directory="$(mktemp -d "${TMPDIR:-/tmp}/mami0tsu-gh-body.XXXXXX")"
   body_file="$private_directory/body.md"
+  trap 'rm -f -- "$body_file"; rmdir -- "$private_directory" 2>/dev/null || true; exit 1' HUP INT TERM
   if ! command cat >"$body_file"; then
-    rmdir "$private_directory" 2>/dev/null || true
+    rm -f -- "$body_file"
+    rmdir -- "$private_directory" 2>/dev/null || true
+    trap - HUP INT TERM
     die "failed to write private body"
   fi
+  trap - HUP INT TERM
   chmod 600 "$body_file"
   printf '%s\n' "$body_file"
 }
