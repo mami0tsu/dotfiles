@@ -3,7 +3,7 @@
 対象repository内で次のcommandを実行する。
 
 ```sh
-bash "${CLAUDE_PLUGIN_ROOT}/skills/tool-workflow-state/scripts/workflow-state.sh" verify \
+bash "<plugin-root>/skills/tool-workflow-state/scripts/workflow-state.sh" verify \
   --workflow-id <workflow-id> \
   --workflow <workflow-name> \
   --subject-kind <subject-kind> \

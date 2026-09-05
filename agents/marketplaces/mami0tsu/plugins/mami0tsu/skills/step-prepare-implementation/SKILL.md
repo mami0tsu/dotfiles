@@ -8,6 +8,8 @@ allowed-tools: >-
   Skill(mami0tsu:task-prepare-worktree)
   Skill(mami0tsu:task-read-issue)
   Skill(mami0tsu:task-read-requirements)
+  Skill(mami0tsu:task-verify-document)
+  Skill(mami0tsu:task-verify-merged-document)
 ---
 
 # step-prepare-implementation
@@ -34,7 +36,10 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 ### 1. 入力を読む
 
 Issueが入力の場合は、先に`task-read-issue`スキルで正本を取得する。
-`task-read-requirements`スキルを使い、Issue読取結果またはDocumentの内容を整理する。
+Issueに設計正本の参照がある場合は、正本種別に対応する`task-verify-document`スキルか`task-verify-merged-document`スキルで本文、URL、revision、digestを取得し、Issueに記録された値と照合する。
+正本取得手段が利用できないか、revisionかdigestが一致しない場合は停止する。
+`task-read-requirements`スキルを使い、Issue読取結果と取得した設計正本を整理する。
+Documentが直接入力された場合は、その内容を整理する。
 
 ### 2. 実装条件を確認する
 
@@ -42,7 +47,8 @@ Issueが入力の場合は、先に`task-read-issue`スキルで正本を取得�
 
 ### 3. リポジトリを調べる
 
-現在の作業リポジトリを対象リポジトリとする。
+IssueかDocumentに記録された対象リポジトリを正とし、現在の作業リポジトリのremoteと照合する。
+対象リポジトリを特定できないとき、remoteが一致しないときは停止し、正しいcheckoutを要求する。
 `task-inspect-repository`スキルへ要求の読み取り結果と対象リポジトリを渡し、変更する場所、既存のルール、実行するtestやlintを調べる。
 
 ### 4. 作業場所を準備する

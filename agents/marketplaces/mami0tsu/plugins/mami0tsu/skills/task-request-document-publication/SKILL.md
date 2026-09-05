@@ -5,6 +5,7 @@ description: >-
   esaまたはNotionへの公開を人間へ引き継いで再開するときに使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
 ---
 
 # task-request-document-publication
@@ -44,5 +45,5 @@ provider、保存先、title、承認済み本文、公開範囲、本文digest�
 
 ### 4. 結果を返す
 
-最終本文を承認時と同じ方法で正規化してdigestを求める。
+最終本文を`tool-artifact-digest`スキルの`digest-text`で正規化してdigestを求める。
 provider、正本URL、revision、最終本文、本文digest、変更点を手動公開結果として返す。

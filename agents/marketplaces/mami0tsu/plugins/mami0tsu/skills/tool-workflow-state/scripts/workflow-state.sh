@@ -27,6 +27,14 @@ validate_workflow_id() {
   [[ "$1" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || die "invalid workflow id"
 }
 
+# 新規作業用のWorkflow IDを、workflow名、UTC時刻、process情報から生成する。
+generate_workflow_id() {
+  local generated_at
+  generated_at="$(date -u '+%Y%m%dT%H%M%SZ')"
+  workflow_id="${workflow}-${generated_at}-$$-${RANDOM}"
+  validate_workflow_id "$workflow_id"
+}
+
 # namespaceをJSON objectのkeyとして扱える文字へ制限する。
 validate_namespace() {
   [[ "$1" =~ ^[a-z0-9][a-z0-9-]{0,63}$ ]] || die "invalid namespace"
@@ -206,6 +214,8 @@ verify_stored_identity() {
 
 # 初期化と検証に共通するidentity optionを読み取る。
 parse_identity_options() {
+  local workflow_id_policy="${1:-required}"
+  shift
   workflow_id=""
   workflow=""
   subject_kind=""
@@ -219,7 +229,11 @@ parse_identity_options() {
       *) die "unknown option: $1" ;;
     esac
   done
-  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" ]] || die "identity options are required"
+  [[ -n "$workflow" && -n "$subject_kind" && -n "$subject" ]] || die "identity options are required"
+  if [[ -z "$workflow_id" ]]; then
+    [[ "$workflow_id_policy" == "generate" ]] || die "workflow id is required"
+    generate_workflow_id
+  fi
   validate_identity
 }
 
@@ -227,7 +241,7 @@ parse_identity_options() {
 
 # 新しいactive stateを作り、Gitとsubjectのidentityを固定する。
 initialize_state() {
-  parse_identity_options "$@"
+  parse_identity_options generate "$@"
   resolve_repository
   state_path_for
   acquire_lock
@@ -248,12 +262,12 @@ initialize_state() {
     '{schema_version: 1, workflow_id: $workflow_id, identity: {workflow: $workflow, subject_kind: $subject_kind, subject: $subject, repository_common_dir: $repository_common_dir, branch: $branch, start_commit: $start_commit}, status: "active", revision: 0, namespaces: {}, created_at: $now, updated_at: $now, completed_at: null, result: null}' >"$draft"
   write_state "$draft"
   rm -f "$draft"
-  jq --arg path "$state_file" '{state_path: $path, identity: .identity, status, revision}' "$state_file"
+  jq --arg path "$state_file" '{workflow_id, state_path: $path, identity: .identity, status, revision}' "$state_file"
 }
 
 # lock下でstateを読み、identityが一致する場合だけ内容を返す。
 verify_state() {
-  parse_identity_options "$@"
+  parse_identity_options required "$@"
   resolve_repository
   state_path_for
   acquire_lock

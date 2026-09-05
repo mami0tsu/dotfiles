@@ -4,6 +4,7 @@ description: >-
   承認済みの本文をesaまたはNotionへ一件のDocumentとして作成し、正本URL、revision、digestを返すTask。
   Wikiを設計の正本として新規作成するときに使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   mcp__esa__*
   mcp__notion__*
 ---
@@ -48,5 +49,6 @@ providerに対応する利用可能な操作で、承認済み本文をそのま
 
 ### 4. 結果を返す
 
+再取得した本文を`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
 provider、正本ID、URL、revision、本文digest、操作結果をDocument作成結果として返す。
 結果が曖昧な場合は、候補と人間による対応付けが必要であることを返す。

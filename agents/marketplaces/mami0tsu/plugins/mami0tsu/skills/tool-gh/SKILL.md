@@ -4,6 +4,8 @@ description: >-
   GitHub CLIを使い、GitHub上のrepository、Issue、pull request、Actions、review commentを読み取り、Issue、Draft PR、pending review、stacked PRを扱うためのTool。
   GitHub上の情報を確認し、対応する操作を行うときに使う。
 allowed-tools: >-
+  Bash(bash */skills/tool-gh/scripts/private-body-file.sh create)
+  Bash(bash */skills/tool-gh/scripts/private-body-file.sh remove --file *)
   Bash(gh api graphql --paginate *)
   Bash(gh api graphql -F owner=* -F name=* -F number=* -f query=*)
   Bash(gh api graphql -F pullRequestId=* -F commitOID=* -f query=*)
@@ -56,6 +58,14 @@ allowed-tools: >-
 - repositoryにpull request templateがないことを確認済みの場合は、`assets/pull_request_template.md`をDraft PR本文に使う。
 - pending reviewのthread、reply、review bodyへ投稿する本文には、`assets/comment_template.md`を使う。
 - CLI referenceの検証結果は[validation](references/validation.md)で確認する。
+- GitHubへ本文を渡す前後だけ、専用scriptで権限`0600`の一時body fileを作成、削除する。
+- 一時body fileの実装変更時は`scripts/test-private-body-file.sh`で内容、権限、削除対象の境界を確認する。
+
+## Scriptの場所
+
+`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryである。
+Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`を使える。
+Codexでは利用中のSkill catalogに表示された`tool-gh/SKILL.md`の絶対pathから`<plugin-root>`を解決する。
 
 ## ユースケース
 
@@ -82,7 +92,9 @@ allowed-tools: >-
 | [`close-issue`](references/close-issue.md) | Issueを完了理由でcloseする。 |
 | [`create-issue`](references/create-issue.md) | titleと本文からIssueを一件作る。 |
 | [`find-issues`](references/find-issues.md) | titleから作成結果の候補Issueを検索する。 |
+| [`prepare-private-body`](references/prepare-private-body.md) | 標準入力から権限`0600`の一時body fileを作る。 |
 | [`read-issue`](references/read-issue.md) | Issueの内容、関係、状態を取得する。 |
+| [`remove-private-body`](references/remove-private-body.md) | GitHub操作後に専用の一時body fileを削除する。 |
 | [`remove-issue-blocker`](references/remove-issue-blocker.md) | Issueから`blockedBy`関係を削除する。 |
 | [`reopen-issue`](references/reopen-issue.md) | closeされたIssueをopenへ戻す。 |
 | [`set-issue-parent`](references/set-issue-parent.md) | Issueへ親Issueを設定する。 |

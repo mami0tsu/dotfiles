@@ -1,0 +1,4 @@
+interface:
+  display_name: "Artifact Digest"
+  short_description: "設計本文と承認対象を共通規則で正規化して照合可能なdigestを作る"
+  default_prompt: "Use $tool-artifact-digest to calculate a canonical artifact digest."

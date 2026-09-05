@@ -4,6 +4,7 @@ description: >-
   esaまたはNotionのDocumentを正本から再取得し、保存先、revision、本文digestが期待値と一致するか検証するTask。
   Wikiへの作成または更新後に設計正本を確定するときに使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   mcp__esa__*
   mcp__notion__*
 ---
@@ -37,7 +38,7 @@ Documentの現在値を読み取り、期待値との差分を返す。
 
 ### 2. Digestを求める
 
-保存済み本文を承認時と同じ方法で正規化し、本文digestを求める。
+保存済み本文を`tool-artifact-digest`スキルの`digest-text`で正規化し、本文digestを求める。
 
 ### 3. 期待値と比較する
 

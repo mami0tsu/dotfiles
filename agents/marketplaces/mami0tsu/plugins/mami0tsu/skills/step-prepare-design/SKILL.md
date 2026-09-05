@@ -54,7 +54,8 @@ Issue構成、provider、container、正本、基準リポジトリ、対象リ�
 
 ### 3. 状態を準備する
 
-Workflow IDがない場合は`task-initialize-state`スキルを使い、基準リポジトリへ状態を作る。
+Workflow IDがない場合は、要求の読み取り結果にある`requirements_digest`を`requirement` subjectとして`task-initialize-state`スキルへ渡し、基準リポジトリへ状態を作る。
+初期化結果が生成したWorkflow IDを、以後の設計工程で使う。
 Workflow IDがある場合は`task-verify-state`スキルを使い、保存済みidentityと設計作業計画を照合する。
 
 ### 4. 追跡用Issueを準備する
@@ -75,5 +76,5 @@ Workflow IDがある場合は`task-verify-state`スキルを使い、保存済�
 
 ### 6. 準備結果を返す
 
-要求の読み取り結果、設計作業計画、Workflow ID、追跡用Issue、対象リポジトリごとの調査結果を設計準備結果として返す。
+要求の読み取り結果、設計作業計画、Workflow ID、state identity、追跡用Issue、対象リポジトリごとの調査結果を設計準備結果として返す。
 まだ保存していない外部Objectの識別情報、調査結果のdigest、完了マーカーだけを`task-update-state`スキルで記録する。

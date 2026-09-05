@@ -5,6 +5,7 @@ description: >-
   設計工程の外部Objectと人間待ちを確定するときに使う。
 allowed-tools: >-
   Skill
+  mcp__atlassian__*
 ---
 
 # task-plan-design-work
@@ -40,6 +41,9 @@ allowed-tools: >-
 
 利用できるproviderとcontainerを提示し、1つずつ選んでもらう。
 既存Issueを使う場合は、そのproviderとcontainerを候補の基準にする。
+Jiraを選ぶ場合はproject metadataを取得し、tracking、設計、実装、standaloneの各役割で利用できるIssue typeと必須fieldを提示する。
+利用者が選んだIssue typeと、必須fieldへ設定する値を役割ごとに記録する。
+必要なmetadataを取得できない場合や必須fieldの値が未確定の場合は、Issue作成を含む計画を確定しない。
 
 ### 3. 状態を対応付ける
 
@@ -63,4 +67,4 @@ Git管理Documentでは正本を置くリポジトリとpathも確定する。
 
 ### 7. 計画を返す
 
-Issue構成、provider、container、意味上の状態対応、正本、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
+Issue構成、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。

@@ -5,6 +5,7 @@ description: >-
   設計成果物を外部へ公開する前に使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
 ---
 
 # task-request-design-approval
@@ -36,8 +37,8 @@ allowed-tools: >-
 
 ### 2. Digestを求める
 
-設計本文を正規化して`design_body_digest`を求める。
-設計本文、実装Issue計画、Issue構成、正本、対象リポジトリを安定した形式へ正規化し、承認全体を表す`approved_design_digest`を求める。
+設計本文をprivate fileまたは標準入力で`tool-artifact-digest`スキルの`digest-text`へ渡し、`design_body_digest`を求める。
+設計本文、実装Issue計画、Issue構成、正本、対象リポジトリを安定したJSONへ整理し、同スキルの`digest-json`で承認全体を表す`approved_design_digest`を求める。
 
 ### 3. 設計を提示する
 

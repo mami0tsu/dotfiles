@@ -14,7 +14,8 @@ allowed-tools: >-
 
 ## 入力
 
-- state identity
+- workflow名、subject kind、subject
+- Workflow ID（指定する場合）
 - 基準リポジトリ
 
 ## 出力
@@ -23,7 +24,8 @@ allowed-tools: >-
 
 ## 制約
 
-- Workflow ID、workflow名、subject kind、subjectを明示する。
+- workflow名、subject kind、subjectを明示する。
+- 新規作業でWorkflow IDがない場合は、state初期化操作に安全なIDを生成させる。
 - subjectには要求本文ではなく、正本URL、外部ID、または`sha256:`で始まる要求digestを使う。
 - 同じWorkflow IDのstateが存在する場合は上書きしない。
 - token、password、secret、Issue本文、Document本文を保存しない。
@@ -33,7 +35,8 @@ allowed-tools: >-
 
 ### 1. Identityを確認する
 
-Workflow ID、workflow名、subject kind、subject、基準リポジトリを入力から確定する。
+workflow名、subject kind、subject、基準リポジトリを入力から確定する。
+Workflow IDが指定されている場合は、その値も確定する。
 
 ### 2. Identityを検査する
 
@@ -42,6 +45,7 @@ Identityに本文やsecretが含まれず、基準リポジトリで一意に作
 ### 3. Stateを作る
 
 利用可能なstate初期化操作を使い、基準リポジトリへstateを作る。
+Workflow IDがない場合は初期化操作の生成結果を採用し、呼び出し元で別のIDを作らない。
 
 ### 4. 結果を返す
 

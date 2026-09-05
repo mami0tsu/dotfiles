@@ -39,6 +39,7 @@ allowed-tools: >-
 ### 2. Issue本文を作る
 
 各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリ、設計正本の参照を設定する。
+設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。
 
@@ -53,5 +54,5 @@ allowed-tools: >-
 
 ### 5. 計画を返す
 
-Issueごとのkey、title、本文、対象リポジトリ、親、依存関係、意味上の状態と、tracking Issueの更新内容を実装Issue計画として返す。
+Issueごとのkey、Issue type、必須field、title、本文、対象リポジトリ、親、依存関係、意味上の状態と、tracking Issueの更新内容を実装Issue計画として返す。
 `standalone-issue`の構成不一致では、必要な実装単位と`tracking-issue`への変更が必要であることを返す。

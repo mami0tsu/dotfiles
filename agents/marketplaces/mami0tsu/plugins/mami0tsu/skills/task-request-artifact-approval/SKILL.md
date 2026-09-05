@@ -5,6 +5,7 @@ description: >-
   Issue群、Document、Draft PRなどの外部成果物を作成または更新する直前に使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
 ---
 
 # task-request-artifact-approval
@@ -35,7 +36,7 @@ allowed-tools: >-
 
 ### 2. Digestを求める
 
-正規化した変更計画から承認対象digestを求める。
+正規化した変更計画をprivate JSON fileまたは標準入力で`tool-artifact-digest`スキルの`digest-json`へ渡し、承認対象digestを求める。
 
 ### 3. 変更を提示する
 

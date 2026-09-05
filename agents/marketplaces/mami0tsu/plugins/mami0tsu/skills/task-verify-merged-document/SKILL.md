@@ -5,6 +5,7 @@ description: >-
   Git管理Documentを設計正本として確定するときに使う。
 allowed-tools: >-
   Read
+  Skill(mami0tsu:tool-artifact-digest)
   Skill(mami0tsu:tool-gh)
   Skill(mami0tsu:tool-git)
 ---
@@ -16,8 +17,7 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 
 ## 入力
 
-- Draft PRのURL
-- Document変更結果
+- Draft PRのURLとDocument変更結果、または正本Git Documentの参照
 
 ## 出力
 
@@ -34,16 +34,18 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 
 ### 1. Pull requestを取得する
 
-入力URLのpull requestを取得し、repository、base、head、merge状態、merge commitを確認する。
+Draft PRのURLが入力された場合はpull requestを取得し、repository、base、head、merge状態、merge commitを確認する。
+正本Git Documentの参照が入力された場合は、記録されたrepository、path、revisionを使い、revisionがmerge先から到達可能であることを確認する。
 
 ### 2. Documentを取得する
 
-merge commitで指定pathのDocumentを取得する。
-pathまたはblobが存在しない場合は停止する。
+確認済みrevisionで指定pathのDocumentを取得する。
+pathとblobの一方でも存在しない場合は停止する。
 
 ### 3. 正本情報を作る
 
-merge commitをrevisionとし、commitを固定したfile URLと本文digestを求める。
+merge commitをrevisionとし、commitを固定したfile URLを求める。
+取得した本文を`tool-artifact-digest`スキルの`digest-text`へ渡し、他の正本経路と同じ本文digestを求める。
 
 ### 4. 結果を返す
 

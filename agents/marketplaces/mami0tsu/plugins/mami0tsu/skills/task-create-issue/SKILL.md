@@ -27,6 +27,7 @@ allowed-tools: >-
 ## 制約
 
 - provider、container、title、description、状態を推測で補わない。
+- JiraではIssue typeとproject metadataが要求するすべての必須fieldを推測で補わない。
 - 承認対象digestと作成計画が一致しない場合は作成しない。
 - pending operationが記録されていない場合は作成しない。
 - 1回の実行で1件だけ作る。
@@ -37,10 +38,14 @@ allowed-tools: >-
 ### 1. 作成内容を確認する
 
 provider、container、title、description、assignee、provider上の状態、意味上の状態を承認結果と照合する。
+Jiraでは承認済みのIssue typeと必須fieldをproject metadataと照合し、不足または不一致があれば作成しない。
 
 ### 2. Issueを作る
 
 providerに対応する利用可能な操作で、承認済みfieldだけを指定してIssueを一件作る。
+GitHubでは`tool-gh`スキルの`prepare-private-body`で承認済み本文を権限`0600`の一時fileへ保存し、そのpathを`create-issue`へ渡す。
+GitHub操作の成否にかかわらず、直後に`remove-private-body`で一時fileを削除する。
+本文または一時fileのpathをstateへ保存しない。
 
 ### 3. 正本を取得する
 

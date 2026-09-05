@@ -8,7 +8,7 @@
 
 ## 目的
 
-指定commitにある1つのfileから、本文とSHA-256 digestを取得する。
+指定commitにある1つのfileから、本文とraw blob SHA-256を取得する。
 
 ## 前提条件
 
@@ -24,7 +24,7 @@
 git -C <repository-path> show <commit-oid>:<file-path>
 ```
 
-同じblobのdigestを取得する。
+同じblobのbyte列を照合するためのraw blob SHA-256を取得する。
 
 ```sh
 git -C <repository-path> show <commit-oid>:<file-path> | shasum -a 256
@@ -32,7 +32,8 @@ git -C <repository-path> show <commit-oid>:<file-path> | shasum -a 256
 
 ## 結果の確認
 
-本文を取得したobjectとdigestを求めたobjectへ、同じ完全なcommit OIDとfile pathを指定したことを確認する。
+本文を取得したobjectとraw blob SHA-256を求めたobjectへ、同じ完全なcommit OIDとfile pathを指定したことを確認する。
+この値を改行正規化済みの`design_body_digest`として使わない。
 
 ## 停止条件
 

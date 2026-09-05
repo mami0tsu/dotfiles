@@ -4,7 +4,7 @@ description: >-
   shell scriptを使い、Git common directoryにある作業stateを初期化、検証、更新、完了するためのTool。
   複数worktreeや人間待ちをまたぐ設計と実装の進行状況を安全に保存するときに使う。
 allowed-tools: >-
-  Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/tool-workflow-state/scripts/workflow-state.sh *)
+  Bash(bash */skills/tool-workflow-state/scripts/workflow-state.sh *)
 ---
 
 # tool-workflow-state
@@ -20,13 +20,19 @@ allowed-tools: >-
 - 完了時もstate fileを削除しない。
 - 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、identity照合、lock競合、保存禁止fieldを確認する。
 
+## Scriptの場所
+
+`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryである。
+Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`を使える。
+Codexでは利用中のSkill catalogに表示された`tool-workflow-state/SKILL.md`の絶対pathから`<plugin-root>`を解決する。
+
 ## ユースケース
 
 **state lifecycle**
 
 | ユースケース | 用途 |
 | --- | --- |
-| `complete-state` | 完了条件を満たしたstateへ完了結果を記録する。 |
-| `initialize-state` | 新しい作業stateをGit common directoryへ作る。 |
-| `update-state` | 検証済みrevisionの一つのnamespaceを更新する。 |
-| `verify-state` | 保存済みidentityを照合してstateを取得する。 |
+| [`complete-state`](references/complete-state.md) | 完了条件を満たしたstateへ完了結果を記録する。 |
+| [`initialize-state`](references/initialize-state.md) | 新しい作業stateをGit common directoryへ作る。 |
+| [`update-state`](references/update-state.md) | 検証済みrevisionの一つのnamespaceを更新する。 |
+| [`verify-state`](references/verify-state.md) | 保存済みidentityを照合してstateを取得する。 |

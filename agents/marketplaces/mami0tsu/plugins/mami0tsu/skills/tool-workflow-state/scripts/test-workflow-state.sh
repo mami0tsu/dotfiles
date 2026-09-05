@@ -10,6 +10,7 @@ repository="$test_root/repository"
 linked_worktree="$test_root/linked"
 other_repository="$test_root/other-repository"
 concurrent_repository="$test_root/concurrent-repository"
+generated_repository="$test_root/generated-repository"
 value_file="$test_root/value.json"
 delta_file="$test_root/delta.json"
 result_file="$test_root/result.json"
@@ -75,6 +76,21 @@ chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_re
     --subject-kind requirement \
     --subject "$subject_digest" >/dev/null
 )
+
+# Workflow IDを省略した新規作業では、安全なIDが生成されて結果にも含まれることを確かめる。
+git init -q "$generated_repository"
+git -C "$generated_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
+generated_result="$test_root/generated-result.json"
+(
+  cd "$generated_repository"
+  bash "$state_script" init \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" >"$generated_result"
+)
+generated_workflow_id="$(jq -r '.workflow_id' "$generated_result")"
+[[ "$generated_workflow_id" =~ ^workflow-design-[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
 
 # 別worktreeから同じstateを検証し、最初のnamespace値を保存する。
 (

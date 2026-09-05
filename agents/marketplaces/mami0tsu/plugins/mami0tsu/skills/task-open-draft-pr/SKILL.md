@@ -7,6 +7,7 @@ allowed-tools: >-
   Glob
   Read
   Skill
+  Skill(mami0tsu:tool-gh)
 ---
 
 # task-open-draft-pr
@@ -56,7 +57,10 @@ remoteのhead branchが存在し、入力で指定されたcommitを含むこと
 
 ### 5. Draft PRを作る
 
-入力から作成したbase branch、head branch、title、本文を使ってDraft PRを作成する。
+`tool-gh`スキルの`prepare-private-body`で本文を権限`0600`の一時fileへ保存する。
+入力から作成したbase branch、head branch、titleと一時body fileを使ってDraft PRを作成する。
+GitHub操作の成否にかかわらず、直後に`remove-private-body`で一時fileを削除する。
+本文または一時fileのpathをstateへ保存しない。
 
 ### 6. Draft PRのURLを返す
 

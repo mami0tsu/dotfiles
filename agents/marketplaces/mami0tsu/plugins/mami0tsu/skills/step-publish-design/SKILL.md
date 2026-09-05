@@ -15,7 +15,9 @@ allowed-tools: >-
   Skill(mami0tsu:task-prepare-worktree)
   Skill(mami0tsu:task-push-branch)
   Skill(mami0tsu:task-request-artifact-approval)
+  Skill(mami0tsu:task-request-diff-review)
   Skill(mami0tsu:task-request-document-publication)
+  Skill(mami0tsu:task-review-diff)
   Skill(mami0tsu:task-run-verification)
   Skill(mami0tsu:task-update-document)
   Skill(mami0tsu:task-update-issue)
@@ -80,7 +82,11 @@ MCPで書き込む場合は、pending operationをstateへ保存してから作�
 
 Git管理Documentを正本にする場合だけ実行する。
 `task-prepare-worktree`スキルで設計Document用のbranchとworktreeを準備し、`task-write-design-document`スキルで承認済み本文を配置する。
-`task-run-verification`スキル、`task-commit-changes`スキル、`task-organize-commits`スキルを順に実行する。
+`task-run-verification`スキルと`task-commit-changes`スキルを実行する。
+要求の読み取り結果とcommit済みの変更を`task-review-diff`スキルへ渡し、修正指摘がないことを確認する。
+続いてcommit済みの変更を`task-request-diff-review`スキルへ渡し、人間のレビュー完了と修正コメントがないことを確認する。
+Agentまたは人間から修正指摘が返った場合はDocumentを公開せず、承認済み設計との不一致として設計検証へ返す。
+通常検証、差分レビュー、人間レビュー、commit済みの変更を検証済みの変更として`task-organize-commits`スキルへ渡す。
 BranchのpushとDraft PR作成を1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
 承認後は各外部操作のpending operationを保存し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
 各操作の正本識別情報と結果は、次の外部操作より先にstateへ保存する。
@@ -94,17 +100,19 @@ merge済みの正本識別情報と完了したpending operationを、次の外�
 
 ### 6. 最終本文から実装Issueを再計画する
 
-確定した正本本文のdigestが`design_body_digest`と一致する場合は、承認済みの実装Issue計画を再利用する。
-Digestが異なる場合は、確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
+Issueが正本の場合は、まだIssue本文を更新していないため、承認済み設計本文と承認済み実装Issue計画を使う。
+WikiまたはGit管理Documentが正本の場合は、確定した正本本文のdigestが`design_body_digest`と一致すれば、承認済みの実装Issue計画を再利用する。
+外部Documentのdigestが異なる場合だけ、確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
 再計画した場合は`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
 `standalone-issue`の構成不一致が返った場合は公開を止め、利用者が`tracking-issue`を再選択するために必要な情報を停止理由として返す。
 
 ### 7. Issue群を承認する
 
-正本の種類、URL、revision、digestと最終実装Issue計画から、更新、作成、relation設定を1つのIssue群として組み立てる。
+正本の種類、URLと最終実装Issue計画から、更新、作成、relation設定を1つのIssue群として組み立てる。
+WikiまたはGit管理Documentが正本の場合は、確定した正本revisionと本文digestもIssue群へ含める。
 外部Documentが正本の場合は、設計を所有するIssueへ要約と正本参照だけを置き、設計本文を複製しない。
-Issueが正本の場合は、設計本文と実装に必要な項目を置くが、自己参照となるrevisionとdigestは置かない。
+Issueが正本の場合は、承認済み設計本文、実装に必要な項目、承認時の`design_body_digest`を使うが、更新後にしか得られないrevisionと最終本文digestは置かない。
 `standalone-issue`では、既存Issueへ実装範囲、受け入れ条件、確認方法、正本参照、意味上の状態を反映する計画を作る。
 `tracking-issue`では、設計Issueの更新、tracking Issueの更新、実装Issue群の作成、親子関係、依存関係、意味上の状態、provider上の状態をまとめる。
 複数リポジトリを扱う場合は、tracking Issueへ全体の実装概要、リポジトリ境界、実行順序を反映する。

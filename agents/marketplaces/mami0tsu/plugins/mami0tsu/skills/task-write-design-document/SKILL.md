@@ -6,6 +6,7 @@ description: >-
 allowed-tools: >-
   Edit
   Read
+  Skill(mami0tsu:tool-artifact-digest)
   Write
 ---
 
@@ -49,8 +50,8 @@ allowed-tools: >-
 
 ### 4. 変更を確認する
 
-対象pathの内容と承認済み本文を比較し、意図しない変更がないことを確認する。
+対象pathの内容を`tool-artifact-digest`スキルの`digest-text`へ渡し、`design_body_digest`と一致することを確認する。
 
 ### 5. 結果を返す
 
-repository、branch、worktree、path、変更前後のdigest、変更内容をDocument変更結果として返す。
+repository、branch、worktree、path、設計を所有するIssue ID、変更前後のdigest、変更内容をDocument変更結果として返す。

@@ -8,6 +8,7 @@ allowed-tools: >-
   Skill(mami0tsu:task-draft-design)
   Skill(mami0tsu:task-plan-implementation)
   Skill(mami0tsu:task-update-state)
+  Skill(mami0tsu:task-verify-state)
 ---
 
 # step-produce-design
@@ -35,26 +36,31 @@ allowed-tools: >-
 
 ## 手順
 
-### 1. 要求を明確にする
+### 1. 公開状態を確認する
+
+`task-verify-state`スキルで設計準備結果のWorkflow ID、state identity、基準リポジトリを照合し、最新revisionを取得する。
+照合できない場合は設計成果物を作らない。
+
+### 2. 要求を明確にする
 
 `task-clarify-requirements`スキルへ設計準備結果、直前の設計成果物、修正指摘を渡す。
 決定事項、未決事項、根拠を含む要求確認結果を受け取る。
 
-### 2. 設計本文を作る
+### 3. 設計本文を作る
 
-未決事項がなくなった後、`task-draft-design`スキルへ要求確認結果とリポジトリ調査結果を渡す。
+未決事項がなくなった後、`task-draft-design`スキルへ要求確認結果、対象リポジトリごとの調査結果、設計作業計画を渡す。
 
-### 3. 実装を計画する
+### 4. 実装を計画する
 
 `task-plan-implementation`スキルへ設計本文と設計作業計画を渡し、実装Issue計画を受け取る。
 `standalone-issue`の構成不一致が返った場合は作成を止め、`tracking-issue`の再選択に必要な実装単位とWorkflow IDを停止理由として返す。
 
-### 4. 整合性を確認する
+### 5. 整合性を確認する
 
 要求、設計判断、受け入れ条件、実装Issueが対応し、すべての変更範囲が一件の実装Issueに属することを確認する。
 構成不一致を除く矛盾または未割り当ての範囲がある場合は、要求の明確化または設計本文の作成へ戻る。
 
-### 5. 設計成果物を返す
+### 6. 設計成果物を返す
 
 設計準備結果、要求確認結果、設計本文、実装Issue計画、未決事項を設計成果物として返す。
 `task-update-state`スキルで成果物のdigestと完了した操作を記録する。

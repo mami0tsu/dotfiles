@@ -4,6 +4,7 @@ description: >-
   esaまたはNotionの既存Documentへ承認済みの本文を反映し、正本URL、revision、digestを返すTask。
   Wiki上の設計正本を更新するときに使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   mcp__esa__*
   mcp__notion__*
 ---
@@ -47,4 +48,5 @@ providerに対応する利用可能な操作で、承認済み本文と承認済
 
 ### 4. 結果を返す
 
+更新後の本文を再取得し、`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
 正本ID、URL、更新後revision、本文digest、操作結果をDocument更新結果として返す。

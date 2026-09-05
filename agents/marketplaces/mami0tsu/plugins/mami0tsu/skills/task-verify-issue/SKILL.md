@@ -4,6 +4,7 @@ description: >-
   Jira、Linear、GitHubのIssueを正本から再取得し、期待するfield、関係、意味上の状態と一致するか検証するTask。
   Issue作成や更新の直後と、設計を実装へ引き渡す直前に使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   Skill(mami0tsu:tool-gh)
   mcp__atlassian__*
   mcp__linear__*
@@ -39,6 +40,7 @@ Issueの現在値を読み取り、期待値との差分を返す。
 
 ### 2. 内容を比較する
 
+本文を`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
 title、本文digest、assignee、label、正本参照、対象リポジトリを期待値と比較する。
 
 ### 3. 関係を比較する

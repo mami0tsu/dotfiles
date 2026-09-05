@@ -8,6 +8,7 @@ allowed-tools: >-
   Skill(mami0tsu:task-request-design-approval)
   Skill(mami0tsu:task-review-design)
   Skill(mami0tsu:task-update-state)
+  Skill(mami0tsu:task-verify-state)
 ---
 
 # step-validate-design
@@ -33,21 +34,26 @@ allowed-tools: >-
 
 ## 手順
 
-### 1. 検証領域を決める
+### 1. 公開状態を確認する
+
+`task-verify-state`スキルで設計成果物に含まれるWorkflow ID、state identity、基準リポジトリを照合し、最新revisionを取得する。
+照合できない場合は設計を検証しない。
+
+### 2. 検証領域を決める
 
 `task-identify-review-domains`スキルへ設計成果物を渡し、要求整合性と必要な専門領域を含む検証計画を受け取る。
 
-### 2. 設計を検証する
+### 3. 設計を検証する
 
 `task-review-design`スキルへ設計成果物と検証計画を渡す。
 修正指摘が返った場合は重複を除き、根拠、影響、修正内容、再検証方法を付けて呼び出し元へ返す。
 
-### 3. 人間の承認を得る
+### 4. 人間の承認を得る
 
 Agentの修正指摘がない場合だけ、`task-request-design-approval`スキルへ設計成果物と検証結果を渡す。
 訂正または疑問が返った場合は修正指摘として呼び出し元へ返す。
 
-### 4. 承認済み設計を返す
+### 5. 承認済み設計を返す
 
 設計成果物、検証計画、Agent検証結果、人間の承認範囲、`design_body_digest`、`approved_design_digest`を承認済み設計として返す。
 `task-update-state`スキルで2つのdigest、検証状態、完了マーカーだけを記録する。
