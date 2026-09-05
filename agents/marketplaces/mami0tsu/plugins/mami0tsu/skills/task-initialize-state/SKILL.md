@@ -24,7 +24,7 @@ allowed-tools: >-
 ## 制約
 
 - Workflow ID、workflow名、subject kind、subjectを明示する。
-- subjectには要求本文ではなく、正本URL、外部ID、または要求digestを使う。
+- subjectには要求本文ではなく、正本URL、外部ID、または`sha256:`で始まる要求digestを使う。
 - 同じWorkflow IDのstateが存在する場合は上書きしない。
 - token、password、secret、Issue本文、Document本文を保存しない。
 - Git common directory以外へ正本stateを作らない。

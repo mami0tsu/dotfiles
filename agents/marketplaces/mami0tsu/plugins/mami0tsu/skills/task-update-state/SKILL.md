@@ -24,7 +24,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 検証済みのWorkflow IDとstate revisionを使う。
+- 検証済みのWorkflow ID、workflow名、subject kind、subject、state revisionを使う。
 - 1回の実行で1つのnamespaceだけを更新する。
 - token、password、secret、Issue本文、Document本文を保存しない。
 - 外部Objectは正本ID、URL、revision、digestだけを保存する。
@@ -38,7 +38,7 @@ namespace、更新値、期待するstate revisionを確認し、保存禁止情
 
 ### 2. Stateを更新する
 
-利用可能なstate更新操作を使い、1つのnamespaceを原子的に更新する。
+検証済みのidentityを省略せずにstate更新操作へ渡し、1つのnamespaceを原子的に更新する。
 
 ### 3. 更新結果を読む
 

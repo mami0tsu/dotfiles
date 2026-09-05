@@ -1,15 +1,15 @@
 ---
 name: task-request-artifact-approval
 description: >-
-  外部へ書き込む成果物の対象、内容、予定操作、完了状態を提示し、人間の承認を受け取るTask。
-  Issue、Document、Draft PRなどの外部成果物を作成または更新する直前に使う。
+  外部へ書き込む成果物またはIssue群の対象、内容、予定操作、完了状態を提示し、人間の承認を受け取るTask。
+  Issue群、Document、Draft PRなどの外部成果物を作成または更新する直前に使う。
 allowed-tools: >-
   Skill
 ---
 
 # task-request-artifact-approval
 
-利用者から見える1つの成果物について、実行する外部変更を承認対象へ固定する。
+利用者から見える1つの成果物または1つのIssue群について、実行する外部変更を承認対象へ固定する。
 1つの成果物を成立させる複数の操作は、同じ承認へまとめる。
 
 ## 入力
@@ -22,7 +22,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 対象Object、本文digest、予定操作、期待する完了状態を省略しない。
+- 対象ObjectまたはIssue一覧、本文digest、予定操作、期待する完了状態を省略しない。
 - 対象、内容、予定操作のいずれかが変わった承認を再利用しない。
 - 承認を受ける前に外部Objectを変更しない。
 - 承認済みの範囲を広げない。
@@ -31,7 +31,7 @@ allowed-tools: >-
 
 ### 1. 変更を正規化する
 
-対象provider、container、Object、作成または更新する内容、relation、状態変更を安定した順序へ正規化する。
+対象provider、container、ObjectまたはIssue一覧、作成または更新する内容、relation、状態変更を安定した順序へ正規化する。
 
 ### 2. Digestを求める
 
@@ -39,7 +39,7 @@ allowed-tools: >-
 
 ### 3. 変更を提示する
 
-利用者が確認できるObject単位で対象、変更内容、予定操作、完了状態を提示する。
+利用者が確認できる成果物またはIssue群の単位で、対象、変更内容、予定操作、完了状態を提示する。
 
 ### 4. 承認を受け取る
 

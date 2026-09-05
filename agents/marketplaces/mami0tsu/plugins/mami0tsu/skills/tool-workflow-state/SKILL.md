@@ -18,7 +18,7 @@ allowed-tools: >-
 - 保存禁止情報を別名のfieldへ移して検査を迂回しない。
 - lock取得失敗、revision競合、破損したJSONを手作業で迂回しない。
 - 完了時もstate fileを削除しない。
-- 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、保存禁止fieldを確認する。
+- 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、identity照合、stale lock回収、保存禁止fieldを確認する。
 
 ## ユースケース
 

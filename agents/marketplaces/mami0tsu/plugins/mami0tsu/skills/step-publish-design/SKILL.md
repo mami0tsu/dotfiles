@@ -11,6 +11,7 @@ allowed-tools: >-
   Skill(mami0tsu:task-link-issues)
   Skill(mami0tsu:task-open-draft-pr)
   Skill(mami0tsu:task-organize-commits)
+  Skill(mami0tsu:task-plan-implementation)
   Skill(mami0tsu:task-prepare-worktree)
   Skill(mami0tsu:task-push-branch)
   Skill(mami0tsu:task-request-artifact-approval)
@@ -57,26 +58,30 @@ allowed-tools: >-
 `task-verify-state`スキルでWorkflow identity、承認対象digest、完了済み操作、pending operationを確認する。
 外部Objectを再取得し、記録済みの識別情報と一致しない場合は停止する。
 
-### 2. Issueへ設計を保存する
+### 2. Issue正本を準備する
 
 Issueを正本にする場合だけ実行する。
-保存先Issueと本文を`task-request-artifact-approval`スキルへ渡し、承認後に`task-update-issue`スキルで本文を更新する。
-`task-verify-issue`スキルで再取得した本文が承認対象digestと一致することを確認する。
+設計を所有する既存IssueのURLを正本URLとし、本文の更新は後続のIssue群へ含める。
+同じIssueのrevisionや本文digestをそのIssue自身の本文へ書くと値が循環するため、自己参照となるrevisionとdigestは本文へ保存しない。
 
 ### 3. Wikiへ設計を保存する
 
 Wikiを正本にする場合だけ実行する。
 Documentの保存先と本文を`task-request-artifact-approval`スキルへ渡し、利用可能な操作に応じて`task-create-document`スキルまたは`task-update-document`スキルを使う。
-利用できるMCPがない場合は`task-request-document-publication`スキルで人間の保存を待つ。
-`task-verify-document`スキルで正本URL、revision、本文digestを取得する。
-人間が保存した本文は保存結果を最終承認として扱い、取得したdigestを採用する。
+MCPで書き込む場合は、pending operationをstateへ保存してから作成・更新し、結果の正本IDとURLを次の外部操作より先にstateへ保存する。
+その後、`task-verify-document`スキルで正本URL、revision、本文digestを取得する。
+利用できるMCPがない場合は、pending operationを保存してから`task-request-document-publication`スキルで人間の保存を待つ。
+この場合は手動公開結果のURL、revision、本文digestを正本値として採用し、利用できない`task-verify-document`スキルを呼び出さない。
+人間が保存した本文は保存結果を最終承認として扱う。
 
 ### 4. Git管理Documentを提案する
 
 Git管理Documentを正本にする場合だけ実行する。
 `task-prepare-worktree`スキルで設計Document用のbranchとworktreeを準備し、`task-write-design-document`スキルで承認済み本文を配置する。
 `task-run-verification`スキル、`task-commit-changes`スキル、`task-organize-commits`スキルを順に実行する。
-BranchのpushとDraft PR作成を1つの成果物計画として`task-request-artifact-approval`スキルへ渡し、承認とpending operationの記録後に`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
+BranchのpushとDraft PR作成を1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
+承認後は各外部操作のpending operationを保存し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
+各操作の正本識別情報と結果は、次の外部操作より先にstateへ保存する。
 
 ### 5. Git管理Documentのmergeを待つ
 
@@ -84,29 +89,39 @@ Draft PRを作成した場合は、人間によるReady化とmergeを待って�
 再開時は`task-verify-merged-document`スキルでmerge済みDocumentを取得する。
 pull request上で編集された本文は人間の最終承認として扱い、merge済みrevisionとdigestを正本にする。
 
-### 6. 正本参照を反映する
+### 6. 最終本文から実装Issueを再計画する
 
-正本の種類、URL、revision、digestを設計の所有者となるIssueへ反映する。
-外部Documentが正本の場合は要約と正本参照だけを保存し、設計本文を複製しない。
-この更新が以前の成果物承認に含まれない場合は、`task-request-artifact-approval`スキルで対象Issueへの変更を承認してもらい、pending operationを記録する。
-`task-update-issue`スキルと`task-verify-issue`スキルで反映結果を確認する。
+Wikiの手動保存やGit管理Documentのmergeで本文digestが承認時から変わった場合は、確定した正本本文を`task-plan-implementation`スキルへ渡す。
+実装Issue計画を最終本文に合わせて置き換えるが、人間が保存した結果やmerge結果を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
+本文digestが変わっていない場合も、実装Issue計画が確定した正本本文と一致することを確認する。
 
-### 7. 実装Issueを作る
+### 7. Issue群を承認する
 
-`standalone-issue`では、既存Issueへ実装範囲、受け入れ条件、確認方法、正本参照、意味上の状態を反映する。
-`tracking-issue`では、実装Issue群のtitle、本文、親、依存関係、意味上の状態、provider上の状態を`task-request-artifact-approval`スキルへまとめて渡す。
+正本の種類、URL、revision、digestと最終実装Issue計画から、更新、作成、relation設定を1つのIssue群として組み立てる。
+外部Documentが正本の場合は、設計を所有するIssueへ要約と正本参照だけを置き、設計本文を複製しない。
+Issueが正本の場合は、設計本文と実装に必要な項目を置くが、自己参照となるrevisionとdigestは置かない。
+`standalone-issue`では、既存Issueへ実装範囲、受け入れ条件、確認方法、正本参照、意味上の状態を反映する計画を作る。
+`tracking-issue`では、設計Issueの更新、tracking Issueの更新、実装Issue群の作成、親子関係、依存関係、意味上の状態、provider上の状態をまとめる。
 複数リポジトリを扱う場合は、tracking Issueへ全体の実装概要、リポジトリ境界、実行順序を反映する。
-設計Issueの状態変更、tracking Issueの更新、実装Issueの作成とrelation設定を同じIssue群の承認へ含める。
-承認後に`task-create-issue`スキルで一件ずつ作り、各正本IDを次の書き込み前に`task-update-state`スキルで記録する。
-すべてのIDを確定した後、`task-link-issues`スキルで親子関係と依存関係を反映する。
+Issue群の最終内容と予定操作を`task-request-artifact-approval`スキルへ一度だけ渡し、一群として承認してもらう。
 
-### 8. 引き渡し状態を検証する
+### 8. Issue群を反映する
+
+各既存Issueはpending operationをstateへ保存してから、`task-update-issue`スキルで一件ずつ更新する。
+各新規Issueもpending operationを保存してから、`task-create-issue`スキルで一件ずつ作成する。
+更新結果、または作成した正本IDとURLは、次の外部操作より先に`task-update-state`スキルで保存する。
+すべてのIDを確定した後、relationごとにpending operationを保存し、`task-link-issues`スキルで親子関係と依存関係を反映する。
+各relationの更新結果も、次の外部操作より先にstateへ保存する。
+
+### 9. 引き渡し状態を検証する
 
 各Issueを`task-verify-issue`スキルで再取得する。
 設計正本への参照、対象リポジトリ、目的、変更範囲、受け入れ条件、確認方法、依存関係、意味上の状態が一致することを確認する。
 `standalone-issue`は未着手で実装可能、`tracking-issue`は進行中、設計Issueは設計完了、実装Issueは未着手で実装可能とする。
+Issueが正本の場合は、Issue群の全更新後に設計を所有するIssueを再取得し、そのURL、最終revision、最終本文digestを正本値として確定する。
+確定した自己参照値をIssue本文へ書き戻さない。
 
-### 9. 設計を引き渡す
+### 10. 設計を引き渡す
 
 Issue構成、代表IssueのURL、設計IssueのURL、正本の種類、URL、revision、digest、実装IssueのURL、対象リポジトリ、依存関係、意味上の状態、状態検証を設計引き渡し結果として返す。
 `task-complete-state`スキルで状態を完了する。

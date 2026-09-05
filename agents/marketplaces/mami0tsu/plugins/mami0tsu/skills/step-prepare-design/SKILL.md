@@ -7,6 +7,7 @@ allowed-tools: >-
   Skill(mami0tsu:task-create-issue)
   Skill(mami0tsu:task-initialize-state)
   Skill(mami0tsu:task-inspect-repository)
+  Skill(mami0tsu:task-link-issues)
   Skill(mami0tsu:task-plan-design-work)
   Skill(mami0tsu:task-read-issue)
   Skill(mami0tsu:task-read-requirements)
@@ -58,9 +59,12 @@ Workflow IDがある場合は`task-verify-state`スキルを使い、保存済�
 
 ### 4. 追跡用Issueを準備する
 
-既存Issueを使わない場合は、作成する`standalone-issue`または`tracking-issue`を`task-request-artifact-approval`スキルへ渡す。
-承認とpending operationを記録した後、`task-create-issue`スキルで一件作成し、`task-verify-issue`スキルで確認する。
-`tracking-issue`では同じ手順で設計Issueを一件作り、親子関係を後続Stepへ引き渡す。
+既存Issueを使わない場合は、`standalone-issue`の1件、または`tracking-issue`と設計IssueからなるIssue群を`task-request-artifact-approval`スキルへ渡す。
+Issue群と、`tracking-issue`を選んだ場合の親子関係を1回だけ承認してもらう。
+各Issueはpending operationをstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
+作成応答を受けたら、次の外部操作より先に正本IDとURLを`task-update-state`スキルで保存し、`task-verify-issue`スキルで確認する。
+すべてのIDが確定したら親子関係のpending operationを保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
+関係の更新結果も、次の外部操作より先にstateへ保存する。
 
 ### 5. リポジトリを調べる
 
@@ -70,4 +74,4 @@ Workflow IDがある場合は`task-verify-state`スキルを使い、保存済�
 ### 6. 準備結果を返す
 
 要求の読み取り結果、設計作業計画、Workflow ID、追跡用Issue、対象リポジトリごとの調査結果を設計準備結果として返す。
-`task-update-state`スキルで外部Objectの識別情報と完了した操作を記録する。
+まだ保存していない内部の調査結果と完了した操作だけを`task-update-state`スキルで記録する。

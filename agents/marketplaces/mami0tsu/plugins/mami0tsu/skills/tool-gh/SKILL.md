@@ -16,7 +16,7 @@ allowed-tools: >-
   Bash(gh issue edit * --repo * --add-assignee *)
   Bash(gh issue edit * --repo * --add-blocked-by *)
   Bash(gh issue edit * --repo * --add-label *)
-  Bash(gh issue edit * --repo * --body-file * --title *)
+  Bash(gh issue edit * --repo * --title * --body-file *)
   Bash(gh issue edit * --repo * --parent *)
   Bash(gh issue edit * --repo * --remove-assignee *)
   Bash(gh issue edit * --repo * --remove-blocked-by *)

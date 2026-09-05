@@ -6,6 +6,9 @@
 ```sh
 bash "${CLAUDE_PLUGIN_ROOT}/skills/tool-workflow-state/scripts/workflow-state.sh" complete \
   --workflow-id <workflow-id> \
+  --workflow <workflow-name> \
+  --subject-kind <subject-kind> \
+  --subject <subject-identifier-or-digest> \
   --expected-revision <revision> \
   --result-file <private-json-file>
 ```
