@@ -50,4 +50,4 @@ Agentの修正指摘がない場合だけ、`task-request-design-approval`スキ
 ### 4. 承認済み設計を返す
 
 設計成果物、検証計画、Agent検証結果、人間の承認範囲、承認対象digestを承認済み設計として返す。
-`task-update-state`スキルで承認対象digestと検証結果を記録する。
+`task-update-state`スキルで承認対象digest、検証状態、完了マーカーだけを記録する。

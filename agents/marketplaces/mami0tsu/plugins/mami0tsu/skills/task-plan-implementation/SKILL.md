@@ -28,6 +28,7 @@ allowed-tools: >-
 - 親子関係を作業範囲、依存関係を実行順序として区別する。
 - branch名とbase branchを確定しない。
 - 設計本文にない実装判断を追加しない。
+- `standalone-issue`で複数の実装Issue、対象リポジトリ、またはPRが必要な場合は、実装Issue計画を返さず構成不一致を返す。
 
 ## 手順
 
@@ -53,3 +54,4 @@ allowed-tools: >-
 ### 5. 計画を返す
 
 Issueごとのkey、title、本文、対象リポジトリ、親、依存関係、意味上の状態と、tracking Issueの更新内容を実装Issue計画として返す。
+`standalone-issue`の構成不一致では、必要な実装単位と`tracking-issue`への変更が必要であることを返す。

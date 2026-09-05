@@ -13,22 +13,32 @@ value_file="$test_root/value.json"
 delta_file="$test_root/delta.json"
 result_file="$test_root/result.json"
 secret_file="$test_root/secret.json"
+invalid_result_file="$test_root/invalid-result.json"
+invalid_digest_file="$test_root/invalid-digest.json"
+invalid_type_file="$test_root/invalid-type.json"
+lock_ready="$test_root/lock-ready"
+holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
 other_subject_digest="sha256:1111111111111111111111111111111111111111111111111111111111111111"
 
 # 試験中に作成した限定的な一時directoryだけを削除する。
 cleanup() {
+  if [[ "${holder_pid:-}" =~ ^[0-9]+$ ]] && kill -0 "$holder_pid" 2>/dev/null; then
+    kill "$holder_pid" 2>/dev/null || true
+    wait "$holder_pid" 2>/dev/null || true
+  fi
   if [[ -n "${test_root:-}" && -d "$test_root" && "$test_root" == "${TMPDIR:-/tmp}/workflow-state-test."* ]]; then
     rm -rf "$test_root"
   fi
 }
 
-# 自動回収試験用に、実装と同じ優先順でmachine IDを取得する。
-read_test_machine_id() {
-  if [[ -r /etc/machine-id ]]; then
-    tr -d '[:space:]' </etc/machine-id
+# OSに応じたfile lockを保持し、取得完了を呼び出し元へ通知する。
+hold_test_lock() {
+  local lock_file="$1" ready_file="$2"
+  if command -v lockf >/dev/null 2>&1; then
+    lockf -k "$lock_file" sh -c "touch \"\$1\"; sleep 1" sh "$ready_file"
   else
-    /usr/sbin/ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformUUID/{print $(NF-1); exit}'
+    flock "$lock_file" sh -c "touch \"\$1\"; sleep 1" sh "$ready_file"
   fi
 }
 
@@ -42,11 +52,14 @@ git -C "$repository" worktree add -q "$linked_worktree" secondary
 repository_common_dir="$(git -C "$repository" rev-parse --path-format=absolute --git-common-dir)"
 
 # 差分更新、完了、機密field拒否に使うprivate JSONを用意する。
-jq -n '{canonical_url:"https://example.invalid/design", body_digest:"sha256:test", context_digest:"sha256:context", message_id:"message-1", approval:{digest:"sha256:approval", revision:1}}' >"$value_file"
+jq -n '{canonical_url:"https://example.invalid/design", body_digest:"sha256:2222222222222222222222222222222222222222222222222222222222222222", context_digest:"sha256:3333333333333333333333333333333333333333333333333333333333333333", message_id:"message-1", approval:{digest:"sha256:4444444444444444444444444444444444444444444444444444444444444444", revision:1}}' >"$value_file"
 jq -n '{pending_operation:{id:"op-1"}, approval:{status:"approved"}}' >"$delta_file"
 jq -n '{issue_url:"https://example.invalid/issues/1"}' >"$result_file"
-jq -n '{payload:"confidential full issue body"}' >"$secret_file"
-chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file"
+jq -n '{payload:{digest:"sha256:5555555555555555555555555555555555555555555555555555555555555555"}}' >"$secret_file"
+jq -n '{result:"confidential full issue body"}' >"$invalid_result_file"
+jq -n '{body_digest:"not-a-digest"}' >"$invalid_digest_file"
+jq -n '{status:1}' >"$invalid_type_file"
+chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file"
 
 # 要件本文の代わりにdigestをidentityへ固定してstateを初期化する。
 (
@@ -91,7 +104,7 @@ chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file"
     --value-file "$delta_file" >/dev/null
   test "$(jq -r '.namespaces.publication.canonical_url' .git/agent-workflows/test-design.json)" = 'https://example.invalid/design'
   test "$(jq -r '.namespaces.publication.pending_operation.id' .git/agent-workflows/test-design.json)" = 'op-1'
-  test "$(jq -r '.namespaces.publication.approval.digest' .git/agent-workflows/test-design.json)" = 'sha256:approval'
+  test "$(jq -r '.namespaces.publication.approval.digest' .git/agent-workflows/test-design.json)" = 'sha256:4444444444444444444444444444444444444444444444444444444444444444'
   test "$(jq -r '.namespaces.publication.approval.status' .git/agent-workflows/test-design.json)" = 'approved'
 )
 
@@ -129,22 +142,24 @@ if (
   exit 1
 fi
 
-# metadata allowlist外のscalar fieldへ本文を保存できないことを確かめる。
-if (
-  cd "$repository"
-  bash "$state_script" update \
-    --workflow-id test-design \
-    --workflow workflow-design \
-    --subject-kind requirement \
-    --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
-    --namespace credentials \
-    --expected-revision 2 \
-    --value-file "$secret_file" >/dev/null 2>&1
-); then
-  printf '%s\n' 'expected prohibited field to fail' >&2
-  exit 1
-fi
+# metadata schema外のcontainer、本文値、digest形式を拒否することを確かめる。
+for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file"; do
+  if (
+    cd "$repository"
+    bash "$state_script" update \
+      --workflow-id test-design \
+      --workflow workflow-design \
+      --subject-kind requirement \
+      --subject "$subject_digest" \
+      --repository-common-dir "$repository_common_dir" \
+      --namespace credentials \
+      --expected-revision 2 \
+      --value-file "$prohibited_file" >/dev/null 2>&1
+  ); then
+    printf '%s\n' 'expected invalid state metadata to fail' >&2
+    exit 1
+  fi
+done
 
 # 同じidentityを持つ別repositoryへ、検証済みGit common directoryを取り違えて書けないことを確かめる。
 git init -q "$other_repository"
@@ -186,23 +201,15 @@ if (
   exit 1
 fi
 
-# 同じmachineの以前のboot sessionが残したowner tokenを自動回収できることを確かめる。
+# 別processが保持するOS levelのlockと並行更新しないことを確かめる。
 state_dir="$repository/.git/agent-workflows"
-machine_id="$(read_test_machine_id)"
-stale_token="$machine_id:previous-boot:2147483647:0000000000000000000000000000000000000000000000000000000000000000:1:1"
-ln -s "$stale_token" "$state_dir/test-design.lock"
-(
-  cd "$repository"
-  bash "$state_script" verify \
-    --workflow-id test-design \
-    --workflow workflow-design \
-    --subject-kind requirement \
-    --subject "$subject_digest" >/dev/null
-)
-
-# 別machine由来のlockは自動回収せず、人間確認済みの完全なowner tokenでだけ回収する。
-foreign_token="foreign-machine:foreign-boot:1:1111111111111111111111111111111111111111111111111111111111111111:1:1"
-ln -s "$foreign_token" "$state_dir/test-design.lock"
+hold_test_lock "$state_dir/test-design.lock" "$lock_ready" &
+holder_pid="$!"
+for _ in {1..100}; do
+  [[ -f "$lock_ready" ]] && break
+  sleep 0.01
+done
+[[ -f "$lock_ready" ]] || { printf '%s\n' 'lock holder did not start' >&2; exit 1; }
 if (
   cd "$repository"
   bash "$state_script" verify \
@@ -211,15 +218,20 @@ if (
     --subject-kind requirement \
     --subject "$subject_digest" >/dev/null 2>&1
 ); then
-  printf '%s\n' 'expected foreign lock to require manual repair' >&2
+  printf '%s\n' 'expected concurrent lock acquisition to fail' >&2
   exit 1
 fi
+wait "$holder_pid"
+holder_pid=""
+
+# Process終了後は残ったlock fileをstale扱いせず、OSから同じlockを再取得する。
 (
   cd "$repository"
-  bash "$state_script" repair-lock \
+  bash "$state_script" verify \
     --workflow-id test-design \
-    --expected-owner-token "$foreign_token" \
-    --confirmed-stale >/dev/null
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" >/dev/null
 )
 
 # 完全なidentityと最新revisionでstateを完了し、監査情報を確かめる。

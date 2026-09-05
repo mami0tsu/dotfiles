@@ -61,17 +61,69 @@ validate_private_json_object() {
   [[ "$owner_id" == "$(id -u)" ]] || die "JSON file must be owned by the current user"
   (( (8#$permission_mode & 077) == 0 )) || die "JSON file must not be accessible by group or other users"
   validated_json="$(jq -ce 'if type == "object" then . else error("JSON value must be an object") end' "$file")" || die "JSON value must be an object"
-  if printf '%s\n' "$validated_json" | jq -e '
+  if ! printf '%s\n' "$validated_json" | jq -e '
     def normalized_key:
       ascii_downcase | gsub("[^a-z0-9]+"; "_");
-    def allowed_metadata_key:
-      test("^(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|result|results|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$|_(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|result|results|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$");
-    [paths(scalars) as $path
-      | ($path | map(select(type == "string")) | last // "" | normalized_key)
-      | select(allowed_metadata_key | not)]
-    | length > 0
+    def scalar_key:
+      normalized_key
+      | test("^(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$|_(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$");
+    def container_key:
+      normalized_key
+      | test("^(approval|approvals|pending_operation|pending_operations|completed_operation|completed_operations|external_object|external_objects|object|objects|issue|issues|document|documents|pull_request|pull_requests|artifact|artifacts|verification|verifications|relation|relations|target|targets|source|sources|result|results|canonical|tracking|design|implementation|publication|repository|repositories|branch|branches|before|after|expected|actual)$");
+    def safe_token:
+      type == "string" and length > 0 and length <= 256 and test("^[A-Za-z0-9][A-Za-z0-9._:/#@+-]*$");
+    def valid_scalar($raw_key; $value):
+      ($raw_key | normalized_key) as $key
+      | if $value == null then
+          (($raw_key | scalar_key) or ($raw_key | container_key))
+        elif $key | test("(^|_)(digest|digests)$") then
+          ($value | type == "string" and test("^sha256:[a-f0-9]{64}$"))
+        elif $key | test("(^|_)(url|urls|uri|uris)$") then
+          ($value | type == "string" and length <= 2048 and test("^https://[^[:space:]]+$"))
+        elif $key | test("(^|_)(revision|revisions)$") then
+          (($value | type == "number" and . >= 0 and floor == .) or ($value | safe_token))
+        elif $key | test("(^|_)(number|numbers)$") then
+          ($value | type == "number" and . >= 0 and floor == .)
+        elif $key | test("(^|_)(completed|verified)$") then
+          ($value | type == "boolean")
+        elif $key | test("(^|_)(timestamp|timestamps|at)$") then
+          ($value | type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"))
+        elif $key | test("(^|_)(commit|commits|oid|oids)$") then
+          ($value | type == "string" and test("^[a-f0-9]{7,64}$"))
+        elif $key | test("(^|_)(path|paths|directory|directories|dir|dirs)$") then
+          ($value | type == "string" and length > 0 and length <= 1024 and test("^[^[:cntrl:]]+$"))
+        elif $key | test("(^|_)(repository|repositories)$") then
+          ($value | (safe_token or (type == "string" and length <= 2048 and test("^https://[^[:space:]]+$"))))
+        elif $raw_key | scalar_key then
+          ($value | safe_token)
+        else
+          false
+        end;
+    def valid_value($parent_key):
+      if type == "object" then
+        all(to_entries[];
+          .key as $key
+          | .value
+          | if type == "object" then
+              (($key | container_key) and valid_value($key))
+            elif type == "array" then
+              ((($key | container_key) or ($key | scalar_key)) and valid_value($key))
+            else
+              valid_scalar($key; .)
+            end)
+      elif type == "array" then
+        all(.[];
+          if type == "object" or type == "array" then
+            valid_value($parent_key)
+          else
+            valid_scalar($parent_key; .)
+          end)
+      else
+        valid_scalar($parent_key; .)
+      end;
+    valid_value("")
   ' >/dev/null; then
-    die "JSON contains a field outside the state metadata allowlist"
+    die "JSON does not match the state metadata schema"
   fi
 }
 
@@ -92,112 +144,24 @@ state_path_for() {
   lock_path="$state_dir/$workflow_id.lock"
 }
 
-# process所有者tokenを使って並行更新を直列化し、終了済み所有者のlockを回復する。
-
-# Hostname変更の影響を受けないmachine IDを取得する。
-read_machine_id() {
-  local value=""
-  if [[ -r /etc/machine-id ]]; then
-    value="$(tr -d '[:space:]' </etc/machine-id)"
-  elif [[ "$(uname -s)" == "Darwin" && -x /usr/sbin/ioreg ]]; then
-    value="$(/usr/sbin/ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformUUID/{print $(NF-1); exit}')"
-  fi
-  [[ "$value" =~ ^[A-Za-z0-9._-]+$ ]] || die "cannot resolve a stable machine id"
-  printf '%s' "$value"
-}
-
-# 再起動前のlockを区別するboot session IDを取得する。
-read_boot_id() {
-  local value=""
-  if [[ -r /proc/sys/kernel/random/boot_id ]]; then
-    value="$(tr -d '[:space:]' </proc/sys/kernel/random/boot_id)"
-  elif [[ "$(uname -s)" == "Darwin" ]]; then
-    value="$(sysctl -n kern.bootsessionuuid 2>/dev/null || true)"
-  fi
-  [[ "$value" =~ ^[A-Za-z0-9._-]+$ ]] || die "cannot resolve a boot session id"
-  printf '%s' "$value"
-}
-
-# PID再利用を区別するため、process開始時刻をSHA-256へ変換する。
-read_process_start_id() {
-  local process_id="$1" start_value digest_line
-  start_value="$(ps -o lstart= -p "$process_id" 2>/dev/null)" || return 1
-  [[ -n "${start_value//[[:space:]]/}" ]] || return 1
-  digest_line="$(printf '%s' "$start_value" | shasum -a 256)"
-  printf '%s' "${digest_line%% *}"
-}
-
-# 現在processを一意に表すowner tokenを組み立てる。
-build_lock_token() {
-  local process_start_id
-  process_start_id="$(read_process_start_id "$$")" || die "cannot resolve current process start time"
-  lock_token="$(read_machine_id):$(read_boot_id):$$:$process_start_id:$(date '+%s'):$RANDOM"
-}
-
-# atomicなsymlinkにあるowner tokenを検査し、終了済み所有者のlockだけを移動して回収する。
-recover_stale_lock() {
-  local owner_token owner_machine owner_boot owner_pid owner_start owner_created owner_nonce owner_extra
-  local current_machine current_boot current_start="" stale_lock
-  owner_token="$(readlink "$lock_path" 2>/dev/null)" || return 1
-  IFS=: read -r owner_machine owner_boot owner_pid owner_start owner_created owner_nonce owner_extra <<<"$owner_token"
-  [[ -z "$owner_extra" && "$owner_machine" =~ ^[A-Za-z0-9._-]+$ && "$owner_boot" =~ ^[A-Za-z0-9._-]+$ ]] || return 1
-  [[ "$owner_pid" =~ ^[0-9]+$ && "$owner_start" =~ ^[a-f0-9]{64}$ && "$owner_created" =~ ^[0-9]+$ && "$owner_nonce" =~ ^[0-9]+$ ]] || return 1
-  current_machine="$(read_machine_id)"
-  current_boot="$(read_boot_id)"
-  [[ "$owner_machine" == "$current_machine" ]] || return 1
-  if [[ "$owner_boot" == "$current_boot" ]]; then
-    current_start="$(read_process_start_id "$owner_pid" || true)"
-    [[ -z "$current_start" || "$current_start" != "$owner_start" ]] || return 1
-  fi
-  stale_lock="$state_dir/.$workflow_id.stale-lock.$$.$RANDOM"
-  mv "$lock_path" "$stale_lock" 2>/dev/null || return 1
-  [[ "$(readlink "$stale_lock" 2>/dev/null || true)" == "$owner_token" ]] || die "stale lock token changed during recovery"
-  rm -f "$stale_lock"
-}
-
-# Workflow単位のlockをatomicに取得する。
+# OSがprocess終了時に解放するfile lockで、Workflow単位の更新を直列化する。
 acquire_lock() {
   mkdir -p "$state_dir"
   chmod 700 "$state_dir"
-  build_lock_token
-  if ! ln -s "$lock_token" "$lock_path" 2>/dev/null; then
-    if ! recover_stale_lock; then
-      die "state is locked: $workflow_id (owner token: $(readlink "$lock_path" 2>/dev/null || printf '%s' unknown))"
-    fi
-    ln -s "$lock_token" "$lock_path" 2>/dev/null || die "state is locked: $workflow_id"
+  exec 9>"$lock_path"
+  chmod 600 "$lock_path"
+  if command -v lockf >/dev/null 2>&1; then
+    lockf -s -t 0 9 || die "state is locked: $workflow_id"
+  elif command -v flock >/dev/null 2>&1; then
+    flock -n 9 || die "state is locked: $workflow_id"
+  else
+    die "lockf or flock is required"
   fi
 }
 
-# owner tokenが一致する自processのlockだけを解放する。
+# 現在processが保持するfile descriptorを閉じてlockを解放する。
 release_lock() {
-  if [[ -L "${lock_path:-}" && "$(readlink "$lock_path" 2>/dev/null || true)" == "${lock_token:-}" ]]; then
-    rm -f "$lock_path"
-  fi
-}
-
-# 人間がstaleと確認したforeign lockを、提示済みowner tokenとの一致を条件に回収する。
-repair_state_lock() {
-  local expected_owner_token="" confirmed=""
-  workflow_id=""
-  while (($#)); do
-    case "$1" in
-      --workflow-id) require_value "$1" "${2:-}"; workflow_id="$2"; shift 2 ;;
-      --expected-owner-token) require_value "$1" "${2:-}"; expected_owner_token="$2"; shift 2 ;;
-      --confirmed-stale) confirmed="yes"; shift ;;
-      *) die "unknown option: $1" ;;
-    esac
-  done
-  [[ -n "$workflow_id" && -n "$expected_owner_token" && "$confirmed" == "yes" ]] || die "repair options and explicit stale confirmation are required"
-  validate_workflow_id "$workflow_id"
-  resolve_repository
-  state_path_for
-  [[ -L "$lock_path" ]] || die "state lock not found: $workflow_id"
-  [[ "$(readlink "$lock_path")" == "$expected_owner_token" ]] || die "state lock owner token does not match"
-  local repaired_lock="$state_dir/.$workflow_id.repaired-lock.$$.$RANDOM"
-  mv "$lock_path" "$repaired_lock" 2>/dev/null || die "state lock changed before repair"
-  [[ "$(readlink "$repaired_lock" 2>/dev/null || true)" == "$expected_owner_token" ]] || die "state lock owner token changed during repair"
-  rm -f "$repaired_lock"
-  jq -n --arg workflow_id "$workflow_id" --arg owner_token "$expected_owner_token" '{workflow_id: $workflow_id, repaired: true, owner_token: $owner_token}'
+  exec 9>&-
 }
 
 # 同じdirectoryの一時fileへ完全なJSONを書き、renameで原子的に置き換える。
@@ -391,16 +355,9 @@ complete_state() {
 
 # 依存commandを確認して、指定されたlifecycle commandだけを実行する。
 main() {
-  require_command awk
   require_command git
   require_command jq
-  require_command ln
-  require_command ps
-  require_command readlink
-  require_command shasum
   require_command stat
-  require_command tr
-  require_command uname
   umask 077
   local command_name="${1:-}"
   [[ -n "$command_name" ]] || die "command is required"
@@ -410,7 +367,6 @@ main() {
     verify) verify_state "$@" ;;
     update) update_state "$@" ;;
     complete) complete_state "$@" ;;
-    repair-lock) repair_state_lock "$@" ;;
     *) die "unknown command: $command_name" ;;
   esac
 }
