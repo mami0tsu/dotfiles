@@ -18,7 +18,7 @@ allowed-tools: >-
 
 - Document作成計画
 - 成果物の承認結果
-- pending operation
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -27,7 +27,7 @@ allowed-tools: >-
 ## 制約
 
 - provider、container、親Document、title、本文を推測で補わない。
-- 承認対象digestまたはpending operationが一致しない場合は作成しない。
+- 作成計画のoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
 - 承認済み本文を要約、翻訳、整形し直さない。
 - 1回の実行で1件だけ作る。
 - 正本IDを確認できない場合は同じ作成操作を再実行しない。
@@ -36,7 +36,8 @@ allowed-tools: >-
 
 ### 1. 作成内容を照合する
 
-保存先、title、本文、公開範囲、承認対象digestを作成計画と照合する。
+作成計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+保存先、title、本文、公開範囲を作成計画と照合する。
 
 ### 2. Documentを作る
 
@@ -49,6 +50,6 @@ providerに対応する利用可能な操作で、承認済み本文をそのま
 
 ### 4. 結果を返す
 
-再取得した本文を`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
+再取得した本文を共通のtext digest操作へ渡して本文digestを求める。
 provider、正本ID、URL、revision、本文digest、操作結果をDocument作成結果として返す。
 結果が曖昧な場合は、候補と人間による対応付けが必要であることを返す。

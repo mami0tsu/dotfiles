@@ -17,3 +17,5 @@ bash "<plugin-root>/skills/tool-workflow-state/scripts/workflow-state.sh" update
 
 一時ファイルはcommand終了後に削除する。
 revision競合時はstateを再検証し、差分を解決するまで更新しない。
+出力されたWorkflow ID、state path、identity、新しいrevisionを次のstate checkpointとして渡す。
+Namespaceと保存値も更新結果として利用する。

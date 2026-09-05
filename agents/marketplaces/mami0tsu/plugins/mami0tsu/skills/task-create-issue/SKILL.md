@@ -4,6 +4,7 @@ description: >-
   承認済みのIssue作成内容をJira、Linear、GitHubの一つへ反映し、作成された正本IDとURLを返すTask。
   tracking、設計、実装、standaloneのIssueを一件作るときに使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   Skill(mami0tsu:tool-gh)
   mcp__atlassian__*
   mcp__linear__*
@@ -18,7 +19,7 @@ allowed-tools: >-
 
 - Issue作成計画
 - 成果物の承認結果
-- pending operation
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -28,7 +29,7 @@ allowed-tools: >-
 
 - provider、container、title、description、状態を推測で補わない。
 - JiraではIssue typeとproject metadataが要求するすべての必須fieldを推測で補わない。
-- 承認対象digestと作成計画が一致しない場合は作成しない。
+- 作成計画のoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
 - pending operationが記録されていない場合は作成しない。
 - 1回の実行で1件だけ作る。
 - 作成結果から正本IDを確認できない場合は再実行しない。
@@ -37,14 +38,15 @@ allowed-tools: >-
 
 ### 1. 作成内容を確認する
 
-provider、container、title、description、assignee、provider上の状態、意味上の状態を承認結果と照合する。
+作成計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+Provider、container、title、description、assignee、provider上の状態、意味上の状態を承認結果と照合する。
 Jiraでは承認済みのIssue typeと必須fieldをproject metadataと照合し、不足または不一致があれば作成しない。
 
 ### 2. Issueを作る
 
 providerに対応する利用可能な操作で、承認済みfieldだけを指定してIssueを一件作る。
-GitHubでは`tool-gh`スキルの`prepare-private-body`で承認済み本文を権限`0600`の一時fileへ保存し、そのpathを`create-issue`へ渡す。
-GitHub操作の成否にかかわらず、直後に`remove-private-body`で一時fileを削除する。
+GitHubでは承認済み本文を権限`0600`の一時body fileへ保存し、そのpathをIssue作成操作へ渡す。
+GitHub操作の成否にかかわらず、直後に一時body fileを削除する。
 本文または一時fileのpathをstateへ保存しない。
 
 ### 3. 正本を取得する

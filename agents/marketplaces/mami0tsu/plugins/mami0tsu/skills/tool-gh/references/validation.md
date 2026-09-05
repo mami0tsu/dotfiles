@@ -12,6 +12,17 @@
 
 GitHubへの書き込みは行わず、command選択と停止条件を読み取り専用で検証した。
 
+## 2026-09-05：本文操作とremote Document読取
+
+- 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`
+- 入力：標準入力の本文からIssueとDraft PRを操作し、別repositoryの完全なcommit OIDからDocumentを読む。
+- 対象ユースケース：`create-issue`、`update-issue`、`create-draft-pr`、`read-file-at-commit`
+- 読み込んだreference：`create-issue.md`、`update-issue.md`、`create-draft-pr.md`、`read-file-at-commit.md`
+- 実行したhelp：`gh api --help`
+- 結果：本文操作は専用scriptのprocess内で権限`0600`の一時fileを使い、成功時と失敗時の両方で削除することをtestで確認した。Remote読取はrepository、完全なcommit OID、pathを明示する構文をローカルhelpと照合した。
+
+GitHubへの書き込みとremote fileの取得は行っていない。
+
 ## 2026-09-04：Version差のフォールバック
 
 - 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`

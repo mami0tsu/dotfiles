@@ -14,7 +14,7 @@ allowed-tools: >-
 
 ## 入力
 
-- state検証結果
+- 最新のstate checkpoint
 - 完了条件
 - 完了証跡
 
@@ -24,7 +24,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 検証済みのWorkflow ID、workflow名、subject kind、subject、Git common directory、state revisionを使う。
+- 初期化、検証、直前の更新のいずれかが返した最新のstate checkpointを使う。
 - すべての必須成果物について正本ID、URL、revisionまたはdigestを確認する。
 - 未解決の差分、未承認の変更、pending operationがある場合は完了しない。
 - 完了済みstateを再度変更しない。

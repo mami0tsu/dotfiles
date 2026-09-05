@@ -17,6 +17,7 @@ allowed-tools: >-
 
 - Document作成または更新計画
 - 成果物の承認結果
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -25,6 +26,7 @@ allowed-tools: >-
 ## 制約
 
 - provider、保存先、title、本文、公開範囲を省略しない。
+- 公開計画のoperation IDとdigestが成果物の承認結果に含まれない場合は依頼しない。
 - 承認済み本文を作業中に変更しない。
 - URLを受け取る前に公開完了と判断しない。
 - 人間が保存した本文へagentによる再承認を要求しない。
@@ -33,6 +35,7 @@ allowed-tools: >-
 
 ### 1. 保存内容を提示する
 
+公開計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
 provider、保存先、title、承認済み本文、公開範囲、本文digestを人間へ提示する。
 
 ### 2. 保存を依頼する
@@ -45,5 +48,5 @@ provider、保存先、title、承認済み本文、公開範囲、本文digest�
 
 ### 4. 結果を返す
 
-最終本文を`tool-artifact-digest`スキルの`digest-text`で正規化してdigestを求める。
+最終本文を共通のtext digest操作で正規化してdigestを求める。
 provider、正本URL、revision、最終本文、本文digest、変更点を手動公開結果として返す。

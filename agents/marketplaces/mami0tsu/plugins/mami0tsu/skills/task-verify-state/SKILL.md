@@ -20,7 +20,7 @@ allowed-tools: >-
 
 ## 出力
 
-- state検証結果
+- state検証結果とstate checkpoint
 
 ## 制約
 
@@ -46,4 +46,5 @@ workflow名、subject kind、subject、基準リポジトリを期待値と比�
 
 ### 4. 結果を返す
 
-state revision、一致した項目、差分、再開可能な操作、人間の対応が必要な操作をstate検証結果として返す。
+Workflow ID、workflow名、subject kind、subject、Git common directory、state path、最新revisionをstate checkpointとして返す。
+一致した項目、差分、再開可能な操作、人間の対応が必要な操作をstate検証結果として返す。

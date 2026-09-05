@@ -40,12 +40,13 @@ Draft PRのURLが入力された場合はpull requestを取得し、repository�
 ### 2. Documentを取得する
 
 確認済みrevisionで指定pathのDocumentを取得する。
+正本repositoryのlocal checkoutを利用できない場合は、正本参照にあるcanonical repository、完全なcommit OID、pathを使い、認証済みremoteから本文を取得する。
 pathとblobの一方でも存在しない場合は停止する。
 
 ### 3. 正本情報を作る
 
 merge commitをrevisionとし、commitを固定したfile URLを求める。
-取得した本文を`tool-artifact-digest`スキルの`digest-text`へ渡し、他の正本経路と同じ本文digestを求める。
+取得した本文を共通のtext digest操作へ渡し、他の正本経路と同じ本文digestを求める。
 
 ### 4. 結果を返す
 

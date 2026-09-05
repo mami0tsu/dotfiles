@@ -17,12 +17,8 @@ allowed-tools: >-
 - 入力fileを使う場合は、通常fileであり、現在の利用者だけが読める権限にする。
 - digestは`sha256:`を先頭に付けた小文字64桁の16進数として返す。
 - 実装変更時は`scripts/test-artifact-digest.sh`で改行、末尾改行、JSONのkey順、異常入力を確認する。
-
-## Scriptの場所
-
-`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryである。
-Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`を使える。
-Codexでは利用中のSkill catalogに表示された`tool-artifact-digest/SKILL.md`の絶対pathから`<plugin-root>`を解決する。
+- reference内の`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryへ置き換える。
+- Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`、CodexではSkill catalogに表示された`SKILL.md`の絶対pathから`<plugin-root>`を解決する。
 
 ## ユースケース
 

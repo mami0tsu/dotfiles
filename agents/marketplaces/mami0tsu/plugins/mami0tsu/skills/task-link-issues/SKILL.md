@@ -4,6 +4,7 @@ description: >-
   承認済みのIssue関係計画に従い、Jira、Linear、GitHubのIssueへ親子関係または依存関係を反映するTask。
   作成済みIssue同士をtracking構成へまとめるときや、実装順序をblockedByで表すときに使う。
 allowed-tools: >-
+  Skill(mami0tsu:tool-artifact-digest)
   Skill(mami0tsu:tool-gh)
   mcp__atlassian__*
   mcp__linear__*
@@ -18,7 +19,7 @@ Issue間の関係を一種類ずつ反映する。
 
 - Issue関係計画
 - 成果物の承認結果
-- pending operation
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -30,7 +31,8 @@ Issue間の関係を一種類ずつ反映する。
 - 対象Issueは同じproviderとcontainerに属するものだけを扱う。
 - 管理対象として承認されていないIssueと関係を変更しない。
 - 既存関係を推測で削除しない。
-- 承認対象digestまたはpending operationが一致しない場合は変更しない。
+- 関係計画のoperation IDとdigestが成果物の承認結果に含まれない場合は変更しない。
+- Pending operationのoperation IDとdigestが一致しない場合は変更しない。
 - 一部の更新に失敗しても、成功済みの関係を戻さない。
 - 更新結果が曖昧な場合は同じ操作を再実行しない。
 
@@ -42,6 +44,7 @@ Issue間の関係を一種類ずつ反映する。
 
 ### 2. 差分を決める
 
+Issue関係計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
 現在の関係と承認済み計画を比較する。
 追加対象と、明示的に承認された削除対象だけを抽出する。
 

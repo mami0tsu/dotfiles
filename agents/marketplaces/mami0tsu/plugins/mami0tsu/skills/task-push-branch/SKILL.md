@@ -5,6 +5,7 @@ description: >-
   Draft PRを作る前にbranchを公開するときに使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
 ---
 
 # task-push-branch
@@ -15,6 +16,9 @@ push後はremote branchの対象commitを確認する。
 ## 入力
 
 - 整理済みの変更
+- Draft PR成果物計画
+- 成果物の承認結果
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -23,6 +27,7 @@ push後はremote branchの対象commitを確認する。
 ## 制約
 
 - 入力のcommitが現在のbranchにない場合はpushしない。
+- Push計画のoperation IDとdigestが成果物の承認結果に含まれない場合はpushしない。
 - commitしていない変更が残っている場合はpushしない。
 - push先のremoteとbranchを明示する。
 - remote branchの履歴を書き換えない。
@@ -37,6 +42,7 @@ push後はremote branchの対象commitを確認する。
 
 ### 2. Push先を確認する
 
+Push計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
 入力とリポジトリの設定から、push先のremoteとbranchを特定する。
 push先を1つに決められない場合は停止する。
 

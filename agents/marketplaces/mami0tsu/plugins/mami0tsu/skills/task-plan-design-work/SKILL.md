@@ -6,6 +6,7 @@ description: >-
 allowed-tools: >-
   Skill
   mcp__atlassian__*
+  mcp__linear__*
 ---
 
 # task-plan-design-work
@@ -44,6 +45,7 @@ allowed-tools: >-
 Jiraを選ぶ場合はproject metadataを取得し、tracking、設計、実装、standaloneの各役割で利用できるIssue typeと必須fieldを提示する。
 利用者が選んだIssue typeと、必須fieldへ設定する値を役割ごとに記録する。
 必要なmetadataを取得できない場合や必須fieldの値が未確定の場合は、Issue作成を含む計画を確定しない。
+Linearを選ぶ場合はteamとworkflow stateのmetadataを取得し、containerと意味上の状態へ対応するIDを記録する。
 
 ### 3. 状態を対応付ける
 
@@ -59,6 +61,7 @@ Issue、Wiki、Git管理Documentの候補と、作成、更新、手動保存、
 ### 5. リポジトリを選ぶ
 
 状態を保存する基準リポジトリと、設計対象となるリポジトリを確定する。
+各リポジトリはhostとcanonical repository名で識別し、GitHubでは`nameWithOwner`を使う。
 Git管理Documentでは正本を置くリポジトリとpathも確定する。
 
 ### 6. 承認単位を決める

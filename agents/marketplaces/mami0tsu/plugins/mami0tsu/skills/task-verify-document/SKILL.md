@@ -38,7 +38,7 @@ Documentの現在値を読み取り、期待値との差分を返す。
 
 ### 2. Digestを求める
 
-保存済み本文を`tool-artifact-digest`スキルの`digest-text`で正規化し、本文digestを求める。
+保存済み本文を共通のtext digest操作で正規化し、本文digestを求める。
 
 ### 3. 期待値と比較する
 

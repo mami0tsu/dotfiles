@@ -41,6 +41,7 @@ WorkflowはStepの順序と成果物の引き渡しだけを管理し、設計�
 ### 2. 設計を作る
 
 `step-produce-design`スキルへ設計準備結果を渡し、設計成果物を受け取る。
+`reprepare-required`結果が返った場合は、その結果を`step-prepare-design`スキルへ渡してIssue構成を再準備し、設計の作成からやり直す。
 
 ### 3. 設計を検証する
 
@@ -50,4 +51,6 @@ WorkflowはStepの順序と成果物の引き渡しだけを管理し、設計�
 ### 4. 設計を公開する
 
 `step-publish-design`スキルへ承認済み設計を渡す。
+`reprepare-required`結果が返った場合は、その結果を`step-prepare-design`スキルへ渡す。
+公開済み正本を維持した設計準備結果を受け取り、設計の作成、検証、公開を順にやり直す。
 正本とIssueの公開結果を検証した設計引き渡し結果を受け取り、その結果を返す。

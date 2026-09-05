@@ -4,6 +4,9 @@ set -euo pipefail
 
 # 共通の入力検査とエラー処理をまとめる。
 
+temporary_files=()
+lock_acquired=false
+
 # 呼び出し元へ一定形式のエラーを返して終了する。
 die() {
   printf '%s\n' "error: $*" >&2
@@ -20,6 +23,29 @@ require_value() {
   local option="$1"
   local value="${2:-}"
   [[ -n "$value" ]] || die "missing value for $option"
+}
+
+# OSごとの差を吸収してfileまたはdirectoryの所有者IDを取得する。
+owner_id_of() {
+  local path="$1"
+  if stat -f '%u' "$path" >/dev/null 2>&1; then
+    stat -f '%u' "$path"
+  else
+    stat -c '%u' "$path"
+  fi
+}
+
+# 終了時に一時fileとfile lockを解放する。
+cleanup_runtime() {
+  local temporary_file
+  for temporary_file in "${temporary_files[@]:-}"; do
+    if [[ -n "$temporary_file" && ( -f "$temporary_file" || -L "$temporary_file" ) ]]; then
+      rm -f -- "$temporary_file"
+    fi
+  done
+  if [[ "$lock_acquired" == true ]]; then
+    release_lock
+  fi
 }
 
 # file名へ使うWorkflow IDを安全な文字と長さへ制限する。
@@ -60,10 +86,10 @@ validate_private_json_object() {
   [[ -f "$file" && -r "$file" ]] || die "JSON file must be a readable regular file: $file"
   local owner_id permission_mode
   if stat -f '%u' "$file" >/dev/null 2>&1; then
-    owner_id="$(stat -f '%u' "$file")"
+    owner_id="$(owner_id_of "$file")"
     permission_mode="$(stat -f '%Lp' "$file")"
   else
-    owner_id="$(stat -c '%u' "$file")"
+    owner_id="$(owner_id_of "$file")"
     permission_mode="$(stat -c '%a' "$file")"
   fi
   [[ "$owner_id" == "$(id -u)" ]] || die "JSON file must be owned by the current user"
@@ -73,7 +99,7 @@ validate_private_json_object() {
     def normalized_key:
       ascii_downcase | gsub("[^a-z0-9]+"; "_");
     def prohibited_key:
-      normalized_key | test("(^|_)(token|password|secret|credential|apikey|authorization|authheader)(_|$)");
+      normalized_key | test("(^|_)(token|password|secret|credential|api_?key|authorization|auth_?header)(_|$)");
     def scalar_key:
       normalized_key
       | test("^(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$|_(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$");
@@ -156,12 +182,29 @@ state_path_for() {
   lock_path="$state_dir/$workflow_id.lock"
 }
 
+# Git common directory直下の保存先が、現在利用者だけの通常directoryであることを確認する。
+ensure_state_directory() {
+  if [[ -e "$state_dir" || -L "$state_dir" ]]; then
+    [[ -d "$state_dir" && ! -L "$state_dir" ]] || die "state directory must be a regular directory"
+    [[ "$(owner_id_of "$state_dir")" == "$(id -u)" ]] || die "state directory must be owned by the current user"
+  else
+    mkdir -m 700 "$state_dir"
+  fi
+  chmod 700 "$state_dir"
+}
+
 # OSがprocess終了時に解放するfile lockで、Workflow単位の更新を直列化する。
 acquire_lock() {
-  mkdir -p "$state_dir"
-  chmod 700 "$state_dir"
-  exec 9>"$lock_path"
-  chmod 600 "$lock_path"
+  ensure_state_directory
+  if [[ ! -e "$lock_path" && ! -L "$lock_path" ]]; then
+    if ! (umask 077; set -o noclobber; : >"$lock_path") 2>/dev/null; then
+      die "cannot create state lock: $workflow_id"
+    fi
+  fi
+  [[ -f "$lock_path" && ! -L "$lock_path" ]] || die "state lock must be a regular file"
+  [[ "$(owner_id_of "$lock_path")" == "$(id -u)" ]] || die "state lock must be owned by the current user"
+  exec 9>>"$lock_path"
+  lock_acquired=true
   if command -v lockf >/dev/null 2>&1; then
     lockf -s -t 0 9 || die "state is locked: $workflow_id"
   elif command -v flock >/dev/null 2>&1; then
@@ -174,6 +217,7 @@ acquire_lock() {
 # 現在processが保持するfile descriptorを閉じてlockを解放する。
 release_lock() {
   exec 9>&-
+  lock_acquired=false
 }
 
 # 同じdirectoryの一時fileへ完全なJSONを書き、renameで原子的に置き換える。
@@ -181,6 +225,7 @@ write_state() {
   local source_file="$1"
   local temporary_file
   temporary_file="$(mktemp "$state_dir/.workflow-state.XXXXXX")"
+  temporary_files+=("$temporary_file")
   chmod 600 "$temporary_file"
   jq '.' "$source_file" >"$temporary_file"
   mv "$temporary_file" "$state_file"
@@ -189,7 +234,8 @@ write_state() {
 
 # stateの最低限のschemaと進行状態を検査する。
 read_state() {
-  [[ -f "$state_file" ]] || die "state not found: $workflow_id"
+  [[ -f "$state_file" && ! -L "$state_file" ]] || die "state not found or not a regular file: $workflow_id"
+  [[ "$(owner_id_of "$state_file")" == "$(id -u)" ]] || die "state file must be owned by the current user"
   jq -e '
     type == "object"
     and .schema_version == 1
@@ -245,11 +291,11 @@ initialize_state() {
   resolve_repository
   state_path_for
   acquire_lock
-  trap release_lock EXIT
-  [[ ! -e "$state_file" ]] || die "state already exists: $workflow_id"
+  [[ ! -e "$state_file" && ! -L "$state_file" ]] || die "state already exists: $workflow_id"
   local now draft
   now="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  draft="$(mktemp)"
+  draft="$(mktemp "$state_dir/.workflow-draft.XXXXXX")"
+  temporary_files+=("$draft")
   jq -n \
     --arg workflow_id "$workflow_id" \
     --arg workflow "$workflow" \
@@ -271,7 +317,6 @@ verify_state() {
   resolve_repository
   state_path_for
   acquire_lock
-  trap release_lock EXIT
   read_state
   verify_stored_identity
   jq '.' "$state_file"
@@ -306,7 +351,6 @@ update_state() {
   [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
-  trap release_lock EXIT
   read_state
   verify_stored_identity
   [[ "$(jq -r '.status' "$state_file")" == "active" ]] || die "state is not active"
@@ -314,7 +358,8 @@ update_state() {
   jq -e --arg namespace "$namespace" '(.namespaces[$namespace] // {}) | type == "object"' "$state_file" >/dev/null || die "namespace is not an object"
   local now draft
   now="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  draft="$(mktemp)"
+  draft="$(mktemp "$state_dir/.workflow-draft.XXXXXX")"
+  temporary_files+=("$draft")
   jq \
     --arg namespace "$namespace" \
     --arg now "$now" \
@@ -323,7 +368,7 @@ update_state() {
     "$state_file" >"$draft"
   write_state "$draft"
   rm -f "$draft"
-  jq --arg namespace "$namespace" '{workflow_id, status, revision, namespace: $namespace, value: .namespaces[$namespace]}' "$state_file"
+  jq --arg namespace "$namespace" --arg path "$state_file" '{workflow_id, state_path: $path, identity, status, revision, namespace: $namespace, value: .namespaces[$namespace]}' "$state_file"
 }
 
 # 完全なidentityとrevisionを照合し、監査用の完了結果を残す。
@@ -353,14 +398,14 @@ complete_state() {
   [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
-  trap release_lock EXIT
   read_state
   verify_stored_identity
   [[ "$(jq -r '.status' "$state_file")" == "active" ]] || die "state is not active"
   [[ "$(jq -r '.revision' "$state_file")" == "$expected_revision" ]] || die "state revision does not match"
   local now draft
   now="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  draft="$(mktemp)"
+  draft="$(mktemp "$state_dir/.workflow-draft.XXXXXX")"
+  temporary_files+=("$draft")
   jq \
     --arg now "$now" \
     --argjson result "$validated_json" \
@@ -377,6 +422,7 @@ main() {
   require_command jq
   require_command stat
   umask 077
+  trap cleanup_runtime EXIT
   local command_name="${1:-}"
   [[ -n "$command_name" ]] || die "command is required"
   shift

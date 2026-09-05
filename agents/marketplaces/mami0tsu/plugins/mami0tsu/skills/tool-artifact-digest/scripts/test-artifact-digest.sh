@@ -39,15 +39,21 @@ json_digest="$(bash "$digest_script" json --file "$test_root/compact.json")"
 test "$json_digest" = "$(bash "$digest_script" json --file "$test_root/formatted.json")"
 test "$json_digest" = "$(printf '%s' '{"beta":[2,1],"alpha":{"enabled":true}}' | bash "$digest_script" json)"
 
-# JSONとして解釈できない入力と公開権限のfileを拒否することを確かめる。
-if bash "$digest_script" json --file "$test_root/invalid.json" >/dev/null 2>&1; then
+# JSONとして解釈できない入力を拒否し、digestを出力しないことを確かめる。
+invalid_output="$test_root/invalid.out"
+if bash "$digest_script" json --file "$test_root/invalid.json" >"$invalid_output" 2>/dev/null; then
   printf '%s\n' 'expected invalid JSON to fail' >&2
   exit 1
 fi
+test ! -s "$invalid_output"
+
+# 公開権限のfileを拒否し、digestを出力しないことを確かめる。
 chmod 644 "$test_root/formatted.json"
-if bash "$digest_script" json --file "$test_root/formatted.json" >/dev/null 2>&1; then
+public_output="$test_root/public.out"
+if bash "$digest_script" json --file "$test_root/formatted.json" >"$public_output" 2>/dev/null; then
   printf '%s\n' 'expected public input file to fail' >&2
   exit 1
 fi
+test ! -s "$public_output"
 
 printf '%s\n' 'artifact digest tests passed'

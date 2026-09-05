@@ -54,6 +54,6 @@ Issue読取結果にあるprovider、container、ID、親子関係と、関連Do
 
 ### 5. 結果を返す
 
-`requirements_digest`を除く要求の読み取り結果を安定したJSONへ整理し、`tool-artifact-digest`スキルの`digest-json`で`requirements_digest`を求める。
+`requirements_digest`を除く要求の読み取り結果を安定したJSONへ整理し、共通のJSON digest操作で`requirements_digest`を求める。
 入力元、正本参照、目的、範囲、制約、受け入れ条件、確認方法、依存関係、不足情報、矛盾、`requirements_digest`を要求の読み取り結果として返す。
 Issueが入力元または関係先にある場合は、provider、container、Issueの種類、IDを省略しない。

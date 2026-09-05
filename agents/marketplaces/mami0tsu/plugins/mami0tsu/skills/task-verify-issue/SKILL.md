@@ -40,7 +40,7 @@ Issueの現在値を読み取り、期待値との差分を返す。
 
 ### 2. 内容を比較する
 
-本文を`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
+本文を共通のtext digest操作へ渡して本文digestを求める。
 title、本文digest、assignee、label、正本参照、対象リポジトリを期待値と比較する。
 
 ### 3. 関係を比較する

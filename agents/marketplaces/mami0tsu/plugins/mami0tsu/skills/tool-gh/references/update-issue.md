@@ -15,16 +15,19 @@ Issueのtitle、本文、担当者、labelを承認済みの値へ更新する�
 - `owner/repo`形式のrepository名
 - Issue番号またはURL
 - 更新前に`read-issue`ユースケースで取得した現在値
-- 権限`0600`のbody file
+- 標準入力から渡す承認済み本文
 
 ## 推奨コマンド
 
 本文とtitleを更新する。
 
 ```sh
-gh issue edit <number-or-url> --repo <owner>/<repo> \
-  --title '<title>' --body-file <body-file>
+bash "<plugin-root>/skills/tool-gh/scripts/github-body-operation.sh" issue-update \
+  --repo <owner>/<repo> --issue <number-or-url> --title '<title>'
 ```
+
+承認済み本文を標準入力へ送り終えたらEOFを送る。
+Scriptはprivate body fileを作成し、`gh issue edit`の終了時に削除する。
 
 承認済みの担当者またはlabelの差分がある場合は、それぞれの追加または削除optionだけを指定する。
 

@@ -14,14 +14,17 @@
 
 - `owner/repo`形式のrepository名
 - title
-- 権限`0600`のbody file
+- 標準入力から渡す承認済み本文
 
 ## 推奨コマンド
 
 ```sh
-gh issue create --repo <owner>/<repo> \
-  --title '<title>' --body-file <body-file>
+bash "<plugin-root>/skills/tool-gh/scripts/github-body-operation.sh" issue-create \
+  --repo <owner>/<repo> --title '<title>'
 ```
+
+承認済み本文を標準入力へ送り終えたらEOFを送る。
+Scriptはprivate body fileを作成し、`gh issue create`の終了時に削除する。
 
 ## 結果の確認
 
@@ -34,4 +37,4 @@ gh issue create --repo <owner>/<repo> \
 ## 代表的な失敗
 
 作成権限がない場合は認証状態とrepositoryの権限を確認する。
-body fileを読めない場合は権限とpathを確認し、本文をcommand lineへ展開しない。
+本文を標準入力へ送れない場合は、本文をcommand lineへ展開しない。

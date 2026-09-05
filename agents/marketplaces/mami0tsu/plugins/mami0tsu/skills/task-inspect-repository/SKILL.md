@@ -35,12 +35,12 @@ allowed-tools: >-
 
 ### 1. リポジトリの状態を確認する
 
-リポジトリのルート、現在のbranch、worktree、変更済みファイル、remoteを確認する。
+リポジトリのルート、現在のbranch、worktree、変更済みファイル、設定された全remoteを確認する。
 
 ### 2. GitHub repositoryを確認する
 
-remote URLからGitHub repository名を取得する。
-remote URLに対応するGitHub repositoryのURLとdefault branchを確認する。
+各remote URLをhostとcanonical `nameWithOwner`へ正規化する。
+対象repositoryと一致するremoteについて、GitHub repositoryのURLとdefault branchを確認する。
 対象を1つに決められない場合は停止する。
 
 ### 3. 作業ルールを確認する
@@ -57,4 +57,4 @@ remote URLに対応するGitHub repositoryのURLとdefault branchを確認する
 
 ### 6. 調査結果を返す
 
-リポジトリのルート、remote、GitHub repository名、GitHub repositoryのURL、default branch、変更候補、適用する指示、確認コマンド、未解決の点をリポジトリ調査結果として返す。
+リポジトリのルート、全remoteの正規化結果、対象と一致するremote、host、canonical `nameWithOwner`、GitHub repositoryのURL、default branch、変更候補、適用する指示、確認コマンド、未解決の点をリポジトリ調査結果として返す。

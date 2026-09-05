@@ -38,7 +38,7 @@ allowed-tools: >-
 
 ### 2. Issue本文を作る
 
-各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリ、設計正本の参照を設定する。
+各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリのhostとcanonical repository名、設計正本の参照を設定する。
 設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。

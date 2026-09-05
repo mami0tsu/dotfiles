@@ -50,7 +50,7 @@ allowed-tools: >-
 
 ### 4. 変更を確認する
 
-対象pathの内容を`tool-artifact-digest`スキルの`digest-text`へ渡し、`design_body_digest`と一致することを確認する。
+対象pathの内容を共通のtext digest操作へ渡し、`design_body_digest`と一致することを確認する。
 
 ### 5. 結果を返す
 

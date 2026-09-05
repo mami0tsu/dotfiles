@@ -57,22 +57,36 @@ sha256_stream() {
 }
 
 # textの改行形式と末尾改行だけを正規化する。
-digest_text() {
+canonicalize_text() {
   local input_file="$1"
   read_input "$input_file" \
-    | jq -jRs 'gsub("\r\n"; "\n") | gsub("\r"; "\n") | sub("\n+$"; "") + "\n"' \
-    | sha256_stream
+    | jq -jRs 'gsub("\r\n"; "\n") | gsub("\r"; "\n") | sub("\n+$"; "") + "\n"'
 }
 
 # JSONのkey順と空白を正規化し、値とarray順序を保持する。
-digest_json() {
+canonicalize_json() {
   local input_file="$1"
   read_input "$input_file" \
-    | jq -cS '.' \
-    | sha256_stream
+    | jq -cS '.'
 }
 
-# modeと任意のprivate fileを読み取り、対応する正規化だけを実行する。
+# 正規化が完了した一時fileだけをhashし、失敗時にdigestを出力しない。
+calculate_digest() {
+  local mode="$1" input_file="$2" normalized_file
+  normalized_file="$(mktemp "${TMPDIR:-/tmp}/artifact-digest.XXXXXX")"
+  chmod 600 "$normalized_file"
+  trap 'rm -f -- "$normalized_file"' EXIT
+  case "$mode" in
+    text) canonicalize_text "$input_file" >"$normalized_file" || die "failed to canonicalize text" ;;
+    json) canonicalize_json "$input_file" >"$normalized_file" || die "failed to canonicalize JSON" ;;
+    *) die "unknown mode: $mode" ;;
+  esac
+  sha256_stream <"$normalized_file"
+  rm -f -- "$normalized_file"
+  trap - EXIT
+}
+
+# modeと任意のprivate fileを読み取り、対応する正規化とhashだけを実行する。
 main() {
   require_command jq
   require_command awk
@@ -90,11 +104,7 @@ main() {
       *) die "unknown option: $1" ;;
     esac
   done
-  case "$mode" in
-    text) digest_text "$input_file" ;;
-    json) digest_json "$input_file" ;;
-    *) die "unknown mode: $mode" ;;
-  esac
+  calculate_digest "$mode" "$input_file"
 }
 
 main "$@"

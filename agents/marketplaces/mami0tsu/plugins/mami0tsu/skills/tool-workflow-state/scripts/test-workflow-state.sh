@@ -11,6 +11,8 @@ linked_worktree="$test_root/linked"
 other_repository="$test_root/other-repository"
 concurrent_repository="$test_root/concurrent-repository"
 generated_repository="$test_root/generated-repository"
+symlink_repository="$test_root/symlink-repository"
+symlink_directory_repository="$test_root/symlink-directory-repository"
 value_file="$test_root/value.json"
 delta_file="$test_root/delta.json"
 result_file="$test_root/result.json"
@@ -20,6 +22,7 @@ invalid_digest_file="$test_root/invalid-digest.json"
 invalid_type_file="$test_root/invalid-type.json"
 invalid_url_file="$test_root/invalid-url.json"
 credential_alias_file="$test_root/credential-alias.json"
+api_alias_file="$test_root/api-alias.json"
 lock_ready="$test_root/lock-ready"
 holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
@@ -65,7 +68,8 @@ jq -n '{body_digest:"not-a-digest"}' >"$invalid_digest_file"
 jq -n '{status:1}' >"$invalid_type_file"
 jq -n '{canonical_url:"https://example.invalid/design?access_token=confidential"}' >"$invalid_url_file"
 jq -n '{credential_id:"top-secret-token", access_token_id:"ghp_secret", password_digest:"sha256:6666666666666666666666666666666666666666666666666666666666666666"}' >"$credential_alias_file"
-chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file"
+jq -n '{api_key:"ghp_secret", "api-key":"ghp_secret", auth_header:"Bearer-secret"}' >"$api_alias_file"
+chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file" "$api_alias_file"
 
 # 要件本文の代わりにdigestをidentityへ固定してstateを初期化する。
 (
@@ -108,8 +112,10 @@ test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
     --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 0 \
-    --value-file "$value_file" >/dev/null
+    --value-file "$value_file" >"$test_root/update-result.json"
 )
+test "$(jq -r '.identity.repository_common_dir' "$test_root/update-result.json")" = "$repository_common_dir"
+test "$(jq -r '.revision' "$test_root/update-result.json")" = '1'
 
 # 同じnamespaceへの差分更新が既存情報を保持したままdeep mergeされることを確かめる。
 (
@@ -126,8 +132,31 @@ test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
   test "$(jq -r '.namespaces.publication.canonical_url' .git/agent-workflows/test-design.json)" = 'https://example.invalid/design'
   test "$(jq -r '.namespaces.publication.pending_operation.id' .git/agent-workflows/test-design.json)" = 'op-1'
   test "$(jq -r '.namespaces.publication.approval.digest' .git/agent-workflows/test-design.json)" = 'sha256:4444444444444444444444444444444444444444444444444444444444444444'
-  test "$(jq -r '.namespaces.publication.approval.status' .git/agent-workflows/test-design.json)" = 'approved'
+test "$(jq -r '.namespaces.publication.approval.status' .git/agent-workflows/test-design.json)" = 'approved'
 )
+
+# State置換に失敗しても一時fileを残さず、既存stateを変更しないことを確かめる。
+fake_bin="$test_root/fake-bin"
+mkdir -m 700 "$fake_bin"
+printf '%s\n' '#!/usr/bin/env sh' 'exit 7' >"$fake_bin/mv"
+chmod 700 "$fake_bin/mv"
+if (
+  cd "$repository"
+  PATH="$fake_bin:$PATH" bash "$state_script" update \
+    --workflow-id test-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" \
+    --repository-common-dir "$repository_common_dir" \
+    --namespace publication \
+    --expected-revision 2 \
+    --value-file "$value_file" >/dev/null 2>&1
+); then
+  printf '%s\n' 'expected state replacement failure' >&2
+  exit 1
+fi
+test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '2'
+test -z "$(find "$repository/.git/agent-workflows" -maxdepth 1 -name '.workflow-*' -print -quit)"
 
 # 古いrevisionによる上書きを拒否することを確かめる。
 if (
@@ -164,7 +193,7 @@ if (
 fi
 
 # metadata schema外のcontainer、本文値、digest形式を拒否することを確かめる。
-for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file"; do
+for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file" "$api_alias_file"; do
   if (
     cd "$repository"
     bash "$state_script" update \
@@ -181,6 +210,43 @@ for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_fi
     exit 1
   fi
 done
+
+# state directoryとlock pathのsymbolic linkを拒否し、参照先を変更しないことを確かめる。
+git init -q "$symlink_repository"
+git -C "$symlink_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
+mkdir -m 700 "$symlink_repository/.git/agent-workflows"
+printf '%s\n' 'victim-content' >"$test_root/lock-victim"
+ln -s "$test_root/lock-victim" "$symlink_repository/.git/agent-workflows/symlink-design.lock"
+if (
+  cd "$symlink_repository"
+  bash "$state_script" init \
+    --workflow-id symlink-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" >/dev/null 2>&1
+); then
+  printf '%s\n' 'expected symbolic link lock to fail' >&2
+  exit 1
+fi
+test "$(command cat "$test_root/lock-victim")" = 'victim-content'
+
+# Git common directory外を指すstate directoryのsymbolic linkを拒否することを確かめる。
+git init -q "$symlink_directory_repository"
+git -C "$symlink_directory_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
+mkdir -m 700 "$test_root/outside-state-directory"
+ln -s "$test_root/outside-state-directory" "$symlink_directory_repository/.git/agent-workflows"
+if (
+  cd "$symlink_directory_repository"
+  bash "$state_script" init \
+    --workflow-id symlink-directory-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" >/dev/null 2>&1
+); then
+  printf '%s\n' 'expected symbolic link state directory to fail' >&2
+  exit 1
+fi
+test -z "$(find "$test_root/outside-state-directory" -mindepth 1 -print -quit)"
 
 # 複数processが同じWorkflow IDを同時初期化しても、1件だけが成功することを確かめる。
 git init -q "$concurrent_repository"

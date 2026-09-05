@@ -5,6 +5,7 @@ description: >-
   worktree、branch、commit、file、remoteを確認または変更するときに使う。
 allowed-tools: >-
   Bash(${CLAUDE_SKILL_DIR}/scripts/inspect-worktree.sh *)
+  Bash(GIT_SEQUENCE_EDITOR=: git -C * rebase --interactive --autosquash *)
   Bash(git -C * add -- *)
   Bash(git -C * apply)
   Bash(git -C * branch -d *)
@@ -25,7 +26,6 @@ allowed-tools: >-
   Bash(git -C * wt --json --nocd)
   Bash(git -C * wt --json)
   Bash(git -C * wt --nocd *)
-  Bash(GIT_SEQUENCE_EDITOR=: git -C * rebase --interactive --autosquash *)
 ---
 
 # tool-git

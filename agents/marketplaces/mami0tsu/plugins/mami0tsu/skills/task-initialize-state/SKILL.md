@@ -20,7 +20,7 @@ allowed-tools: >-
 
 ## 出力
 
-- state初期化結果
+- state checkpoint
 
 ## 制約
 
@@ -49,4 +49,4 @@ Workflow IDがない場合は初期化操作の生成結果を採用し、呼び
 
 ### 4. 結果を返す
 
-Workflow ID、state path、identity、revisionをstate初期化結果として返す。
+Workflow ID、workflow名、subject kind、subject、Git common directory、state path、revisionをstate checkpointとして返す。

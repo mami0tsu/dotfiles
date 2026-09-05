@@ -37,8 +37,8 @@ allowed-tools: >-
 
 ### 2. Digestを求める
 
-設計本文をprivate fileまたは標準入力で`tool-artifact-digest`スキルの`digest-text`へ渡し、`design_body_digest`を求める。
-設計本文、実装Issue計画、Issue構成、正本、対象リポジトリを安定したJSONへ整理し、同スキルの`digest-json`で承認全体を表す`approved_design_digest`を求める。
+設計本文を共通のtext digest操作へ渡し、`design_body_digest`を求める。
+設計本文、実装Issue計画、Issue構成、正本、対象リポジトリを安定したJSONへ整理し、共通のJSON digest操作で承認全体を表す`approved_design_digest`を求める。
 
 ### 3. 設計を提示する
 

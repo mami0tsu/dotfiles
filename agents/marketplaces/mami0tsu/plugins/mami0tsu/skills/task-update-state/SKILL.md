@@ -14,7 +14,7 @@ allowed-tools: >-
 
 ## 入力
 
-- state検証結果
+- state checkpoint
 - 更新namespace
 - 更新値
 
@@ -24,7 +24,8 @@ allowed-tools: >-
 
 ## 制約
 
-- 検証済みのWorkflow ID、workflow名、subject kind、subject、Git common directory、state revisionを使う。
+- 初期化、検証、直前の更新のいずれかが返したstate checkpointを使う。
+- Workflow ID、workflow名、subject kind、subject、Git common directory、state revisionを省略しない。
 - 1回の実行で1つのnamespaceだけを更新する。
 - token、password、secret、Issue本文、Document本文を保存しない。
 - 外部Objectは正本ID、URL、revision、digestだけを保存する。
@@ -46,4 +47,5 @@ namespace、更新値、期待するstate revisionを確認し、保存禁止情
 
 ### 4. 結果を返す
 
-Workflow ID、namespace、更新前後のrevision、保存した識別情報をstate更新結果として返す。
+Workflow ID、workflow名、subject kind、subject、Git common directory、state path、更新後revisionを次のstate checkpointとして返す。
+Namespace、更新前後のrevision、保存した識別情報をstate更新結果へ含める。

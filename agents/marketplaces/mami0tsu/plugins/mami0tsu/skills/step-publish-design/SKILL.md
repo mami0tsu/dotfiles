@@ -52,6 +52,7 @@ allowed-tools: >-
 - 実装Issueを、1つのリポジトリと1つのPRに対応させる。
 - Git管理Documentのpull requestをReady for reviewへ変更せず、mergeしない。
 - 外部操作が成功するたびに、次の外部操作より先に正本識別情報と完了結果をstateへ記録する。
+- Stateを更新するたびに返されたstate checkpointを、次のstate操作と完了処理へ渡す。
 
 ## 手順
 
@@ -59,6 +60,12 @@ allowed-tools: >-
 
 `task-verify-state`スキルでWorkflow identity、`design_body_digest`、`approved_design_digest`、完了済み操作、pending operationを確認する。
 外部Objectを再取得し、記録済みの識別情報と一致しない場合は停止する。
+正本を再取得して結果が一致した完了済みoperationは、対応する後続手順で再実行しない。
+Pending operationは対象の現在値を取得し、反映済みなら完了結果をstateへ記録して飛ばし、未反映を確認できた場合だけ同じoperationを再開する。
+結果が曖昧なpending operationでは停止し、後続operationを実行しない。
+Wiki保存が完了済みなら手順3を飛ばし、検証済みの正本値を手順6へ渡す。
+Draft PR作成が完了済みなら手順4を飛ばして手順5へ進み、merge確認も完了済みなら手順5を飛ばす。
+Issue更新、作成、relation設定が完了済みなら、手順8では未完了operationだけを実行する。
 
 ### 2. Issue正本を準備する
 
@@ -70,10 +77,10 @@ Issueを正本にする場合だけ実行する。
 
 Wikiを正本にする場合だけ実行する。
 Documentの保存先と本文を`task-request-artifact-approval`スキルへ渡し、利用可能な操作に応じて`task-create-document`スキルまたは`task-update-document`スキルを使う。
-MCPで書き込む場合は、pending operationをstateへ保存してから作成・更新し、結果の正本IDとURLを次の外部操作より先にstateへ保存する。
+MCPで書き込む場合は、operation IDと承認済みdigestをpending operationとしてstateへ保存してから作成・更新し、結果の正本IDとURLを次の外部操作より先にstateへ保存する。
 その後、`task-verify-document`スキルで正本URL、revision、本文digestを取得する。
 検証状態、正本識別情報、本文digest、完了マーカーを抽出し、次の外部操作より先に`task-update-state`スキルで保存する。
-利用できるMCPがない場合は、pending operationを保存してから`task-request-document-publication`スキルで人間の保存を待つ。
+利用できるMCPがない場合は、operation IDと承認済みdigestをpending operationとして保存してから`task-request-document-publication`スキルで人間の保存を待つ。
 この場合は手動公開結果の最終本文、URL、revision、本文digestを正本値として採用し、利用できない`task-verify-document`スキルを呼び出さない。
 手動公開結果から正本識別情報、本文digest、完了マーカーだけを抽出し、再開後の次の外部操作より先にstateへ保存する。
 人間が保存した本文は保存結果を最終承認として扱う。
@@ -88,7 +95,8 @@ Git管理Documentを正本にする場合だけ実行する。
 Agentまたは人間から修正指摘が返った場合はDocumentを公開せず、承認済み設計との不一致として設計検証へ返す。
 通常検証、差分レビュー、人間レビュー、commit済みの変更を検証済みの変更として`task-organize-commits`スキルへ渡す。
 BranchのpushとDraft PR作成を1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
-承認後は各外部操作のpending operationを保存し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
+承認後は各外部操作のoperation IDと承認済みdigestをpending operationとして保存する。
+Draft PR成果物計画、成果物の承認結果、対応するpending operationを渡し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
 各操作の正本識別情報と結果は、次の外部操作より先にstateへ保存する。
 
 ### 5. Git管理Documentのmergeを待つ
@@ -105,7 +113,8 @@ WikiまたはGit管理Documentが正本の場合は、確定した正本本文�
 外部Documentのdigestが異なる場合だけ、確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
 再計画した場合は`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
-`standalone-issue`の構成不一致が返った場合は公開を止め、利用者が`tracking-issue`を再選択するために必要な情報を停止理由として返す。
+`standalone-issue`の構成不一致が返った場合はIssue群の公開を止める。
+Workflow ID、state identity、承認済み設計、必要な実装単位、既存Issue、公開済み正本の最終本文と識別情報を`reprepare-required`結果として返す。
 
 ### 7. Issue群を承認する
 
@@ -120,10 +129,10 @@ Issue群の最終内容と予定操作を`task-request-artifact-approval`スキ�
 
 ### 8. Issue群を反映する
 
-各既存Issueはpending operationをstateへ保存してから、`task-update-issue`スキルで一件ずつ更新する。
-各新規Issueもpending operationを保存してから、`task-create-issue`スキルで一件ずつ作成する。
+各既存Issueはoperation IDと承認済みdigestをpending operationとしてstateへ保存してから、`task-update-issue`スキルで一件ずつ更新する。
+各新規Issueもoperation IDと承認済みdigestをpending operationとして保存してから、`task-create-issue`スキルで一件ずつ作成する。
 更新結果、または作成した正本IDとURLは、次の外部操作より先に`task-update-state`スキルで保存する。
-すべてのIDを確定した後、relationごとにpending operationを保存し、`task-link-issues`スキルで親子関係と依存関係を反映する。
+すべてのIDを確定した後、relationごとのoperation IDと承認済みdigestをpending operationとして保存し、`task-link-issues`スキルで親子関係と依存関係を反映する。
 各relationの更新結果も、次の外部操作より先にstateへ保存する。
 
 ### 9. 引き渡し状態を検証する

@@ -26,6 +26,7 @@ allowed-tools: >-
 
 - 生の要求、Issue、またはDocument
 - Workflow ID（再開時）
+- `reprepare-required`結果（Issue構成の再選択時）
 
 ## 出力
 
@@ -39,6 +40,8 @@ allowed-tools: >-
 - 複数リポジトリでも設計Issueと正本は1つにする。
 - 外部書き込み前に、対象成果物の承認とpending operationの記録を完了する。
 - 作成結果が曖昧な操作を再実行しない。
+- Stateを更新するたびに返されたstate checkpointを、次のstate操作へ渡す。
+- Issue構成の再選択では、公開済み正本と完了済み外部操作を変更しない。
 
 ## 手順
 
@@ -51,23 +54,32 @@ allowed-tools: >-
 
 `task-plan-design-work`スキルへ要求の読み取り結果と既存Issueを渡す。
 Issue構成、provider、container、正本、基準リポジトリ、対象リポジトリ、承認予定を含む設計作業計画を受け取る。
+`reprepare-required`結果がある場合は`tracking-issue`を選択対象とし、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本を維持する。
+公開済み正本の最終本文を、再準備後に作る設計本文の基準にする。
 
 ### 3. 状態を準備する
 
-Workflow IDがない場合は、要求の読み取り結果にある`requirements_digest`を`requirement` subjectとして`task-initialize-state`スキルへ渡し、基準リポジトリへ状態を作る。
+Workflow IDがない場合は、入力元の種類ごとに不変なsubjectを選び、`task-initialize-state`スキルへ渡す。
+生の要求では`requirement`と`requirements_digest`、Issueでは`issue`とprovider、container、正本IDを組み合わせた識別子、Documentでは`document`とprovider、正本IDを組み合わせた識別子を使う。
 初期化結果が生成したWorkflow IDを、以後の設計工程で使う。
-Workflow IDがある場合は`task-verify-state`スキルを使い、保存済みidentityと設計作業計画を照合する。
+Workflow IDがある場合は、同じ入力元の不変なsubjectを使って`task-verify-state`スキルを実行し、保存済みidentityと設計作業計画を照合する。
+`reprepare-required`結果から再開する場合は、結果に含まれるstate identityをそのまま照合へ使う。
+Issue本文、Document本文、relation、revisionの変更からsubjectを再計算しない。
 
 ### 4. 追跡用Issueを準備する
 
 `standalone-issue`では既存Issueがなければ1件を作成対象にする。
 `tracking-issue`では、親となるtracking Issueと子となる設計Issueの役割を既存Issueへ割り当て、足りないIssueを作成対象にする。
 既存のtracking Issueを親にする場合も、設計Issueを省略しない。
+`standalone-issue`から再選択する場合は、既存Issueをtracking Issueか設計Issueのどちらへ再利用するか利用者に選んでもらい、もう一方だけを作成対象にする。
 作成対象のIssue群と、必要な親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
-作成対象がある場合は、各Issueのpending operationをstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
+作成対象がある場合は、各Issueのoperation IDと承認済みdigestをpending operationとしてstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
 作成応答を受けたら、次の外部操作より先に正本IDとURLを`task-update-state`スキルで保存し、`task-verify-issue`スキルで確認する。
-すべてのIDが確定したら親子関係のpending operationを保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
+すべてのIDが確定したら親子関係のoperation IDと承認済みdigestをpending operationとして保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
 関係の更新結果も、次の外部操作より先にstateへ保存する。
+再開時は、正本を再取得して結果が一致した完了済みoperationを飛ばす。
+Pending operationは対象の現在値を取得し、反映済みなら完了結果をstateへ記録して飛ばし、未反映を確認できた場合だけ同じoperationを再開する。
+結果が曖昧なpending operationでは停止し、後続operationを実行しない。
 
 ### 5. リポジトリを調べる
 

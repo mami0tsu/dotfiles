@@ -18,13 +18,9 @@ allowed-tools: >-
 - 保存禁止情報を別名のfieldへ移して検査を迂回しない。
 - lock取得失敗、revision競合、破損したJSONを手作業で迂回しない。
 - 完了時もstate fileを削除しない。
-- 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、identity照合、lock競合、保存禁止fieldを確認する。
-
-## Scriptの場所
-
-`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryである。
-Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`を使える。
-Codexでは利用中のSkill catalogに表示された`tool-workflow-state/SKILL.md`の絶対pathから`<plugin-root>`を解決する。
+- 実装変更時は`scripts/test-workflow-state.sh`で複数worktree、revision競合、identity照合、lock競合、symbolic link、書込失敗時のcleanup、保存禁止fieldを確認する。
+- reference内の`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryへ置き換える。
+- Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`、CodexではSkill catalogに表示された`SKILL.md`の絶対pathから`<plugin-root>`を解決する。
 
 ## ユースケース
 

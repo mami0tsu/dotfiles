@@ -4,8 +4,8 @@ description: >-
   GitHub CLIを使い、GitHub上のrepository、Issue、pull request、Actions、review commentを読み取り、Issue、Draft PR、pending review、stacked PRを扱うためのTool。
   GitHub上の情報を確認し、対応する操作を行うときに使う。
 allowed-tools: >-
-  Bash(bash */skills/tool-gh/scripts/private-body-file.sh create)
-  Bash(bash */skills/tool-gh/scripts/private-body-file.sh remove --file *)
+  Bash(bash */skills/tool-gh/scripts/github-body-operation.sh *)
+  Bash(gh api --method GET -H * repos/* -f ref=*)
   Bash(gh api graphql --paginate *)
   Bash(gh api graphql -F owner=* -F name=* -F number=* -f query=*)
   Bash(gh api graphql -F pullRequestId=* -F commitOID=* -f query=*)
@@ -14,11 +14,9 @@ allowed-tools: >-
   Bash(gh api graphql -F reviewId=* -F threadId=* -F body=@* -f query=*)
   Bash(gh auth status --hostname *)
   Bash(gh issue close * --repo * --reason completed)
-  Bash(gh issue create --repo * --title * --body-file *)
   Bash(gh issue edit * --repo * --add-assignee *)
   Bash(gh issue edit * --repo * --add-blocked-by *)
   Bash(gh issue edit * --repo * --add-label *)
-  Bash(gh issue edit * --repo * --title * --body-file *)
   Bash(gh issue edit * --repo * --parent *)
   Bash(gh issue edit * --repo * --remove-assignee *)
   Bash(gh issue edit * --repo * --remove-blocked-by *)
@@ -28,7 +26,6 @@ allowed-tools: >-
   Bash(gh issue reopen * --repo *)
   Bash(gh issue view * --repo * --json number,id,state,stateReason,title,body,assignees,labels,parent,subIssues,blockedBy,blocking,url,updatedAt)
   Bash(gh pr checks * --repo * --json name,state,bucket,workflow,link)
-  Bash(gh pr create --repo * --draft --base * --head * --title * --body-file *)
   Bash(gh pr list --repo * --head * --state all --json number,state,isDraft,baseRefName,headRefName,title,url)
   Bash(gh pr view * --repo * --json number,isDraft,baseRefName,headRefName,title,body,url)
   Bash(gh pr view * --repo * --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,mergeCommit,mergedAt,changedFiles,additions,deletions,files,statusCheckRollup,url)
@@ -58,14 +55,10 @@ allowed-tools: >-
 - repositoryにpull request templateがないことを確認済みの場合は、`assets/pull_request_template.md`をDraft PR本文に使う。
 - pending reviewのthread、reply、review bodyへ投稿する本文には、`assets/comment_template.md`を使う。
 - CLI referenceの検証結果は[validation](references/validation.md)で確認する。
-- GitHubへ本文を渡す前後だけ、専用scriptで権限`0600`の一時body fileを作成、削除する。
-- 一時body fileの実装変更時は`scripts/test-private-body-file.sh`で内容、権限、削除対象の境界を確認する。
-
-## Scriptの場所
-
-`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryである。
-Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`を使える。
-Codexでは利用中のSkill catalogに表示された`tool-gh/SKILL.md`の絶対pathから`<plugin-root>`を解決する。
+- GitHubへ本文を渡す操作では、専用scriptの同一process内で権限`0600`の一時body fileを作成、使用、削除する。
+- 本文操作の実装変更時は`scripts/test-github-body-operation.sh`で本文、権限、引数、成功時と失敗時の削除を確認する。
+- reference内の`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryへ置き換える。
+- Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`、CodexではSkill catalogに表示された`SKILL.md`の絶対pathから`<plugin-root>`を解決する。
 
 ## ユースケース
 
@@ -75,6 +68,7 @@ Codexでは利用中のSkill catalogに表示された`tool-gh/SKILL.md`の絶�
 | --- | --- |
 | `inspect-authentication` | GitHub hostの認証状態を取得する。 |
 | `inspect-repository` | GitHub上の対象repositoryを取得する。 |
+| [`read-file-at-commit`](references/read-file-at-commit.md) | 完全なcommit OIDを指定し、remote repositoryのfileを読む。 |
 
 **pull request**
 
@@ -92,9 +86,7 @@ Codexでは利用中のSkill catalogに表示された`tool-gh/SKILL.md`の絶�
 | [`close-issue`](references/close-issue.md) | Issueを完了理由でcloseする。 |
 | [`create-issue`](references/create-issue.md) | titleと本文からIssueを一件作る。 |
 | [`find-issues`](references/find-issues.md) | titleから作成結果の候補Issueを検索する。 |
-| [`prepare-private-body`](references/prepare-private-body.md) | 標準入力から権限`0600`の一時body fileを作る。 |
 | [`read-issue`](references/read-issue.md) | Issueの内容、関係、状態を取得する。 |
-| [`remove-private-body`](references/remove-private-body.md) | GitHub操作後に専用の一時body fileを削除する。 |
 | [`remove-issue-blocker`](references/remove-issue-blocker.md) | Issueから`blockedBy`関係を削除する。 |
 | [`reopen-issue`](references/reopen-issue.md) | closeされたIssueをopenへ戻す。 |
 | [`set-issue-parent`](references/set-issue-parent.md) | Issueへ親Issueを設定する。 |

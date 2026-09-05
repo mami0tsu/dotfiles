@@ -18,7 +18,7 @@ allowed-tools: >-
 
 - Document更新計画
 - 成果物の承認結果
-- pending operation
+- operation IDとdigestを含むpending operation
 
 ## 出力
 
@@ -26,7 +26,7 @@ allowed-tools: >-
 
 ## 制約
 
-- 正本ID、更新前revision、承認対象digestを省略しない。
+- 正本ID、更新前revision、operation ID、承認済みdigestを省略しない。
 - 更新前revisionが現在値と一致しない場合は変更しない。
 - 承認済み本文を要約、翻訳、整形し直さない。
 - 承認範囲にないpropertyや公開範囲を変更しない。
@@ -40,7 +40,8 @@ allowed-tools: >-
 
 ### 2. 更新条件を照合する
 
-現在のrevision、更新計画、承認対象digest、pending operationが一致することを確認する。
+更新計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+現在のrevisionとpending operationの期待値が一致することを確認する。
 
 ### 3. 本文を更新する
 
@@ -48,5 +49,5 @@ providerに対応する利用可能な操作で、承認済み本文と承認済
 
 ### 4. 結果を返す
 
-更新後の本文を再取得し、`tool-artifact-digest`スキルの`digest-text`へ渡して本文digestを求める。
+更新後の本文を再取得し、共通のtext digest操作へ渡して本文digestを求める。
 正本ID、URL、更新後revision、本文digest、操作結果をDocument更新結果として返す。
