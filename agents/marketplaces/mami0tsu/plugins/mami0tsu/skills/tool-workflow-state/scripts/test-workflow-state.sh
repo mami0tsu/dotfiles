@@ -9,6 +9,7 @@ test_root="$(mktemp -d "${TMPDIR:-/tmp}/workflow-state-test.XXXXXX")"
 repository="$test_root/repository"
 linked_worktree="$test_root/linked"
 other_repository="$test_root/other-repository"
+concurrent_repository="$test_root/concurrent-repository"
 value_file="$test_root/value.json"
 delta_file="$test_root/delta.json"
 result_file="$test_root/result.json"
@@ -17,6 +18,7 @@ invalid_result_file="$test_root/invalid-result.json"
 invalid_digest_file="$test_root/invalid-digest.json"
 invalid_type_file="$test_root/invalid-type.json"
 invalid_url_file="$test_root/invalid-url.json"
+credential_alias_file="$test_root/credential-alias.json"
 lock_ready="$test_root/lock-ready"
 holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
@@ -61,7 +63,8 @@ jq -n '{result:"confidential full issue body"}' >"$invalid_result_file"
 jq -n '{body_digest:"not-a-digest"}' >"$invalid_digest_file"
 jq -n '{status:1}' >"$invalid_type_file"
 jq -n '{canonical_url:"https://example.invalid/design?access_token=confidential"}' >"$invalid_url_file"
-chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file"
+jq -n '{credential_id:"top-secret-token", access_token_id:"ghp_secret", password_digest:"sha256:6666666666666666666666666666666666666666666666666666666666666666"}' >"$credential_alias_file"
+chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file"
 
 # 要件本文の代わりにdigestをidentityへ固定してstateを初期化する。
 (
@@ -145,7 +148,7 @@ if (
 fi
 
 # metadata schema外のcontainer、本文値、digest形式を拒否することを確かめる。
-for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file"; do
+for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file"; do
   if (
     cd "$repository"
     bash "$state_script" update \
@@ -162,6 +165,34 @@ for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_fi
     exit 1
   fi
 done
+
+# 複数processが同じWorkflow IDを同時初期化しても、1件だけが成功することを確かめる。
+git init -q "$concurrent_repository"
+git -C "$concurrent_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
+concurrent_pids=()
+for attempt in {1..32}; do
+  (
+    cd "$concurrent_repository"
+    bash "$state_script" init \
+      --workflow-id concurrent-design \
+      --workflow workflow-design \
+      --subject-kind requirement \
+      --subject "$subject_digest" >"$test_root/concurrent-$attempt.out" 2>"$test_root/concurrent-$attempt.err" &&
+      touch "$test_root/concurrent-$attempt.succeeded"
+  ) &
+  concurrent_pids+=("$!")
+done
+for concurrent_pid in "${concurrent_pids[@]}"; do
+  wait "$concurrent_pid" || true
+done
+success_count=0
+for attempt in {1..32}; do
+  if [[ -f "$test_root/concurrent-$attempt.succeeded" ]]; then
+    ((success_count += 1))
+  fi
+done
+test "$success_count" = '1'
+test "$(jq -r '.revision' "$concurrent_repository/.git/agent-workflows/concurrent-design.json")" = '0'
 
 # 同じidentityを持つ別repositoryへ、検証済みGit common directoryを取り違えて書けないことを確かめる。
 git init -q "$other_repository"

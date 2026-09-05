@@ -64,6 +64,8 @@ validate_private_json_object() {
   if ! printf '%s\n' "$validated_json" | jq -e '
     def normalized_key:
       ascii_downcase | gsub("[^a-z0-9]+"; "_");
+    def prohibited_key:
+      normalized_key | test("(^|_)(token|password|secret|credential|apikey|authorization|authheader)(_|$)");
     def scalar_key:
       normalized_key
       | test("^(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$|_(id|ids|url|urls|uri|uris|revision|revisions|digest|digests|status|statuses|state|states|kind|kinds|provider|providers|container|containers|type|types|operation|operations|action|actions|completed|verified|marker|markers|timestamp|timestamps|at|path|paths|directory|directories|dir|dirs|repository|repositories|branch|branches|commit|commits|oid|oids|number|numbers|key|keys|relation|relations)$");
@@ -74,7 +76,9 @@ validate_private_json_object() {
       type == "string" and length > 0 and length <= 256 and test("^[A-Za-z0-9][A-Za-z0-9._:/#@+-]*$");
     def valid_scalar($raw_key; $value):
       ($raw_key | normalized_key) as $key
-      | if $value == null then
+      | if $raw_key | prohibited_key then
+          false
+        elif $value == null then
           (($raw_key | scalar_key) or ($raw_key | container_key))
         elif $key | test("(^|_)(digest|digests)$") then
           ($value | type == "string" and test("^sha256:[a-f0-9]{64}$"))
@@ -226,9 +230,9 @@ initialize_state() {
   parse_identity_options "$@"
   resolve_repository
   state_path_for
-  [[ ! -e "$state_file" ]] || die "state already exists: $workflow_id"
   acquire_lock
   trap release_lock EXIT
+  [[ ! -e "$state_file" ]] || die "state already exists: $workflow_id"
   local now draft
   now="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   draft="$(mktemp)"
