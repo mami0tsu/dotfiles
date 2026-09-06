@@ -13,14 +13,14 @@ Issueから明示的に承認された1つの`blockedBy`関係を削除する。
 ## 前提条件
 
 - `host/owner/repo`形式のrepository名
-- blocked側のIssue
-- 削除対象となるblocker側のIssue
+- blocked側のIssueの正の整数番号
+- 削除対象となるblocker側のIssueの正の整数番号
 
 ## 推奨コマンド
 
 ```sh
-gh issue edit <blocked-number-or-url> --repo <host>/<owner>/<repo> \
-  --remove-blocked-by <blocker-number-or-url>
+gh issue edit <blocked-number> --repo <host>/<owner>/<repo> \
+  --remove-blocked-by <blocker-number>
 ```
 
 ## 結果の確認

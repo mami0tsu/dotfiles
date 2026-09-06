@@ -97,7 +97,7 @@ Operation IDと承認済みoperation envelopeのdigestの組を完了済み操�
 ### 4. Git管理Documentを提案する
 
 Git管理Documentを正本にする場合だけ実行する。
-設計作業計画のmerge先branch、設計Documentのpath、stateに保存済みの作業場所情報を`task-prepare-worktree`スキルへ渡し、設計Document用のbranchとworktreeを準備する。
+要求の読み取り結果、正本repositoryの調査結果、設計作業計画のmerge先branch、設計Documentのpath、stateに保存済みの作業場所情報を`task-prepare-worktree`スキルへ渡し、設計Document用のbranchとworktreeを準備する。
 返された作業場所情報を、次の処理より先にstateへ保存する。
 `task-write-design-document`スキルで承認済み本文を配置する。
 返されたDocument変更結果をstateへ保存し、再開後も同じrepository、path、branch、worktree、変更前後のdigestへ結び付ける。
@@ -110,6 +110,9 @@ Agentまたは人間から修正指摘が返った場合はDocumentを公開せ�
 Push計画、Draft PR作成計画、merge確認計画をそれぞれの反映値とし、異なるoperation IDを持つoperation envelopeを作る。
 Branchのpush、Draft PR作成、人間によるmergeの確認を、operation envelopeを含む1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
 Draft PR作成計画のbase branchが、設計作業計画で確認済みのmerge先branchと一致することを確認する。
+承認後は、merge確認のoperation IDとenvelope digest、承認対象digest、承認状態、承認範囲を再開artifactとしてstateへ保存する。
+同じartifactへmerge確認計画のhost、canonical repository、Document path、base branch、head branch、head commit、期待する現在状態、期待する完了状態を保存する。
+本文とtitleは保存しない。
 承認後はpush、Draft PR作成、merge確認の順に進め、各操作の直前に対応する1件のoperation IDと承認済みoperation envelopeのdigestだけをpending operationとして保存する。
 Push計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-push-branch`スキルへ渡す。
 Draft PR作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-open-draft-pr`スキルへ渡す。
@@ -120,10 +123,10 @@ Draft PR作成後の更新には、Draft PRのURL、Document変更結果、host�
 
 ### 5. Git管理Documentのmergeを待つ
 
-Draft PRを作成した場合は、そのoperation IDとoperation envelope digestの組を作成結果とともに完了済み操作へ移す。
-続いてmerge確認用のoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ保存し、その後で人間によるReady化とmergeを待って停止する。
+Draft PRを作成した場合は、merge確認用のoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ保存し、その後で人間によるReady化とmergeを待って停止する。
 再開時はstateから検証したDraft PRのURLとDocument変更結果を取得する。
-これらとDraft PR作成計画、merge確認計画、成果物の承認結果、merge確認の承認済みoperation envelope、pending operationを`task-verify-merged-document`スキルへ渡し、merge済みDocumentを取得する。
+保存済みの再開artifactからmerge確認計画、承認済みoperation envelope、merge確認の承認結果を再構成し、operation IDとenvelope digestを保存値と照合する。
+これらとDraft PRのURL、Document変更結果、pending operationを`task-verify-merged-document`スキルへ渡し、merge済みDocumentを取得する。
 pull request上で編集された本文は人間の最終承認として扱い、merge済みrevisionとdigestを正本にする。
 merge済みの正本識別情報を保存し、同じoperation IDとdigestの組を完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
 
@@ -137,7 +140,8 @@ Digestが異なる場合は、確定した正本本文から実装Issue計画を
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
 `task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
 外部Documentを正本にする最終実装Issue計画へ、計画中の参照が残る場合は停止する。
-`standalone-issue`の構成不一致が返った場合はIssue群の公開を止める。
+構成不一致が返った場合はIssue群の公開を止める。
+公開済み正本、作成済みIssueの検証済み対応表、構成不一致の理由を含む`reprepare-required`結果を返す。
 Workflow ID、state identity、承認済み設計、必要な実装単位、既存Issue、公開済み正本の最終本文と識別情報を`reprepare-required`結果として返す。
 
 ### 7. Issue群を承認する

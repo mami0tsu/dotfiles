@@ -13,13 +13,13 @@
 ## 前提条件
 
 - `host/owner/repo`形式のrepository名
-- 親を持つ子Issue
+- 親を持つ子Issueの正の整数番号
 - 削除対象の承認
 
 ## 推奨コマンド
 
 ```sh
-gh issue edit <child-number-or-url> --repo <host>/<owner>/<repo> --remove-parent
+gh issue edit <child-number> --repo <host>/<owner>/<repo> --remove-parent
 ```
 
 ## 結果の確認

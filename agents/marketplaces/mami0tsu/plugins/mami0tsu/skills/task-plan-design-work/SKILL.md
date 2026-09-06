@@ -31,7 +31,7 @@ allowed-tools: >-
 - Issue構成と正本種別を独立して扱う。
 - 1つの工程に属するIssueを複数providerまたは複数containerへ分けない。
 - 複数リポジトリでも設計Issueと正本を増やさない。
-- Issue構成の再選択では、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本、完了済み外部操作を変更しない。
+- 再選択では、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本、作成済みIssueの対応表、完了済み外部操作を変更しない。
 - Git管理Documentのmerge先branchを推測で確定しない。
 - 外部Objectを変更しない。
 
@@ -42,6 +42,8 @@ allowed-tools: >-
 1つのIssueが設計と実装を担う`standalone-issue`と、親Issueの子に設計Issueと実装Issueを置く`tracking-issue`を提示する。
 人間が選んだ構成を記録する。
 `reprepare-required`結果がある場合は`tracking-issue`を選択対象とし、既存の`standalone-issue`をtracking Issueと設計Issueのどちらへ再利用するか選んでもらう。
+作成済みIssueの実装境界に構成不一致がある場合は、各計画上のIssue keyと正本IDの対応を維持できる修正方針を選んでもらう。
+既存keyの削除または別の実装単位への再利用が必要な方針では、計画を確定しない。
 
 ### 2. Issueの保存先を選ぶ
 
@@ -78,5 +80,5 @@ Git管理Documentでは正本を置くhost、canonical repository、pathも確�
 
 ### 7. 計画を返す
 
-Issue構成、既存Issueの役割、provider、container、GitHubのhostとcanonical repository、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画としてまとめる。
+Issue構成、既存Issueの役割、作成済みIssueの対応表、provider、container、GitHubのhostとcanonical repository、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画としてまとめる。
 計画を共通のJSON digest操作へ渡し、計画digestと設計作業計画を返す。

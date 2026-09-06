@@ -26,7 +26,7 @@ allowed-tools: >-
 
 - 生の要求、Issue、またはDocument
 - Workflow ID（再開時）
-- `reprepare-required`結果（Issue構成の再選択時）
+- `reprepare-required`結果（Issue構成または実装境界の再選択時）
 
 ## 出力
 
@@ -41,7 +41,7 @@ allowed-tools: >-
 - 外部書き込み前に、対象成果物の承認とpending operationの記録を完了する。
 - 作成結果が曖昧な操作を再実行しない。
 - Stateを更新するたびに返されたstate checkpointを、次のstate操作へ渡す。
-- Issue構成の再選択では、公開済み正本と完了済み外部操作を変更しない。
+- Issue構成または実装境界の再選択では、公開済み正本、作成済みIssueの対応表、完了済み外部操作を変更しない。
 
 ## 手順
 

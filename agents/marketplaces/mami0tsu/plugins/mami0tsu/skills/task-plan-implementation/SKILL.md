@@ -37,6 +37,7 @@ allowed-tools: >-
 - 正本確定後は、最終本文digestを承認時の`design_body_digest`と比較する。
 - 作成済みIssueの対応表がある場合は、同じ計画上のIssue keyを正本IDへ結び付け、新規作成計画へ戻さない。
 - 作成済みIssueのkeyを別の実装単位へ結び直す必要がある場合は、実装Issue計画を返さず構成不一致を返す。
+- 作成済みIssueのkeyが新しい実装Issue計画からなくなる場合も、実装Issue計画を返さず構成不一致を返す。
 - `standalone-issue`で複数の実装Issue、対象リポジトリ、またはPRが必要な場合は、実装Issue計画を返さず構成不一致を返す。
 
 ## 手順

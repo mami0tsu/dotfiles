@@ -13,6 +13,7 @@ concurrent_repository="$test_root/concurrent-repository"
 generated_repository="$test_root/generated-repository"
 symlink_repository="$test_root/symlink-repository"
 symlink_directory_repository="$test_root/symlink-directory-repository"
+payload_repository="$test_root/payload-repository"
 value_file="$test_root/value.json"
 delta_file="$test_root/delta.json"
 result_file="$test_root/result.json"
@@ -23,6 +24,9 @@ invalid_type_file="$test_root/invalid-type.json"
 invalid_url_file="$test_root/invalid-url.json"
 credential_alias_file="$test_root/credential-alias.json"
 api_alias_file="$test_root/api-alias.json"
+draft_resume_file="$test_root/draft-resume.json"
+issue_mapping_file="$test_root/issue-mapping.json"
+worktree_location_file="$test_root/worktree-location.json"
 lock_ready="$test_root/lock-ready"
 holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
@@ -71,7 +75,10 @@ jq -n '{status:1}' >"$invalid_type_file"
 jq -n '{canonical_url:"https://example.invalid/design?access_token=confidential"}' >"$invalid_url_file"
 jq -n '{credential_id:"top-secret-token", access_token_id:"ghp_secret", password_digest:"sha256:6666666666666666666666666666666666666666666666666666666666666666"}' >"$credential_alias_file"
 jq -n '{api_key:"ghp_secret", "api-key":"ghp_secret", auth_header:"Bearer-secret"}' >"$api_alias_file"
-chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file" "$api_alias_file"
+jq -n --arg digest "$operation_digest" '{pull_request:{host:"github.example.invalid",repository:"owner/repo",url:"https://github.example.invalid/owner/repo/pull/7",document_path:"docs/design.md",base_branch:"main",head_branch:"design/topic",head_commit:"abcdef1"},approval:{status:"approved",digest:$digest,scope:"merge"},pending_operation:{id:"merge-1",envelope_digest:$digest,expected_state:"open",expected_completion_state:"merged"}}' >"$draft_resume_file"
+jq -n '{issues:[{key:"implementation-1",provider:"github",container:"owner/repo",host:"github.example.invalid",repository:"owner/repo",id:"7",url:"https://github.example.invalid/owner/repo/issues/7"}]}' >"$issue_mapping_file"
+jq -n '{repository:"owner/repo",target_path:"docs/design.md",base_branch:"main",origin_commit:"abcdef1",branch:"design/topic",worktree_path:"/tmp/worktree"}' >"$worktree_location_file"
+chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file" "$api_alias_file" "$draft_resume_file" "$issue_mapping_file" "$worktree_location_file"
 
 # 要件本文の代わりにdigestをidentityへ固定してstateを初期化する。
 (
@@ -97,6 +104,30 @@ generated_result="$test_root/generated-result.json"
 generated_workflow_id="$(jq -r '.workflow_id' "$generated_result")"
 [[ "$generated_workflow_id" =~ ^workflow-design-[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
 test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
+
+# Draft PR再開、GitHub Issue対応、worktree再利用に必要なmetadataを実際のstate更新で受理することを確かめる。
+git init -q "$payload_repository"
+git -C "$payload_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
+(
+  cd "$payload_repository"
+  bash "$state_script" init \
+    --workflow-id payload-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" >/dev/null
+  bash "$state_script" update \
+    --workflow-id payload-design --workflow workflow-design --subject-kind requirement --subject "$subject_digest" \
+    --namespace publication --expected-revision 0 --value-file "$draft_resume_file" >/dev/null
+  bash "$state_script" update \
+    --workflow-id payload-design --workflow workflow-design --subject-kind requirement --subject "$subject_digest" \
+    --namespace issues --expected-revision 1 --value-file "$issue_mapping_file" >/dev/null
+  bash "$state_script" update \
+    --workflow-id payload-design --workflow workflow-design --subject-kind requirement --subject "$subject_digest" \
+    --namespace workspace --expected-revision 2 --value-file "$worktree_location_file" >/dev/null
+  test "$(jq -r '.namespaces.publication.pull_request.host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
+  test "$(jq -r '.namespaces.issues.issues[0].host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
+  test "$(jq -r '.namespaces.workspace.worktree_path' .git/agent-workflows/payload-design.json)" = '/tmp/worktree'
+)
 
 # 別worktreeから同じstateを検証し、最初のnamespace値を保存する。
 (

@@ -13,12 +13,12 @@
 ## 前提条件
 
 - `host/owner/repo`形式のrepository名
-- 完了条件を満たしたIssue
+- 完了条件を満たしたIssueの正の整数番号
 
 ## 推奨コマンド
 
 ```sh
-gh issue close <number-or-url> --repo <host>/<owner>/<repo> --reason completed
+gh issue close <number> --repo <host>/<owner>/<repo> --reason completed
 ```
 
 ## 結果の確認

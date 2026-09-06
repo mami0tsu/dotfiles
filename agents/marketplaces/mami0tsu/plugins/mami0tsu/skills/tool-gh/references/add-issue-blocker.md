@@ -13,14 +13,14 @@
 ## 前提条件
 
 - `host/owner/repo`形式のrepository名
-- blocked側のIssue
-- blocker側のIssue
+- blocked側のIssueの正の整数番号
+- blocker側のIssueの正の整数番号
 
 ## 推奨コマンド
 
 ```sh
-gh issue edit <blocked-number-or-url> --repo <host>/<owner>/<repo> \
-  --add-blocked-by <blocker-number-or-url>
+gh issue edit <blocked-number> --repo <host>/<owner>/<repo> \
+  --add-blocked-by <blocker-number>
 ```
 
 ## 結果の確認
