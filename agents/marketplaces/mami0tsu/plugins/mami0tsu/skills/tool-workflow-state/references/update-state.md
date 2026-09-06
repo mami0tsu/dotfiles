@@ -16,6 +16,8 @@ bash "<plugin-root>/skills/tool-workflow-state/scripts/workflow-state.sh" update
 ```
 
 一時ファイルはcommand終了後に削除する。
+更新値にはJSON Merge Patchを使い、`null`を指定したfieldは保存済みnamespaceから削除する。
+Pending operationを完了済みへ移す場合は、同じ更新で完了済み操作を追加し、対応するpending operationへ`null`を指定する。
 revision競合時はstateを再検証し、差分を解決するまで更新しない。
 出力されたWorkflow ID、state path、identity、新しいrevisionを次のstate checkpointとして渡す。
 Namespaceと保存値も更新結果として利用する。

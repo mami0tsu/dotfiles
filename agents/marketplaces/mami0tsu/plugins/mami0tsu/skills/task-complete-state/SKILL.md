@@ -15,6 +15,7 @@ allowed-tools: >-
 ## 入力
 
 - 最新のstate checkpoint
+- 基準リポジトリ
 - 完了条件
 - 完了証跡
 
@@ -42,7 +43,7 @@ allowed-tools: >-
 
 ### 3. Stateを完了する
 
-検証済みのidentityとGit common directoryを省略せずにstate完了操作へ渡し、完了時刻と最終結果を記録する。
+検証済みのidentity、revision、基準リポジトリをstate完了操作へ渡し、完了時刻と最終結果を記録する。
 
 ### 4. 結果を返す
 

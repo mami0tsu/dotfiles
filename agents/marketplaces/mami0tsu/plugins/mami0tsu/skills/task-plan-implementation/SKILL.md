@@ -26,7 +26,7 @@ allowed-tools: >-
 - 1つの実装Issueを、1つのリポジトリと、実装時に作る1つのbranch、worktree、PRに対応させる。
 - 受け入れ条件を複数Issueの共同完了だけで満たす構成にしない。
 - 親子関係を作業範囲、依存関係を実行順序として区別する。
-- branch名とbase branchを確定しない。
+- 実装用branch名と実装PRのbase branchを確定しない。
 - 設計本文にない実装判断を追加しない。
 - `standalone-issue`で複数の実装Issue、対象リポジトリ、またはPRが必要な場合は、実装Issue計画を返さず構成不一致を返す。
 
@@ -39,6 +39,7 @@ allowed-tools: >-
 ### 2. Issue本文を作る
 
 各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリのhostとcanonical repository名、設計正本の参照を設定する。
+設計正本がGit管理Documentの場合は、正本参照へrepository、path、revision、本文digest、merge先branchを含める。
 設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。

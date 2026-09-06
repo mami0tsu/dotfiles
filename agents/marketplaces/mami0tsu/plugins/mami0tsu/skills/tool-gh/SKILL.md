@@ -6,6 +6,7 @@ description: >-
 allowed-tools: >-
   Bash(bash */skills/tool-gh/scripts/github-body-operation.sh *)
   Bash(gh api --method GET -H * repos/* -f ref=*)
+  Bash(gh api --method GET repos/*)
   Bash(gh api graphql --paginate *)
   Bash(gh api graphql -F owner=* -F name=* -F number=* -f query=*)
   Bash(gh api graphql -F pullRequestId=* -F commitOID=* -f query=*)
@@ -69,6 +70,7 @@ allowed-tools: >-
 | `inspect-authentication` | GitHub hostの認証状態を取得する。 |
 | `inspect-repository` | GitHub上の対象repositoryを取得する。 |
 | [`read-file-at-commit`](references/read-file-at-commit.md) | 完全なcommit OIDを指定し、remote repositoryのfileを読む。 |
+| [`verify-commit-reachable`](references/verify-commit-reachable.md) | Commitが指定branchから到達可能であることを確認する。 |
 
 **pull request**
 

@@ -27,6 +27,7 @@ allowed-tools: >-
 ## 制約
 
 - 正本ID、更新前revision、operation ID、承認済みdigestを省略しない。
+- Pending operationのoperation IDとdigestが更新計画および成果物の承認結果と一致しない場合は更新しない。
 - 更新前revisionが現在値と一致しない場合は変更しない。
 - 承認済み本文を要約、翻訳、整形し直さない。
 - 承認範囲にないpropertyや公開範囲を変更しない。
@@ -40,7 +41,7 @@ allowed-tools: >-
 
 ### 2. 更新条件を照合する
 
-更新計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+更新計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
 現在のrevisionとpending operationの期待値が一致することを確認する。
 
 ### 3. 本文を更新する

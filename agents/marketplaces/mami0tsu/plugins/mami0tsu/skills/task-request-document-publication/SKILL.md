@@ -27,6 +27,7 @@ allowed-tools: >-
 
 - provider、保存先、title、本文、公開範囲を省略しない。
 - 公開計画のoperation IDとdigestが成果物の承認結果に含まれない場合は依頼しない。
+- Pending operationのoperation IDとdigestが公開計画および成果物の承認結果と一致しない場合は依頼しない。
 - 承認済み本文を作業中に変更しない。
 - URLを受け取る前に公開完了と判断しない。
 - 人間が保存した本文へagentによる再承認を要求しない。
@@ -35,7 +36,7 @@ allowed-tools: >-
 
 ### 1. 保存内容を提示する
 
-公開計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+公開計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
 provider、保存先、title、承認済み本文、公開範囲、本文digestを人間へ提示する。
 
 ### 2. 保存を依頼する

@@ -16,6 +16,7 @@ allowed-tools: >-
 
 - Workflow ID
 - 期待するstate identity
+- 基準リポジトリ
 - 現在の作業情報
 
 ## 出力
@@ -46,5 +47,5 @@ workflow名、subject kind、subject、基準リポジトリを期待値と比�
 
 ### 4. 結果を返す
 
-Workflow ID、workflow名、subject kind、subject、Git common directory、state path、最新revisionをstate checkpointとして返す。
+Workflow ID、workflow名、subject kind、subject、最新revisionをstate checkpointとして返す。
 一致した項目、差分、再開可能な操作、人間の対応が必要な操作をstate検証結果として返す。

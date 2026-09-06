@@ -74,11 +74,11 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 `standalone-issue`から再選択する場合は、既存Issueをtracking Issueか設計Issueのどちらへ再利用するか利用者に選んでもらい、もう一方だけを作成対象にする。
 作成対象のIssue群と、必要な親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
 作成対象がある場合は、各Issueのoperation IDと承認済みdigestをpending operationとしてstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
-作成応答を受けたら、次の外部操作より先に正本IDとURLを`task-update-state`スキルで保存し、`task-verify-issue`スキルで確認する。
+作成応答を受けたら、正本IDとURLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
 すべてのIDが確定したら親子関係のoperation IDと承認済みdigestをpending operationとして保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
-関係の更新結果も、次の外部操作より先にstateへ保存する。
+関係の更新結果も、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
 再開時は、正本を再取得して結果が一致した完了済みoperationを飛ばす。
-Pending operationは対象の現在値を取得し、反映済みなら完了結果をstateへ記録して飛ばし、未反映を確認できた場合だけ同じoperationを再開する。
+Pending operationは対象の現在値を取得し、反映済みなら同じoperation IDを完了済み操作へ移してpending operationを消し、未反映を確認できた場合だけ同じoperationを再開する。
 結果が曖昧なpending operationでは停止し、後続operationを実行しない。
 
 ### 5. リポジトリを調べる

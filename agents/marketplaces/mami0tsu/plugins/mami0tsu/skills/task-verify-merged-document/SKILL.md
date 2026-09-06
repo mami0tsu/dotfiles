@@ -17,7 +17,7 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 
 ## 入力
 
-- Draft PRのURLとDocument変更結果、または正本Git Documentの参照
+- Draft PRのURLとDocument変更結果、またはrepository、path、revision、merge先branchを含む正本Git Documentの参照
 
 ## 出力
 
@@ -36,6 +36,8 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 
 Draft PRのURLが入力された場合はpull requestを取得し、repository、base、head、merge状態、merge commitを確認する。
 正本Git Documentの参照が入力された場合は、記録されたrepository、path、revisionを使い、revisionがmerge先から到達可能であることを確認する。
+Local checkoutを利用できない場合は、認証済みremoteでrevisionと記録済みmerge先branchを比較し、merge先branchがrevisionを含むことを確認する。
+記録済みmerge先branchがない場合や、別branchからしか到達できない場合は停止する。
 
 ### 2. Documentを取得する
 
@@ -50,4 +52,4 @@ merge commitをrevisionとし、commitを固定したfile URLを求める。
 
 ### 4. 結果を返す
 
-repository、path、正本URL、revision、本文digest、merge済み本文をmerge済みDocumentとして返す。
+repository、path、merge先branch、正本URL、revision、本文digest、merge済み本文をmerge済みDocumentとして返す。

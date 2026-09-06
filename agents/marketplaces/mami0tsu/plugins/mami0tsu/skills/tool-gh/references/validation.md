@@ -23,6 +23,17 @@ GitHubへの書き込みは行わず、command選択と停止条件を読み取�
 
 GitHubへの書き込みとremote fileの取得は行っていない。
 
+## 2026-09-06：Remote commitをbranchから確認
+
+- 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`
+- 入力：完全なcommit OIDとmerge先branchを比較し、branchがcommitを含むことを確認する。
+- 対象ユースケース：`verify-commit-reachable`
+- 読み込んだreference：`verify-commit-reachable.md`
+- 実行したhelp：`gh api --help`
+- 結果：比較APIのpathと読み取り専用の呼び出し方法をローカルhelpと照合し、`ahead`または`identical`だけを到達可能として扱う停止条件を確認した。
+
+GitHubへの書き込みとremote比較の実行は行っていない。
+
 ## 2026-09-04：Version差のフォールバック
 
 - 実行環境：macOS、`gh version 2.96.0 (nixpkgs)`

@@ -5,6 +5,7 @@ description: >-
   Draft PRの作成結果を呼び出し元へ返す前に使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
 ---
 
 # task-verify-pull-request
@@ -16,6 +17,8 @@ Draft PRを取得し、レビュー対象が整理済みの変更と一致する
 
 - Draft PRのURL
 - 整理済みの変更
+- Draft PR作成計画
+- 成果物の承認結果
 
 ## 出力
 
@@ -39,15 +42,20 @@ Draft PRを取得し、レビュー対象が整理済みの変更と一致する
 
 base branchとhead branchが整理済みの変更と一致することを確認する。
 
-### 3. Draft状態を確認する
+### 3. 承認内容を確認する
+
+Draft PR作成計画を共通のJSON digest操作へ渡し、成果物の承認結果にある対応するdigestと照合する。
+Repository、base branch、head branch、title、正規化した本文が承認済み計画と一致することを確認する。
+
+### 4. Draft状態を確認する
 
 pull requestがopenかつDraftであることを確認する。
 
-### 4. Commitを確認する
+### 5. Commitを確認する
 
 整理後の対象commitがpull requestのhead branchに含まれていることを確認する。
 
-### 5. 確認結果を返す
+### 6. 確認結果を返す
 
-すべて一致した場合は、Draft状態、base branch、head branch、対象commit、URLをpull request確認結果として返す。
+すべて一致した場合は、Draft状態、repository、base branch、head branch、title、本文digest、対象commit、URLをpull request確認結果として返す。
 不一致がある場合は、その項目と実際の値を返す。

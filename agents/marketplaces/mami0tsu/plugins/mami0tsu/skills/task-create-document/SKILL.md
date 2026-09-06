@@ -28,6 +28,7 @@ allowed-tools: >-
 
 - provider、container、親Document、title、本文を推測で補わない。
 - 作成計画のoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
+- Pending operationのoperation IDとdigestが作成計画および成果物の承認結果と一致しない場合は作成しない。
 - 承認済み本文を要約、翻訳、整形し直さない。
 - 1回の実行で1件だけ作る。
 - 正本IDを確認できない場合は同じ作成操作を再実行しない。
@@ -36,7 +37,7 @@ allowed-tools: >-
 
 ### 1. 作成内容を照合する
 
-作成計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+作成計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
 保存先、title、本文、公開範囲を作成計画と照合する。
 
 ### 2. Documentを作る

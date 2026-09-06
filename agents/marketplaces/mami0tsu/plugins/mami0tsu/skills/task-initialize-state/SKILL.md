@@ -1,7 +1,7 @@
 ---
 name: task-initialize-state
 description: >-
-  基準リポジトリのGit common directoryへ作業状態を新規作成し、再開に使うidentityと保存先を確定するTask。
+  基準リポジトリへ作業状態を新規作成し、再開に使うidentityを確定するTask。
   設計や実装を複数turn、複数worktreeにまたがって始めるときに使う。
 allowed-tools: >-
   Skill(mami0tsu:tool-workflow-state)
@@ -29,7 +29,6 @@ allowed-tools: >-
 - subjectには要求本文ではなく、正本URL、外部ID、または`sha256:`で始まる要求digestを使う。
 - 同じWorkflow IDのstateが存在する場合は上書きしない。
 - token、password、secret、Issue本文、Document本文を保存しない。
-- Git common directory以外へ正本stateを作らない。
 
 ## 手順
 
@@ -49,4 +48,4 @@ Workflow IDがない場合は初期化操作の生成結果を採用し、呼び
 
 ### 4. 結果を返す
 
-Workflow ID、workflow名、subject kind、subject、Git common directory、state path、revisionをstate checkpointとして返す。
+Workflow ID、workflow名、subject kind、subject、revisionをstate checkpointとして返す。

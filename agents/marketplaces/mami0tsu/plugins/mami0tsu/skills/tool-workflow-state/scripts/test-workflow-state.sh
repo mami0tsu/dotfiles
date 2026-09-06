@@ -135,6 +135,25 @@ test "$(jq -r '.revision' "$test_root/update-result.json")" = '1'
 test "$(jq -r '.namespaces.publication.approval.status' .git/agent-workflows/test-design.json)" = 'approved'
 )
 
+# 完了済み操作への移動で、対応するpending operationを原子的に削除できることを確かめる。
+complete_operation_file="$test_root/complete-operation.json"
+jq -n '{pending_operation:null,completed_operations:[{id:"op-1",completed:true}]}' >"$complete_operation_file"
+chmod 600 "$complete_operation_file"
+(
+  cd "$repository"
+  bash "$state_script" update \
+    --workflow-id test-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" \
+    --repository-common-dir "$repository_common_dir" \
+    --namespace publication \
+    --expected-revision 2 \
+    --value-file "$complete_operation_file" >/dev/null
+  test "$(jq -r '.namespaces.publication | has("pending_operation")' .git/agent-workflows/test-design.json)" = 'false'
+  test "$(jq -r '.namespaces.publication.completed_operations[] | select(.id == "op-1") | .completed' .git/agent-workflows/test-design.json)" = 'true'
+)
+
 # State置換に失敗しても一時fileを残さず、既存stateを変更しないことを確かめる。
 fake_bin="$test_root/fake-bin"
 mkdir -m 700 "$fake_bin"
@@ -149,13 +168,13 @@ if (
     --subject "$subject_digest" \
     --repository-common-dir "$repository_common_dir" \
     --namespace publication \
-    --expected-revision 2 \
+    --expected-revision 3 \
     --value-file "$value_file" >/dev/null 2>&1
 ); then
   printf '%s\n' 'expected state replacement failure' >&2
   exit 1
 fi
-test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '2'
+test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '3'
 test -z "$(find "$repository/.git/agent-workflows" -maxdepth 1 -name '.workflow-*' -print -quit)"
 
 # 古いrevisionによる上書きを拒否することを確かめる。
@@ -358,10 +377,10 @@ holder_pid=""
     --subject-kind requirement \
     --subject "$subject_digest" \
     --repository-common-dir "$repository_common_dir" \
-    --expected-revision 2 \
+    --expected-revision 3 \
     --result-file "$result_file" >/dev/null
   test "$(jq -r '.status' .git/agent-workflows/test-design.json)" = 'completed'
-  test "$(jq -r '.revision' .git/agent-workflows/test-design.json)" = '3'
+  test "$(jq -r '.revision' .git/agent-workflows/test-design.json)" = '4'
 )
 
 printf '%s\n' 'workflow-state tests passed'

@@ -7,6 +7,7 @@ allowed-tools: >-
   Skill(mami0tsu:task-open-draft-pr)
   Skill(mami0tsu:task-organize-commits)
   Skill(mami0tsu:task-push-branch)
+  Skill(mami0tsu:task-request-artifact-approval)
   Skill(mami0tsu:task-verify-pull-request)
 ---
 
@@ -43,13 +44,16 @@ allowed-tools: >-
 
 ### 3. BranchをPushする
 
-`task-push-branch`スキルへ整理済みの変更を渡し、push結果を受け取る。
+PushとDraft PR作成のoperation IDを分けた成果物計画を作り、`task-request-artifact-approval`スキルで一度だけ承認してもらう。
+Push operationのIDと承認済みdigestをpending operationとして確定する。
+整理済みの変更、成果物計画、成果物の承認結果、pending operationを`task-push-branch`スキルへ渡し、push結果を受け取る。
 
 ### 4. Draft PRを作る
 
-`task-open-draft-pr`スキルへ整理済みの変更とpush結果を渡し、Draft PRのURLを受け取る。
+Draft PR operationのIDと承認済みdigestをpending operationとして確定する。
+整理済みの変更、push結果、成果物計画、成果物の承認結果、pending operationを`task-open-draft-pr`スキルへ渡し、Draft PRのURLを受け取る。
 
 ### 5. Draft PRを確認する
 
-`task-verify-pull-request`スキルへDraft PRのURLと整理済みの変更を渡し、作成したpull requestを取得する。
+`task-verify-pull-request`スキルへDraft PRのURL、整理済みの変更、Draft PR作成計画、成果物の承認結果を渡し、作成したpull requestを取得する。
 整理後のcommitが含まれ、Draftになっていることを確認してURLを返す。

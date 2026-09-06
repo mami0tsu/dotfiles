@@ -28,6 +28,7 @@ push後はremote branchの対象commitを確認する。
 
 - 入力のcommitが現在のbranchにない場合はpushしない。
 - Push計画のoperation IDとdigestが成果物の承認結果に含まれない場合はpushしない。
+- Pending operationのoperation IDとdigestがPush計画および成果物の承認結果と一致しない場合はpushしない。
 - commitしていない変更が残っている場合はpushしない。
 - push先のremoteとbranchを明示する。
 - remote branchの履歴を書き換えない。
@@ -42,7 +43,7 @@ push後はremote branchの対象commitを確認する。
 
 ### 2. Push先を確認する
 
-Push計画を共通のJSON digest操作へ渡し、operation IDに対応する承認済みdigestと照合する。
+Push計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
 入力とリポジトリの設定から、push先のremoteとbranchを特定する。
 push先を1つに決められない場合は停止する。
 

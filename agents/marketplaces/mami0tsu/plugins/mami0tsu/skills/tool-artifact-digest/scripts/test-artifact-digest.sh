@@ -47,6 +47,22 @@ if bash "$digest_script" json --file "$test_root/invalid.json" >"$invalid_output
 fi
 test ! -s "$invalid_output"
 
+# 不正なUTF-8を置換せず拒否し、異なるbyte列へ同じdigestを与えないことを確かめる。
+printf '\377\n' >"$test_root/invalid-utf8-text.bin"
+printf '{"value":"\376"}\n' >"$test_root/invalid-utf8-json.bin"
+chmod 600 "$test_root"/invalid-utf8-*.bin
+for invalid_case in text:text json:json; do
+  invalid_mode="${invalid_case%%:*}"
+  invalid_name="${invalid_case#*:}"
+  invalid_utf8_output="$test_root/invalid-utf8-$invalid_name.out"
+  if TMPDIR="$test_root" bash "$digest_script" "$invalid_mode" --file "$test_root/invalid-utf8-$invalid_name.bin" >"$invalid_utf8_output" 2>/dev/null; then
+    printf '%s\n' "expected invalid UTF-8 in $invalid_mode mode to fail" >&2
+    exit 1
+  fi
+  test ! -s "$invalid_utf8_output"
+done
+test -z "$(find "$test_root" -maxdepth 1 -name 'artifact-digest.*' -print -quit)"
+
 # 公開権限のfileを拒否し、digestを出力しないことを確かめる。
 chmod 644 "$test_root/formatted.json"
 public_output="$test_root/public.out"

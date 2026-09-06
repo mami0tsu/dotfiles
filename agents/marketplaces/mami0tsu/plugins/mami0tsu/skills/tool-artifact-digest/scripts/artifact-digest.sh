@@ -42,6 +42,11 @@ read_input() {
   fi
 }
 
+# 正規化前の入力が妥当なUTF-8であることを確認し、不正byteを置換せず拒否する。
+validate_utf8() {
+  iconv -f UTF-8 -t UTF-8
+}
+
 # 利用可能な標準commandでSHA-256を求め、共通の出力形式へ変換する。
 sha256_stream() {
   local digest
@@ -60,6 +65,7 @@ sha256_stream() {
 canonicalize_text() {
   local input_file="$1"
   read_input "$input_file" \
+    | validate_utf8 \
     | jq -jRs 'gsub("\r\n"; "\n") | gsub("\r"; "\n") | sub("\n+$"; "") + "\n"'
 }
 
@@ -67,6 +73,7 @@ canonicalize_text() {
 canonicalize_json() {
   local input_file="$1"
   read_input "$input_file" \
+    | validate_utf8 \
     | jq -cS '.'
 }
 
@@ -89,6 +96,7 @@ calculate_digest() {
 # modeと任意のprivate fileを読み取り、対応する正規化とhashだけを実行する。
 main() {
   require_command jq
+  require_command iconv
   require_command awk
   require_command stat
   local mode="${1:-}" input_file=""

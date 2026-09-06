@@ -24,7 +24,7 @@ allowed-tools: >-
 
 ## 出力
 
-- 設計成果物
+- 設計成果物、または`reprepare-required`結果
 
 ## 制約
 
