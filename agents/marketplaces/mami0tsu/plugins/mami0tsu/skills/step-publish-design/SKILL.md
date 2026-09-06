@@ -51,6 +51,7 @@ allowed-tools: >-
 - 管理対象外のIssueとrelationを変更しない。
 - 実装Issueを、1つのリポジトリと1つのPRに対応させる。
 - Git管理Documentのpull requestをReady for reviewへ変更せず、mergeしない。
+- Git管理DocumentのDraft PRでは、base branchを設計作業計画のmerge先branchと一致させる。
 - 外部操作が成功するたびに、次の外部操作より先に正本識別情報と完了結果をstateへ記録する。
 - Stateを更新するたびに返されたstate checkpointを、次のstate操作と完了処理へ渡す。
 
@@ -94,7 +95,8 @@ Git管理Documentを正本にする場合だけ実行する。
 続いてcommit済みの変更を`task-request-diff-review`スキルへ渡し、人間のレビュー完了と修正コメントがないことを確認する。
 Agentまたは人間から修正指摘が返った場合はDocumentを公開せず、承認済み設計との不一致として設計検証へ返す。
 通常検証、差分レビュー、人間レビュー、commit済みの変更を検証済みの変更として`task-organize-commits`スキルへ渡す。
-BranchのpushとDraft PR作成を1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
+Branchのpush、Draft PR作成、人間によるmergeの確認を、異なるoperation IDを持つ1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
+Draft PR作成計画のbase branchが、設計作業計画で確認済みのmerge先branchと一致することを確認する。
 承認後は各外部操作のoperation IDと承認済みdigestをpending operationとして保存する。
 Draft PR成果物計画、成果物の承認結果、対応するpending operationを渡し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
 各操作の正本識別情報と結果は、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
@@ -102,6 +104,7 @@ Draft PR成果物計画、成果物の承認結果、対応するpending operati
 ### 5. Git管理Documentのmergeを待つ
 
 Draft PRを作成した場合は、人間によるReady化とmergeを待って停止する。
+Draft PRの作成結果を完了済み操作へ移した後、merge確認用のoperation IDと承認済みdigestをpending operationとしてstateへ保存してから停止する。
 再開時は`task-verify-merged-document`スキルでmerge済みDocumentを取得する。
 pull request上で編集された本文は人間の最終承認として扱い、merge済みrevisionとdigestを正本にする。
 merge済みの正本識別情報を保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。

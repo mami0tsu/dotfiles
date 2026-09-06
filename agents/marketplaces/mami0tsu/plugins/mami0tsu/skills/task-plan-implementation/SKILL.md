@@ -43,6 +43,7 @@ allowed-tools: >-
 ### 2. Issue本文を作る
 
 各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリのhostとcanonical repository名、設計正本の参照を設定する。
+Wiki正本の作成または更新前は、計画中の参照としてprovider、container、親Document、title、存在する場合の正本IDとURLを含め、公開後のrevisionと本文digestを未確定のまま残す。
 設計正本がGit管理Documentで未公開の場合は、計画中の参照としてrepository、path、merge先branchを含め、revisionと本文digestを未確定のまま残す。
 Git管理Documentの確定した正本情報がある場合は、最終参照としてrepository、path、revision、本文digest、merge先branchを含める。
 Wikiの確定した正本情報がある場合も、最終参照としてURL、revision、本文digestを含める。

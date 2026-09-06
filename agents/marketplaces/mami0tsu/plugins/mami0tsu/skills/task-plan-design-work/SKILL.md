@@ -31,6 +31,7 @@ allowed-tools: >-
 - 1つの工程に属するIssueを複数providerまたは複数containerへ分けない。
 - 複数リポジトリでも設計Issueと正本を増やさない。
 - Issue構成の再選択では、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本、完了済み外部操作を変更しない。
+- Git管理Documentのmerge先branchを推測で確定しない。
 - 外部Objectを変更しない。
 
 ## 手順
@@ -67,6 +68,7 @@ Issue、Wiki、Git管理Documentの候補と、作成、更新、手動保存、
 状態を保存する基準リポジトリと、設計対象となるリポジトリを確定する。
 各リポジトリはhostとcanonical repository名で識別し、GitHubでは`nameWithOwner`を使う。
 Git管理Documentでは正本を置くリポジトリとpathも確定する。
+正本リポジトリのmetadataから既定branchを候補として取得し、Git管理Documentのmerge先branchを人間に確認して計画へ記録する。
 
 ### 6. 承認単位を決める
 
@@ -74,4 +76,4 @@ Git管理Documentでは正本を置くリポジトリとpathも確定する。
 
 ### 7. 計画を返す
 
-Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
+Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
