@@ -16,6 +16,7 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 
 - 要求の読み取り結果
 - リポジトリ調査結果
+- base branch
 
 ## 出力
 
@@ -27,6 +28,7 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 - 既存のbranchやworktreeを削除しない。
 - リポジトリのbranchとworktreeの命名規則を優先する。
 - 起点や作業対象を特定できない場合は、作業場所を作らず不明点を返す。
+- Base branchを推測で既定branchへ置き換えない。
 - Issueを入力とする作業でIssue IDを特定できない場合は停止する。
 
 ## 手順
@@ -43,8 +45,8 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 
 ### 3. Branchを決める
 
-入力で指定されたremoteにある最新のdefault branchを確認する。
-確認したdefault branchがリポジトリ調査結果と一致することを確かめ、その最新commitを起点commitとする。
+入力で指定されたremoteにあるbase branchを確認する。
+確認したbase branchが入力およびリポジトリ調査結果と一致することを確かめ、そのremote上の最新commitを起点commitとする。
 リポジトリの規則と変更の目的からprefixを決める。
 変更内容を短い英語のkebab-caseで表したdesc-enを作る。
 prefixは英小文字で書く。
@@ -59,4 +61,4 @@ Issue IDがない場合は、作業用branch名を`<prefix>/<desc-en>`とする�
 
 ### 5. 作業場所情報を返す
 
-リポジトリのルート、remote、GitHub repository名、GitHub repositoryのURL、Issueの種類とID、base branch、起点commit、作業用branch、worktreeのパスを作業場所情報として返す。
+リポジトリのルート、remote、GitHub repository名、GitHub repositoryのURL、Issueの種類とID、確認済みbase branch、起点commit、作業用branch、worktreeのパスを作業場所情報として返す。

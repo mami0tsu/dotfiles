@@ -13,13 +13,14 @@
 ## 前提条件
 
 - `owner/repo`形式のrepository名
+- GitHub host
 - 完全なcommit OID
 - 記録済みのmerge先branch
 
 ## 推奨コマンド
 
 ```sh
-gh api --method GET \
+gh api --hostname '<host>' --method GET \
   'repos/<owner>/<repo>/compare/<full-commit-oid>...<percent-encoded-merge-target-branch>'
 ```
 
@@ -31,7 +32,7 @@ gh api --method GET \
 ## 停止条件
 
 `status`が`behind`または`diverged`の場合は停止する。
-Repository、commit、merge先branchのいずれかを確認できない場合も停止する。
+Host、repository、commit、merge先branchのいずれかを確認できない場合も停止する。
 
 ## 代表的な失敗
 

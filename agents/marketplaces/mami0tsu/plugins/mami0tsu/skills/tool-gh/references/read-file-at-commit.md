@@ -13,13 +13,14 @@
 ## 前提条件
 
 - `owner/repo`形式のrepository名
+- GitHub host
 - 完全なcommit OID
 - repository rootからのfile path
 
 ## 推奨コマンド
 
 ```sh
-gh api --method GET \
+gh api --hostname '<host>' --method GET \
   -H 'Accept: application/vnd.github.raw+json' \
   'repos/<owner>/<repo>/contents/<percent-encoded-path>' \
   -f ref='<full-commit-oid>'
@@ -28,11 +29,11 @@ gh api --method GET \
 ## 結果の確認
 
 応答本文だけを正本本文として返す。
-Repository、完全なcommit OID、pathが入力と一致することを確認する。
+Host、repository、完全なcommit OID、pathが入力と一致することを確認する。
 
 ## 停止条件
 
-Repository、commit、pathのいずれかを確認できない場合は停止する。
+Host、repository、commit、pathのいずれかを確認できない場合は停止する。
 Branch名、既定branch、別のrepositoryにある同名pathへ置き換えない。
 
 ## 代表的な失敗

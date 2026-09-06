@@ -17,7 +17,8 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 
 ## 入力
 
-- Draft PRのURLとDocument変更結果、またはrepository、path、revision、merge先branchを含む正本Git Documentの参照
+- Draft PRのURLとDocument変更結果、Draft PR成果物計画、成果物の承認結果、merge確認のpending operation
+- またはhost、repository、path、revision、merge先branchを含む正本Git Documentの参照
 
 ## 出力
 
@@ -28,21 +29,25 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 - pull request、branch、commit、Documentを変更しない。
 - open、closed、未mergeのpull requestを成功扱いにしない。
 - merge先のpathがDocument変更結果と異なる場合は停止する。
+- Pull request経路では、merge確認の計画、承認結果、pending operationのoperation IDとdigestが三者で一致しない場合は停止する。
+- Pull requestのrepository、base branch、head branch、Document pathが承認済み計画と異なる場合は停止する。
 - merge済み本文を承認前の本文へ戻さない。
 
 ## 手順
 
 ### 1. Pull requestを取得する
 
-Draft PRのURLが入力された場合はpull requestを取得し、repository、base、head、merge状態、merge commitを確認する。
-正本Git Documentの参照が入力された場合は、記録されたrepository、path、revisionを使い、revisionがmerge先から到達可能であることを確認する。
-Local checkoutを利用できない場合は、認証済みremoteでrevisionと記録済みmerge先branchを比較し、merge先branchがrevisionを含むことを確認する。
+Draft PRのURLが入力された場合は、merge確認計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
+Pull requestを取得し、host、repository、base、head、merge状態、merge commit、Document pathを承認済み計画と照合する。
+Merge commitが承認済みbase branchから到達可能であることを確認する。
+正本Git Documentの参照が入力された場合は、記録されたhost、repository、path、revisionを使い、revisionがmerge先から到達可能であることを確認する。
+Local checkoutを利用できない場合は、記録されたhostの認証済みremoteでrevisionと記録済みmerge先branchを比較し、merge先branchがrevisionを含むことを確認する。
 記録済みmerge先branchがない場合や、別branchからしか到達できない場合は停止する。
 
 ### 2. Documentを取得する
 
 確認済みrevisionで指定pathのDocumentを取得する。
-正本repositoryのlocal checkoutを利用できない場合は、正本参照にあるcanonical repository、完全なcommit OID、pathを使い、認証済みremoteから本文を取得する。
+正本repositoryのlocal checkoutを利用できない場合は、正本参照にあるhost、canonical repository、完全なcommit OID、pathを使い、認証済みremoteから本文を取得する。
 pathとblobの一方でも存在しない場合は停止する。
 
 ### 3. 正本情報を作る
@@ -54,4 +59,4 @@ Pull requestのURLから確認した場合はmerge commitをrevisionとする。
 
 ### 4. 結果を返す
 
-repository、path、merge先branch、正本URL、revision、本文digest、merge済み本文をmerge済みDocumentとして返す。
+host、repository、path、merge先branch、正本URL、revision、本文digest、merge済み本文をmerge済みDocumentとして返す。

@@ -60,8 +60,12 @@ Issue構成、provider、container、正本、基準リポジトリ、対象リ�
 Workflow IDがない場合は、入力元の種類ごとに不変なsubjectを選び、`task-initialize-state`スキルへ渡す。
 生の要求では`requirement`と`requirements_digest`、Issueでは`issue`とprovider、container、正本IDを組み合わせた識別子、Documentでは`document`とprovider、正本IDを組み合わせた識別子を使う。
 初期化結果が生成したWorkflow IDを、以後の設計工程で使う。
-Workflow IDがある場合は、同じ入力元の不変なsubjectを使って`task-verify-state`スキルを実行し、保存済みidentityと設計作業計画を照合する。
-`reprepare-required`結果から再開する場合は、結果に含まれるstate identityをそのまま照合へ使う。
+新規stateでは、設計作業計画のdigestを外部書き込み前に`task-update-state`スキルで保存する。
+通常の再開では、同じ入力元の不変なsubjectを使って`task-verify-state`スキルを実行し、保存済みidentityと設計作業計画のdigestを照合する。
+`reprepare-required`結果から再開する場合は、結果に含まれるstate identityと変更前の設計作業計画を使って先に`task-verify-state`スキルを実行する。
+未完了または曖昧なpending operationがないことと、新しい計画との差分がIssue構成、既存Issueの役割、対応する実装計画だけであることを確認する。
+確認後は新しい計画digestを保存し、Issue構成と実装計画に対する以前の承認を失効させる更新を`task-update-state`スキルで行う。
+更新後のstate checkpointを使って新しい設計作業計画を再検証し、その後にだけ外部書き込みへ進む。
 Issue本文、Document本文、relation、revisionの変更からsubjectを再計算しない。
 
 ### 4. 追跡用Issueを準備する
@@ -70,10 +74,11 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 `tracking-issue`では、親となるtracking Issueと子となる設計Issueの役割を既存Issueへ割り当て、足りないIssueを作成対象にする。
 既存のtracking Issueを親にする場合も、設計Issueを省略しない。
 `standalone-issue`から再選択する場合は、設計作業計画で選ばれた既存Issueの役割に従い、もう一方だけを作成対象にする。
-作成対象のIssue群と、必要な親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
+作成対象のIssue群と、計画上のIssue keyで表した親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
 作成対象がある場合は、各Issueのoperation IDと承認済みdigestをpending operationとしてstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
 作成応答を受けたら、正本IDとURLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
-すべてのIDが確定したら親子関係のoperation IDと承認済みdigestをpending operationとして保存し、`task-link-issues`スキルで設計Issueを`tracking-issue`の子にする。
+すべてのIDが確定したら、計画上のIssue keyからprovider、container、正本IDへの対応表を作成結果から組み立てる。
+親子関係のoperation IDと承認済みdigestをpending operationとして保存し、Issue関係計画と対応表を`task-link-issues`スキルへ渡して設計Issueを`tracking-issue`の子にする。
 関係の更新結果も、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
 再開時は、正本を再取得して結果が一致した完了済みoperationを飛ばす。
 Pending operationは対象の現在値を取得し、反映済みなら同じoperation IDを完了済み操作へ移してpending operationを消し、未反映を確認できた場合だけ同じoperationを再開する。

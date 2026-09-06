@@ -5,8 +5,8 @@ description: >-
   GitHub上の情報を確認し、対応する操作を行うときに使う。
 allowed-tools: >-
   Bash(bash */skills/tool-gh/scripts/github-body-operation.sh *)
-  Bash(gh api --method GET -H * repos/* -f ref=*)
-  Bash(gh api --method GET repos/*)
+  Bash(gh api --hostname * --method GET -H * repos/* -f ref=*)
+  Bash(gh api --hostname * --method GET repos/*)
   Bash(gh api graphql --paginate *)
   Bash(gh api graphql -F owner=* -F name=* -F number=* -f query=*)
   Bash(gh api graphql -F pullRequestId=* -F commitOID=* -f query=*)

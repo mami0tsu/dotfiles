@@ -4,6 +4,7 @@ description: >-
   esaまたはNotionのDocumentを正本から再取得し、保存先、revision、本文digestが期待値と一致するか検証するTask。
   Wikiへの作成または更新後に設計正本を確定するときに使う。
 allowed-tools: >-
+  Skill
   Skill(mami0tsu:tool-artifact-digest)
   mcp__esa__*
   mcp__notion__*
@@ -29,12 +30,14 @@ Documentの現在値を読み取り、期待値との差分を返す。
 - 本文を正規化したdigestで比較する。
 - URLとrevisionをproviderの正本値から取得する。
 - 差分があってもDocumentを更新しない。
+- 読み取り操作を利用できない場合は、人間が現在の正本ID、URL、revision、本文を返すまで成功扱いにしない。
 
 ## 手順
 
 ### 1. Documentを取得する
 
-正本IDでDocumentを再取得し、URL、revision、title、本文、propertyを読む。
+正本IDでDocumentを再取得し、provider、container、URL、revision、title、本文、propertyを読む。
+読み取り操作を利用できない場合は、人間に現在の正本ID、URL、revision、title、全文、必要なpropertyの確認を依頼し、返却まで停止する。
 
 ### 2. Digestを求める
 
@@ -46,4 +49,4 @@ Documentの現在値を読み取り、期待値との差分を返す。
 
 ### 4. 結果を返す
 
-正本ID、URL、revision、本文digest、一致した項目、差分をDocument検証結果として返す。
+provider、container、正本ID、URL、revision、本文digest、一致した項目、差分をDocument検証結果として返す。

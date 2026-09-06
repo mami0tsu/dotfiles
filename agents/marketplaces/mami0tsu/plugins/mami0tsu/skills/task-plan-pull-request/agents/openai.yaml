@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Pull Request"
+  short_description: "承認前にDraft PRのtitleと最終本文を固定する"
+  default_prompt: "Use $task-plan-pull-request to prepare an exact Draft PR creation plan."

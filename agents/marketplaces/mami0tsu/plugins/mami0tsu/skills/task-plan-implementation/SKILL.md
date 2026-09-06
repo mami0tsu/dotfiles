@@ -46,10 +46,10 @@ allowed-tools: >-
 
 各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリのhostとcanonical repository名、設計正本の参照を設定する。
 Wiki正本の作成または更新前は、計画中の参照としてprovider、container、親Document、title、存在する場合の正本IDとURLを含め、公開後のrevisionと本文digestを未確定のまま残す。
-設計正本がGit管理Documentで未公開の場合は、計画中の参照としてrepository、path、merge先branchを含め、revisionと本文digestを未確定のまま残す。
-Git管理Documentの確定した正本情報がある場合は、最終参照としてrepository、path、revision、本文digest、merge先branchを含める。
-Wikiの確定した正本情報がある場合も、最終参照としてURL、revision、本文digestを含める。
-確定した正本本文のdigestが直前の計画と一致する場合はIssue境界と本文の設計内容を維持し、計画中の参照だけを最終参照へ置き換える。
+設計正本がGit管理Documentで未公開の場合は、計画中の参照としてhost、repository、path、merge先branchを含め、revisionと本文digestを未確定のまま残す。
+Git管理Documentの確定した正本情報がある場合は、最終参照としてhost、repository、path、revision、本文digest、merge先branchを含める。
+Wikiの確定した正本情報がある場合も、最終参照としてprovider、container、正本ID、URL、revision、本文digestを含める。
+確定した正本本文のdigestが承認時の`design_body_digest`と一致する場合はIssue境界と本文の設計内容を維持し、計画中の参照だけを最終参照へ置き換える。
 設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。

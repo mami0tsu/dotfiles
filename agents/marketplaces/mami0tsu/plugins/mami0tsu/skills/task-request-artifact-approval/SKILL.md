@@ -25,6 +25,7 @@ allowed-tools: >-
 
 - 対象ObjectまたはIssue一覧、本文digest、予定操作、期待する完了状態を省略しない。
 - 各予定操作へ成果物内で一意なoperation IDを付ける。
+- 新規Issueを含むrelationでは、作成前後で変わらない計画上のIssue keyを対象に使う。
 - 同じ正規化済み操作では、再開後も同じoperation IDを使う。
 - 対象、内容、予定操作のいずれかが変わった承認を再利用しない。
 - 承認を受ける前に外部Objectを変更しない。
@@ -36,6 +37,7 @@ allowed-tools: >-
 
 対象provider、container、ObjectまたはIssue一覧、作成または更新する内容、relation、状態変更を安定した順序へ正規化する。
 各予定操作を、operation ID、対象、期待する現在値、反映値、期待する完了状態を持つ単位へ分ける。
+新規Issueのrelationは計画上のIssue keyで正規化し、未確定の正本IDを承認対象へ混ぜない。
 
 ### 2. Digestを求める
 

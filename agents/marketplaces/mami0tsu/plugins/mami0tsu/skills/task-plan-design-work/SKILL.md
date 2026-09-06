@@ -5,6 +5,7 @@ description: >-
   設計工程の外部Objectと人間待ちを確定するときに使う。
 allowed-tools: >-
   Skill
+  Skill(mami0tsu:tool-artifact-digest)
   mcp__atlassian__*
   mcp__linear__*
 ---
@@ -67,7 +68,7 @@ Issue、Wiki、Git管理Documentの候補と、作成、更新、手動保存、
 
 状態を保存する基準リポジトリと、設計対象となるリポジトリを確定する。
 各リポジトリはhostとcanonical repository名で識別し、GitHubでは`nameWithOwner`を使う。
-Git管理Documentでは正本を置くリポジトリとpathも確定する。
+Git管理Documentでは正本を置くhost、canonical repository、pathも確定する。
 正本リポジトリのmetadataから既定branchを候補として取得し、Git管理Documentのmerge先branchを人間に確認して計画へ記録する。
 
 ### 6. 承認単位を決める
@@ -76,4 +77,5 @@ Git管理Documentでは正本を置くリポジトリとpathも確定する。
 
 ### 7. 計画を返す
 
-Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
+Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画としてまとめる。
+計画を共通のJSON digest操作へ渡し、計画digestと設計作業計画を返す。

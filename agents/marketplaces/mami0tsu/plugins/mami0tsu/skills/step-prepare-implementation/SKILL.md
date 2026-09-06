@@ -58,7 +58,7 @@ IssueかDocumentに記録された対象リポジトリのhostとcanonical repos
 
 ### 4. 作業場所を準備する
 
-`task-prepare-worktree`スキルを使い、作業用のbranchとworktreeを用意する。
+確認済みのbase branchを`task-prepare-worktree`スキルへ渡し、作業用のbranchとworktreeを用意する。
 
 ### 5. 準備結果を返す
 

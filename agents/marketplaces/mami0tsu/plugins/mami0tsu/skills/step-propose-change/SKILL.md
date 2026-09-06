@@ -6,6 +6,7 @@ description: >-
 allowed-tools: >-
   Skill(mami0tsu:task-open-draft-pr)
   Skill(mami0tsu:task-organize-commits)
+  Skill(mami0tsu:task-plan-pull-request)
   Skill(mami0tsu:task-push-branch)
   Skill(mami0tsu:task-request-artifact-approval)
   Skill(mami0tsu:task-verify-pull-request)
@@ -44,7 +45,8 @@ allowed-tools: >-
 
 ### 3. BranchをPushする
 
-PushとDraft PR作成のoperation IDを分けた成果物計画を作り、`task-request-artifact-approval`スキルで一度だけ承認してもらう。
+整理済みの変更、IssueまたはDocumentへの参照、base branch、head branchを`task-plan-pull-request`スキルへ渡し、template適用済みのDraft PR作成計画を受け取る。
+PushとDraft PR作成のoperation IDを分けた成果物計画を作り、Draft PR作成計画とともに`task-request-artifact-approval`スキルで一度だけ承認してもらう。
 Push operationのIDと承認済みdigestをpending operationとして確定する。
 整理済みの変更、成果物計画、成果物の承認結果、pending operationを`task-push-branch`スキルへ渡し、push結果を受け取る。
 
