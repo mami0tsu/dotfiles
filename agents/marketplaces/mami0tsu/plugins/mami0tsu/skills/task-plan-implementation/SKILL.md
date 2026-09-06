@@ -16,6 +16,8 @@ allowed-tools: >-
 
 - 設計本文
 - 設計作業計画
+- 直前の実装Issue計画（正本確定後の再計画時）
+- 確定した正本情報（公開後に存在する場合）
 
 ## 出力
 
@@ -28,6 +30,8 @@ allowed-tools: >-
 - 親子関係を作業範囲、依存関係を実行順序として区別する。
 - 実装用branch名と実装PRのbase branchを確定しない。
 - 設計本文にない実装判断を追加しない。
+- 確定した正本情報がある場合は、そのURL、revision、本文digestを省略しない。
+- 確定した正本情報がある場合は、計画中の参照を実装Issue計画へ残さない。
 - `standalone-issue`で複数の実装Issue、対象リポジトリ、またはPRが必要な場合は、実装Issue計画を返さず構成不一致を返す。
 
 ## 手順
@@ -39,7 +43,10 @@ allowed-tools: >-
 ### 2. Issue本文を作る
 
 各Issueへtitle、目的、変更範囲、受け入れ条件、確認方法、対象リポジトリのhostとcanonical repository名、設計正本の参照を設定する。
-設計正本がGit管理Documentの場合は、正本参照へrepository、path、revision、本文digest、merge先branchを含める。
+設計正本がGit管理Documentで未公開の場合は、計画中の参照としてrepository、path、merge先branchを含め、revisionと本文digestを未確定のまま残す。
+Git管理Documentの確定した正本情報がある場合は、最終参照としてrepository、path、revision、本文digest、merge先branchを含める。
+Wikiの確定した正本情報がある場合も、最終参照としてURL、revision、本文digestを含める。
+確定した正本本文のdigestが直前の計画と一致する場合はIssue境界と本文の設計内容を維持し、計画中の参照だけを最終参照へ置き換える。
 設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。
@@ -55,5 +62,5 @@ allowed-tools: >-
 
 ### 5. 計画を返す
 
-Issueごとのkey、Issue type、必須field、title、本文、対象リポジトリ、親、依存関係、意味上の状態と、tracking Issueの更新内容を実装Issue計画として返す。
+Issueごとのkey、Issue type、必須field、title、本文、対象リポジトリ、親、依存関係、意味上の状態、設計正本参照の確定状態と、tracking Issueの更新内容を実装Issue計画として返す。
 `standalone-issue`の構成不一致では、必要な実装単位と`tracking-issue`への変更が必要であることを返す。

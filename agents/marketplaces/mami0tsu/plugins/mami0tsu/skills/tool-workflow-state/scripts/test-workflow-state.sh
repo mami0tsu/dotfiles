@@ -109,7 +109,6 @@ test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 0 \
     --value-file "$value_file" >"$test_root/update-result.json"
@@ -125,7 +124,6 @@ test "$(jq -r '.revision' "$test_root/update-result.json")" = '1'
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 1 \
     --value-file "$delta_file" >/dev/null
@@ -146,7 +144,6 @@ chmod 600 "$complete_operation_file"
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 2 \
     --value-file "$complete_operation_file" >/dev/null
@@ -154,6 +151,34 @@ chmod 600 "$complete_operation_file"
   test "$(jq -r '.namespaces.publication.completed_operations[] | select(.id == "op-1") | .completed' .git/agent-workflows/test-design.json)" = 'true'
 )
 
+# 未作成の親fieldとscalarからobjectへの置換でも、nested nullを削除することを確かめる。
+merge_patch_seed_file="$test_root/merge-patch-seed.json"
+merge_patch_nested_file="$test_root/merge-patch-nested.json"
+jq -n '{repository:"previous"}' >"$merge_patch_seed_file"
+jq -n '{approval:{status:null},repository:{status:null,completed:true}}' >"$merge_patch_nested_file"
+chmod 600 "$merge_patch_seed_file" "$merge_patch_nested_file"
+(
+  cd "$repository"
+  bash "$state_script" update \
+    --workflow-id test-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" \
+    --namespace verification \
+    --expected-revision 3 \
+    --value-file "$merge_patch_seed_file" >/dev/null
+  bash "$state_script" update \
+    --workflow-id test-design \
+    --workflow workflow-design \
+    --subject-kind requirement \
+    --subject "$subject_digest" \
+    --namespace verification \
+    --expected-revision 4 \
+    --value-file "$merge_patch_nested_file" >/dev/null
+  test "$(jq -r '.namespaces.verification.approval | has("status")' .git/agent-workflows/test-design.json)" = 'false'
+  test "$(jq -r '.namespaces.verification.repository | has("status")' .git/agent-workflows/test-design.json)" = 'false'
+  test "$(jq -r '.namespaces.verification.repository.completed' .git/agent-workflows/test-design.json)" = 'true'
+)
 # State置換に失敗しても一時fileを残さず、既存stateを変更しないことを確かめる。
 fake_bin="$test_root/fake-bin"
 mkdir -m 700 "$fake_bin"
@@ -166,15 +191,14 @@ if (
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
-    --expected-revision 3 \
+    --expected-revision 5 \
     --value-file "$value_file" >/dev/null 2>&1
 ); then
   printf '%s\n' 'expected state replacement failure' >&2
   exit 1
 fi
-test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '3'
+test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '5'
 test -z "$(find "$repository/.git/agent-workflows" -maxdepth 1 -name '.workflow-*' -print -quit)"
 
 # 古いrevisionによる上書きを拒否することを確かめる。
@@ -185,7 +209,6 @@ if (
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 1 \
     --value-file "$value_file" >/dev/null 2>&1
@@ -202,7 +225,6 @@ if (
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$other_subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 2 \
     --value-file "$value_file" >/dev/null 2>&1
@@ -220,7 +242,6 @@ for prohibited_file in "$secret_file" "$invalid_result_file" "$invalid_digest_fi
       --workflow workflow-design \
       --subject-kind requirement \
       --subject "$subject_digest" \
-      --repository-common-dir "$repository_common_dir" \
       --namespace credentials \
       --expected-revision 2 \
       --value-file "$prohibited_file" >/dev/null 2>&1
@@ -295,7 +316,7 @@ done
 test "$success_count" = '1'
 test "$(jq -r '.revision' "$concurrent_repository/.git/agent-workflows/concurrent-design.json")" = '0'
 
-# 同じidentityを持つ別repositoryへ、検証済みGit common directoryを取り違えて書けないことを確かめる。
+# 同じidentityを持つ別repositoryでも、現在のrepositoryに属するstateだけを更新することを確かめる。
 git init -q "$other_repository"
 git -C "$other_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
 (
@@ -306,21 +327,19 @@ git -C "$other_repository" -c user.name=Codex -c user.email=codex@example.invali
     --subject-kind requirement \
     --subject "$subject_digest" >/dev/null
 )
-if (
+(
   cd "$other_repository"
   bash "$state_script" update \
     --workflow-id test-design \
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
     --namespace publication \
     --expected-revision 0 \
-    --value-file "$value_file" >/dev/null 2>&1
-); then
-  printf '%s\n' 'expected repository identity mismatch to fail' >&2
-  exit 1
-fi
+    --value-file "$value_file" >/dev/null
+)
+test "$(jq -r '.revision' "$other_repository/.git/agent-workflows/test-design.json")" = '1'
+test "$(jq -r '.revision' "$repository/.git/agent-workflows/test-design.json")" = '5'
 
 # requirement identityへ生の要件文字列を保存できないことを確かめる。
 if (
@@ -376,11 +395,10 @@ holder_pid=""
     --workflow workflow-design \
     --subject-kind requirement \
     --subject "$subject_digest" \
-    --repository-common-dir "$repository_common_dir" \
-    --expected-revision 3 \
+    --expected-revision 5 \
     --result-file "$result_file" >/dev/null
   test "$(jq -r '.status' .git/agent-workflows/test-design.json)" = 'completed'
-  test "$(jq -r '.revision' .git/agent-workflows/test-design.json)" = '4'
+  test "$(jq -r '.revision' .git/agent-workflows/test-design.json)" = '6'
 )
 
 printf '%s\n' 'workflow-state tests passed'

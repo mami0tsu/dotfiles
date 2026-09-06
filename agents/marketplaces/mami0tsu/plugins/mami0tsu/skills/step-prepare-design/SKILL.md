@@ -52,10 +52,8 @@ allowed-tools: >-
 
 ### 2. 設計作業を計画する
 
-`task-plan-design-work`スキルへ要求の読み取り結果と既存Issueを渡す。
+`task-plan-design-work`スキルへ要求の読み取り結果、既存Issue、利用可能な`reprepare-required`結果を渡す。
 Issue構成、provider、container、正本、基準リポジトリ、対象リポジトリ、承認予定を含む設計作業計画を受け取る。
-`reprepare-required`結果がある場合は`tracking-issue`を選択対象とし、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本を維持する。
-公開済み正本の最終本文を、再準備後に作る設計本文の基準にする。
 
 ### 3. 状態を準備する
 
@@ -71,7 +69,7 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 `standalone-issue`では既存Issueがなければ1件を作成対象にする。
 `tracking-issue`では、親となるtracking Issueと子となる設計Issueの役割を既存Issueへ割り当て、足りないIssueを作成対象にする。
 既存のtracking Issueを親にする場合も、設計Issueを省略しない。
-`standalone-issue`から再選択する場合は、既存Issueをtracking Issueか設計Issueのどちらへ再利用するか利用者に選んでもらい、もう一方だけを作成対象にする。
+`standalone-issue`から再選択する場合は、設計作業計画で選ばれた既存Issueの役割に従い、もう一方だけを作成対象にする。
 作成対象のIssue群と、必要な親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
 作成対象がある場合は、各Issueのoperation IDと承認済みdigestをpending operationとしてstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
 作成応答を受けたら、正本IDとURLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。

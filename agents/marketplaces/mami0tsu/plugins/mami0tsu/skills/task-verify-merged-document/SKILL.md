@@ -47,7 +47,9 @@ pathとblobの一方でも存在しない場合は停止する。
 
 ### 3. 正本情報を作る
 
-merge commitをrevisionとし、commitを固定したfile URLを求める。
+Pull requestのURLから確認した場合はmerge commitをrevisionとする。
+正本Git Documentの参照から確認した場合は、merge先からの到達可能性を確認した記録済みrevisionを使う。
+確定したrevisionでcommitを固定したfile URLを求める。
 取得した本文を共通のtext digest操作へ渡し、他の正本経路と同じ本文digestを求める。
 
 ### 4. 結果を返す

@@ -324,7 +324,7 @@ verify_state() {
 
 # 1つのnamespaceへJSON Merge Patchを適用し、revisionを1つ進める。
 update_state() {
-  local namespace="" expected_revision="" value_file="" expected_common_dir=""
+  local namespace="" expected_revision="" value_file=""
   workflow_id=""
   workflow=""
   subject_kind=""
@@ -335,20 +335,18 @@ update_state() {
       --workflow) require_value "$1" "${2:-}"; workflow="$2"; shift 2 ;;
       --subject-kind) require_value "$1" "${2:-}"; subject_kind="$2"; shift 2 ;;
       --subject) require_value "$1" "${2:-}"; subject="$2"; shift 2 ;;
-      --repository-common-dir) require_value "$1" "${2:-}"; expected_common_dir="$2"; shift 2 ;;
       --namespace) require_value "$1" "${2:-}"; namespace="$2"; shift 2 ;;
       --expected-revision) require_value "$1" "${2:-}"; expected_revision="$2"; shift 2 ;;
       --value-file) require_value "$1" "${2:-}"; value_file="$2"; shift 2 ;;
       *) die "unknown option: $1" ;;
     esac
   done
-  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_common_dir" && -n "$namespace" && -n "$expected_revision" && -n "$value_file" ]] || die "update options are required"
+  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$namespace" && -n "$expected_revision" && -n "$value_file" ]] || die "update options are required"
   validate_identity
   validate_namespace "$namespace"
   [[ "$expected_revision" =~ ^[0-9]+$ ]] || die "expected revision must be a non-negative integer"
   validate_private_json_object "$value_file"
   resolve_repository
-  [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
   read_state
@@ -368,8 +366,11 @@ update_state() {
        reduce ($patch | keys_unsorted[]) as $key ($target;
          if $patch[$key] == null then
            del(.[$key])
-         elif (($patch[$key] | type) == "object" and ((.[$key] // null) | type) == "object") then
-           .[$key] = merge_patch(.[$key]; $patch[$key])
+         elif ($patch[$key] | type) == "object" then
+           .[$key] = merge_patch(
+             (if ((.[$key] // null) | type) == "object" then .[$key] else {} end);
+             $patch[$key]
+           )
          else
            .[$key] = $patch[$key]
          end);
@@ -384,7 +385,7 @@ update_state() {
 
 # 完全なidentityとrevisionを照合し、監査用の完了結果を残す。
 complete_state() {
-  local expected_revision="" result_file="" expected_common_dir=""
+  local expected_revision="" result_file=""
   workflow_id=""
   workflow=""
   subject_kind=""
@@ -395,18 +396,16 @@ complete_state() {
       --workflow) require_value "$1" "${2:-}"; workflow="$2"; shift 2 ;;
       --subject-kind) require_value "$1" "${2:-}"; subject_kind="$2"; shift 2 ;;
       --subject) require_value "$1" "${2:-}"; subject="$2"; shift 2 ;;
-      --repository-common-dir) require_value "$1" "${2:-}"; expected_common_dir="$2"; shift 2 ;;
       --expected-revision) require_value "$1" "${2:-}"; expected_revision="$2"; shift 2 ;;
       --result-file) require_value "$1" "${2:-}"; result_file="$2"; shift 2 ;;
       *) die "unknown option: $1" ;;
     esac
   done
-  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_common_dir" && -n "$expected_revision" && -n "$result_file" ]] || die "complete options are required"
+  [[ -n "$workflow_id" && -n "$workflow" && -n "$subject_kind" && -n "$subject" && -n "$expected_revision" && -n "$result_file" ]] || die "complete options are required"
   validate_identity
   [[ "$expected_revision" =~ ^[0-9]+$ ]] || die "expected revision must be a non-negative integer"
   validate_private_json_object "$result_file"
   resolve_repository
-  [[ "$common_dir" == "$expected_common_dir" ]] || die "repository common directory does not match verified state"
   state_path_for
   acquire_lock
   read_state

@@ -109,10 +109,12 @@ merge済みの正本識別情報を保存し、同じoperation IDを完了済み
 ### 6. 最終本文から実装Issueを再計画する
 
 Issueが正本の場合は、まだIssue本文を更新していないため、承認済み設計本文と承認済み実装Issue計画を使う。
-WikiまたはGit管理Documentが正本の場合は、確定した正本本文のdigestが`design_body_digest`と一致すれば、承認済みの実装Issue計画を再利用する。
-外部Documentのdigestが異なる場合だけ、確定した正本本文と設計作業計画を`task-plan-implementation`スキルへ渡し、実装Issue計画を作り直す。
+WikiまたはGit管理Documentが正本の場合は、確定した正本本文、正本情報、設計作業計画、承認済み実装Issue計画を`task-plan-implementation`スキルへ渡す。
+確定した正本本文のdigestが`design_body_digest`と一致する場合は、Issue境界と設計内容を維持し、計画中の正本参照だけを最終参照へ置き換える。
+Digestが異なる場合は、確定した正本本文から実装Issue計画を作り直す。
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
-再計画した場合は`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
+`task-plan-implementation`スキルが返した計画を、後続で使う最終実装Issue計画とする。
+外部Documentを正本にする最終実装Issue計画へ、計画中の参照が残る場合は停止する。
 `standalone-issue`の構成不一致が返った場合はIssue群の公開を止める。
 Workflow ID、state identity、承認済み設計、必要な実装単位、既存Issue、公開済み正本の最終本文と識別情報を`reprepare-required`結果として返す。
 

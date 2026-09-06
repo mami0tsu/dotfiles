@@ -18,6 +18,7 @@ allowed-tools: >-
 
 - 要求の読み取り結果
 - 既存Issue（存在する場合）
+- `reprepare-required`結果（Issue構成の再選択時）
 
 ## 出力
 
@@ -29,6 +30,7 @@ allowed-tools: >-
 - Issue構成と正本種別を独立して扱う。
 - 1つの工程に属するIssueを複数providerまたは複数containerへ分けない。
 - 複数リポジトリでも設計Issueと正本を増やさない。
+- Issue構成の再選択では、provider、container、基準リポジトリ、対象リポジトリ、公開済み正本、完了済み外部操作を変更しない。
 - 外部Objectを変更しない。
 
 ## 手順
@@ -37,6 +39,7 @@ allowed-tools: >-
 
 1つのIssueが設計と実装を担う`standalone-issue`と、親Issueの子に設計Issueと実装Issueを置く`tracking-issue`を提示する。
 人間が選んだ構成を記録する。
+`reprepare-required`結果がある場合は`tracking-issue`を選択対象とし、既存の`standalone-issue`をtracking Issueと設計Issueのどちらへ再利用するか選んでもらう。
 
 ### 2. Issueの保存先を選ぶ
 
@@ -57,6 +60,7 @@ Linearを選ぶ場合はteamとworkflow stateのmetadataを取得し、container
 
 Issue、Wiki、Git管理Documentの候補と、作成、更新、手動保存、merge待ちの有無を提示する。
 人間が選んだ保存先と対象Objectを記録する。
+`reprepare-required`結果がある場合は、公開済み正本とその最終本文を変更せず計画へ引き継ぐ。
 
 ### 5. リポジトリを選ぶ
 
@@ -70,4 +74,4 @@ Git管理Documentでは正本を置くリポジトリとpathも確定する。
 
 ### 7. 計画を返す
 
-Issue構成、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
+Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画として返す。
