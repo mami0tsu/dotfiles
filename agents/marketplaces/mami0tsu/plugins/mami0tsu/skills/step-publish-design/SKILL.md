@@ -97,7 +97,7 @@ Agentまたは人間から修正指摘が返った場合はDocumentを公開せ�
 通常検証、差分レビュー、人間レビュー、commit済みの変更を検証済みの変更として`task-organize-commits`スキルへ渡す。
 Branchのpush、Draft PR作成、人間によるmergeの確認を、異なるoperation IDを持つ1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
 Draft PR作成計画のbase branchが、設計作業計画で確認済みのmerge先branchと一致することを確認する。
-承認後は各外部操作のoperation IDと承認済みdigestをpending operationとして保存する。
+承認後はpush、Draft PR作成、merge確認の順に進め、各操作の直前に対応する1件のoperation IDと承認済みdigestだけをpending operationとして保存する。
 Draft PR成果物計画、成果物の承認結果、対応するpending operationを渡し、`task-push-branch`スキル、`task-open-draft-pr`スキル、`task-verify-pull-request`スキルを実行する。
 各操作の正本識別情報と結果は、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
 
@@ -112,7 +112,7 @@ merge済みの正本識別情報を保存し、同じoperation IDを完了済み
 ### 6. 最終本文から実装Issueを再計画する
 
 Issueが正本の場合は、まだIssue本文を更新していないため、承認済み設計本文と承認済み実装Issue計画を使う。
-WikiまたはGit管理Documentが正本の場合は、確定した正本本文、正本情報、設計作業計画、承認済み実装Issue計画を`task-plan-implementation`スキルへ渡す。
+WikiまたはGit管理Documentが正本の場合は、確定した正本本文、正本情報、設計作業計画、承認済み実装Issue計画、承認時の`design_body_digest`を`task-plan-implementation`スキルへ渡す。
 確定した正本本文のdigestが`design_body_digest`と一致する場合は、Issue境界と設計内容を維持し、計画中の正本参照だけを最終参照へ置き換える。
 Digestが異なる場合は、確定した正本本文から実装Issue計画を作り直す。
 Wikiを手動保存した場合やGit管理Documentをmergeした場合は、人間が確定した本文を最終承認として扱い、設計本文に対するagent reviewや人間の再承認は求めない。
