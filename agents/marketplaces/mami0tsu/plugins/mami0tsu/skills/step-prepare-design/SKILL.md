@@ -78,13 +78,17 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 作成対象のIssue群、計画上のIssue keyで表した親子関係、operation envelopeを`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
 作成対象がある場合は、各Issueのoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ記録する。
 Issue作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-create-issue`スキルへ渡し、1件ずつ作成する。
-作成応答を受けたら、計画上のIssue key、provider、container、正本ID、URLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
-すべてのIDが確定したら、検証済みの既存Issue読取結果、現在の作成結果、stateで検証した完了済みoperationの結果から、計画上のIssue key、provider、container、正本IDの対応表を組み立てる。
+作成応答を受けたら、計画上のIssue key、provider、container、GitHubのhostとcanonical repository、正本ID、URLを保存する。
+Operation IDと承認済みoperation envelopeのdigestの組を完了済み操作へ移し、pending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
+すべてのIDが確定したら、検証済みの既存Issue読取結果、現在の作成結果、stateで検証した完了済みoperationの結果から対応表を組み立てる。
+対応表には計画上のIssue key、provider、container、GitHubのhostとcanonical repository、正本IDを含める。
 親子関係のoperation IDと承認済みoperation envelopeのdigestをpending operationとして保存し、Issue関係計画と対応表を`task-link-issues`スキルへ渡して設計Issueを`tracking-issue`の子にする。
 このとき、対応表の根拠となる検証済みIssue結果、成果物の承認結果、対応する承認済みoperation envelope、pending operationも渡す。
-関係の更新結果も、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
-再開時は、正本を再取得して結果が一致した完了済みoperationを飛ばす。
-Pending operationは対象の現在値を取得し、反映済みなら同じoperation IDを完了済み操作へ移してpending operationを消し、未反映を確認できた場合だけ同じoperationを再開する。
+関係の更新結果も、operation IDと承認済みoperation envelopeのdigestの組を完了済み操作へ移す更新として、次の外部操作より先にstateへ保存する。
+同じ更新で対応するpending operationを消す。
+再開時は、正本を再取得し、operation IDとoperation envelope digestの組が一致する完了済みoperationを飛ばす。
+Pending operationは対象の現在値を取得し、反映済みなら同じoperation IDとdigestの組を完了済み操作へ移してpending operationを消す。
+未反映を確認できた場合だけ同じoperationを再開する。
 結果が曖昧なpending operationでは停止し、後続operationを実行しない。
 
 ### 5. リポジトリを調べる

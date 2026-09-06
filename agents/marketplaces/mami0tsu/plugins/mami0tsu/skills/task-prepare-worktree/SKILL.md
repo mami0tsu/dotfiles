@@ -17,6 +17,8 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 - 要求の読み取り結果
 - リポジトリ調査結果
 - base branch
+- 作業対象のIssue IDまたはDocument path
+- stateで検証した保存済みの作業場所情報（再開時）
 
 ## 出力
 
@@ -39,6 +41,7 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 
 ### 2. 既存の作業場所を確認する
 
+保存済みの作業場所情報がある場合は、repository identity、作業対象、base branch、起点commit、branch、worktree pathを現在値と照合する。
 同じIssueまたはDocumentのために作られたbranchとworktreeがあるか確認する。
 その作業のbase branchが入力のbase branchと同一であり、記録された起点commitがそのbase branchから作業を始めた時点のtipであると確認できる場合に限り、既存のbranchとworktreeを再利用する。
 Base branchと起点commitのどちらかを確認できない場合は、既存の作業場所を再利用せず停止する。
@@ -63,4 +66,4 @@ Issue IDがない場合は、作業用branch名を`<prefix>/<desc-en>`とする�
 
 ### 5. 作業場所情報を返す
 
-リポジトリのルート、remote、GitHub repository名、GitHub repositoryのURL、Issueの種類とID、確認済みbase branch、起点commit、作業用branch、worktreeのパスを作業場所情報として返す。
+リポジトリのルート、repository identity、remote、GitHub repository名、GitHub repositoryのURL、Issueの種類とIDまたはDocument path、確認済みbase branch、起点commit、作業用branch、worktreeのパスを作業場所情報として返す。

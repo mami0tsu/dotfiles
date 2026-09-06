@@ -29,6 +29,7 @@ allowed-tools: >-
 - 記録済みの外部Objectを正本IDとURLで照合する。
 - 承認対象digestと予定操作が変わっている場合は承認を無効とする。
 - pending operationが曖昧な場合は外部操作を再実行しない。
+- Pending operationと完了済みoperationは、operation IDとoperation envelope digestの組で照合する。
 - 検証中にstateを変更しない。
 
 ## 手順
@@ -44,6 +45,7 @@ workflow名、subject kind、subject、基準リポジトリを期待値と比�
 ### 3. 進行状況を照合する
 
 外部Object、revision、digest、承認、完了済み操作、pending operationを現在の作業情報と比較する。
+操作はoperation IDとoperation envelope digestの組が一致する場合だけ同一と判断する。
 
 ### 4. 結果を返す
 

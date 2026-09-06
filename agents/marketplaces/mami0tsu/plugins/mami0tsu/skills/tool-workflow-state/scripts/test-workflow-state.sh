@@ -27,6 +27,8 @@ lock_ready="$test_root/lock-ready"
 holder_pid=""
 subject_digest="sha256:0000000000000000000000000000000000000000000000000000000000000000"
 other_subject_digest="sha256:1111111111111111111111111111111111111111111111111111111111111111"
+operation_digest="sha256:7777777777777777777777777777777777777777777777777777777777777777"
+other_operation_digest="sha256:8888888888888888888888888888888888888888888888888888888888888888"
 
 # 試験中に作成した限定的な一時directoryだけを削除する。
 cleanup() {
@@ -60,7 +62,7 @@ repository_common_dir="$(git -C "$repository" rev-parse --path-format=absolute -
 
 # 差分更新、完了、機密field拒否に使うprivate JSONを用意する。
 jq -n '{canonical_url:"https://example.invalid/design", body_digest:"sha256:2222222222222222222222222222222222222222222222222222222222222222", context_digest:"sha256:3333333333333333333333333333333333333333333333333333333333333333", message_id:"message-1", approval:{digest:"sha256:4444444444444444444444444444444444444444444444444444444444444444", revision:1}}' >"$value_file"
-jq -n '{pending_operation:{id:"op-1"}, approval:{status:"approved"}}' >"$delta_file"
+jq -n --arg digest "$operation_digest" '{pending_operation:{id:"op-1",envelope_digest:$digest},approval:{status:"approved"}}' >"$delta_file"
 jq -n '{issue_url:"https://example.invalid/issues/1"}' >"$result_file"
 jq -n '{payload:{digest:"sha256:5555555555555555555555555555555555555555555555555555555555555555"}}' >"$secret_file"
 jq -n '{result:"confidential full issue body"}' >"$invalid_result_file"
@@ -129,13 +131,16 @@ test "$(jq -r '.revision' "$test_root/update-result.json")" = '1'
     --value-file "$delta_file" >/dev/null
   test "$(jq -r '.namespaces.publication.canonical_url' .git/agent-workflows/test-design.json)" = 'https://example.invalid/design'
   test "$(jq -r '.namespaces.publication.pending_operation.id' .git/agent-workflows/test-design.json)" = 'op-1'
+  test "$(jq -r '.namespaces.publication.pending_operation.envelope_digest' .git/agent-workflows/test-design.json)" = "$operation_digest"
   test "$(jq -r '.namespaces.publication.approval.digest' .git/agent-workflows/test-design.json)" = 'sha256:4444444444444444444444444444444444444444444444444444444444444444'
 test "$(jq -r '.namespaces.publication.approval.status' .git/agent-workflows/test-design.json)" = 'approved'
 )
 
-# 完了済み操作への移動で、対応するpending operationを原子的に削除できることを確かめる。
+# 完了済み操作への移動で、IDとdigestの組を保持しながらpending operationを原子的に削除できることを確かめる。
 complete_operation_file="$test_root/complete-operation.json"
-jq -n '{pending_operation:null,completed_operations:[{id:"op-1",completed:true}]}' >"$complete_operation_file"
+jq -n --arg digest "$operation_digest" --arg other_digest "$other_operation_digest" \
+  '{pending_operation:null,completed_operations:[{id:"op-1",envelope_digest:$digest,completed:true},{id:"op-1",envelope_digest:$other_digest,completed:false}]}' \
+  >"$complete_operation_file"
 chmod 600 "$complete_operation_file"
 (
   cd "$repository"
@@ -148,7 +153,8 @@ chmod 600 "$complete_operation_file"
     --expected-revision 2 \
     --value-file "$complete_operation_file" >/dev/null
   test "$(jq -r '.namespaces.publication | has("pending_operation")' .git/agent-workflows/test-design.json)" = 'false'
-  test "$(jq -r '.namespaces.publication.completed_operations[] | select(.id == "op-1") | .completed' .git/agent-workflows/test-design.json)" = 'true'
+  test "$(jq -r --arg digest "$operation_digest" '.namespaces.publication.completed_operations[] | select(.id == "op-1" and .envelope_digest == $digest) | .completed' .git/agent-workflows/test-design.json)" = 'true'
+  test "$(jq -r --arg digest "$other_operation_digest" '.namespaces.publication.completed_operations[] | select(.id == "op-1" and .envelope_digest == $digest) | .completed' .git/agent-workflows/test-design.json)" = 'false'
 )
 
 # 未作成の親fieldとscalarからobjectへの置換でも、nested nullを削除することを確かめる。

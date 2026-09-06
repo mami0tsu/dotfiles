@@ -26,6 +26,12 @@ validate_repository() {
   [[ "$repository" =~ ^[^/[:space:]]+/[^/[:space:]]+/[^/[:space:]]+$ ]] || die "repository must be host/owner/repo"
 }
 
+# Issue更新先をrepositoryへ束縛できる正の整数番号だけに限定する。
+validate_issue_number() {
+  local issue="$1"
+  [[ "$issue" =~ ^[1-9][0-9]*$ ]] || die "issue must be a positive integer"
+}
+
 # 成否やsignalにかかわらず、専用processが作った一時成果物を削除する。
 cleanup() {
   if [[ -n "$body_file" && ( -f "$body_file" || -L "$body_file" ) ]]; then
@@ -79,6 +85,7 @@ update_issue() {
   done
   [[ -n "$repository" && -n "$issue" && -n "$title" ]] || die "issue-update options are required"
   validate_repository "$repository"
+  validate_issue_number "$issue"
   prepare_body
   gh issue edit "$issue" --repo "$repository" --title "$title" --body-file "$body_file"
 }

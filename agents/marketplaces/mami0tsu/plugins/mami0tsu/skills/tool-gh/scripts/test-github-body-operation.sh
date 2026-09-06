@@ -69,4 +69,13 @@ if printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script
   exit 1
 fi
 
+# 別hostのURLやoptionに見える値をIssue番号として外部操作へ渡さないことを確かめる。
+for invalid_issue in 'https://evil.example.invalid/bad/repo/issues/7' '--repo' '0' '1,2'; do
+  if printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script" issue-update \
+    --repo github.example.invalid/owner/repo --issue "$invalid_issue" --title title; then
+    printf '%s\n' 'expected issue selector validation failure' >&2
+    exit 1
+  fi
+done
+
 printf '%s\n' 'GitHub body operation tests passed'

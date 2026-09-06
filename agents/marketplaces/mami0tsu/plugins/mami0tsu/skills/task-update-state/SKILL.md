@@ -30,7 +30,10 @@ allowed-tools: >-
 - 1回の実行で1つのnamespaceだけを更新する。
 - 更新値では、対応する保存済みfieldの削除を指定できる。
 - token、password、secret、Issue本文、Document本文を保存しない。
-- 外部Objectは正本ID、URL、revision、digestだけを保存する。
+- 外部Objectはprovider、host、container、canonical repository、計画上のkey、正本ID、URL、revision、digest、path、branch、commit、操作状態だけを保存する。
+- 作業場所情報はrepository identity、作業対象、base branch、起点commit、作業用branch、worktree pathだけを保存する。
+- Pending operationと完了済みoperationには、operation IDとoperation envelope digestの組を保存する。
+- Operation IDだけでpending operationを完了済みoperationへ移さない。
 - revision競合時に上書きしない。
 
 ## 手順

@@ -28,6 +28,7 @@ allowed-tools: >-
 - 初期化、検証、直前の更新のいずれかが返した最新のstate checkpointを使う。
 - すべての必須成果物について正本ID、URL、revisionまたはdigestを確認する。
 - 未解決の差分、未承認の変更、pending operationがある場合は完了しない。
+- 完了済みoperationにoperation IDとoperation envelope digestの組がない場合は完了しない。
 - 完了済みstateを再度変更しない。
 - state fileを削除しない。
 

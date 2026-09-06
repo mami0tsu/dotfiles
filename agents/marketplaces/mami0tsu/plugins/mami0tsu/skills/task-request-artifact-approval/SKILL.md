@@ -27,6 +27,8 @@ allowed-tools: >-
 - 各予定操作へ成果物内で一意なoperation IDを付ける。
 - 新規Issueを含むrelationでは、作成前後で変わらない計画上のIssue keyを対象に使う。
 - 同じ正規化済み操作では、再開後も同じoperation IDを使う。
+- Operationはoperation IDとoperation envelope digestの組で識別する。
+- 同じoperation IDでもdigestが異なる操作を、同じpending operationまたは完了済みoperationとして扱わない。
 - 対象、内容、予定操作のいずれかが変わった承認を再利用しない。
 - 承認を受ける前に外部Objectを変更しない。
 - 承認済みの範囲を広げない。

@@ -19,6 +19,7 @@ allowed-tools: >-
 - 直前の実装Issue計画（正本確定後の再計画時）
 - 確定した正本情報（公開後に存在する場合）
 - 承認時の`design_body_digest`（正本確定後の再計画時）
+- 作成済みIssueの検証済み対応表（再計画時）
 
 ## 出力
 
@@ -34,6 +35,8 @@ allowed-tools: >-
 - 確定した正本情報がある場合は、そのURL、revision、本文digestを省略しない。
 - 確定した正本情報がある場合は、計画中の参照を実装Issue計画へ残さない。
 - 正本確定後は、最終本文digestを承認時の`design_body_digest`と比較する。
+- 作成済みIssueの対応表がある場合は、同じ計画上のIssue keyを正本IDへ結び付け、新規作成計画へ戻さない。
+- 作成済みIssueのkeyを別の実装単位へ結び直す必要がある場合は、実装Issue計画を返さず構成不一致を返す。
 - `standalone-issue`で複数の実装Issue、対象リポジトリ、またはPRが必要な場合は、実装Issue計画を返さず構成不一致を返す。
 
 ## 手順
@@ -50,6 +53,8 @@ Wiki正本の作成または更新前は、計画中の参照としてprovider�
 Git管理Documentの確定した正本情報がある場合は、最終参照としてhost、repository、path、revision、本文digest、merge先branchを含める。
 Wikiの確定した正本情報がある場合も、最終参照としてprovider、container、正本ID、URL、revision、本文digestを含める。
 確定した正本本文のdigestが承認時の`design_body_digest`と一致する場合はIssue境界と本文の設計内容を維持し、計画中の参照だけを最終参照へ置き換える。
+作成済みIssueの検証済み対応表がある場合は、同じ計画上のIssue keyを持つIssueを更新対象にする。
+対応表にない新しい計画上のIssue keyだけを作成対象にする。
 設計作業計画に役割ごとのIssue typeと必須fieldがある場合は、各実装Issueへ対応する値を設定する。
 複数リポジトリを扱う`tracking-issue`には、全体の実装概要、リポジトリ境界、実行順序を置く。
 リポジトリ固有の条件は対応する実装Issueだけに置く。
