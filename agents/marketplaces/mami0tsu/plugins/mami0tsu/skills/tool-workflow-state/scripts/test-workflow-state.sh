@@ -5,6 +5,7 @@ set -euo pipefail
 # 一時repositoryと検証用JSONの配置先を準備する。
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 state_script="$script_dir/workflow-state.sh"
+digest_script="$script_dir/../../tool-artifact-digest/scripts/artifact-digest.sh"
 test_root="$(mktemp -d "${TMPDIR:-/tmp}/workflow-state-test.XXXXXX")"
 repository="$test_root/repository"
 linked_worktree="$test_root/linked"
@@ -25,6 +26,8 @@ invalid_url_file="$test_root/invalid-url.json"
 credential_alias_file="$test_root/credential-alias.json"
 api_alias_file="$test_root/api-alias.json"
 draft_resume_file="$test_root/draft-resume.json"
+merge_envelope_file="$test_root/merge-envelope.json"
+stored_merge_envelope_file="$test_root/stored-merge-envelope.json"
 issue_mapping_file="$test_root/issue-mapping.json"
 worktree_location_file="$test_root/worktree-location.json"
 lock_ready="$test_root/lock-ready"
@@ -33,6 +36,7 @@ subject_digest="sha256:000000000000000000000000000000000000000000000000000000000
 other_subject_digest="sha256:1111111111111111111111111111111111111111111111111111111111111111"
 operation_digest="sha256:7777777777777777777777777777777777777777777777777777777777777777"
 other_operation_digest="sha256:8888888888888888888888888888888888888888888888888888888888888888"
+approval_digest="sha256:9999999999999999999999999999999999999999999999999999999999999999"
 
 # 試験中に作成した限定的な一時directoryだけを削除する。
 cleanup() {
@@ -75,7 +79,10 @@ jq -n '{status:1}' >"$invalid_type_file"
 jq -n '{canonical_url:"https://example.invalid/design?access_token=confidential"}' >"$invalid_url_file"
 jq -n '{credential_id:"top-secret-token", access_token_id:"ghp_secret", password_digest:"sha256:6666666666666666666666666666666666666666666666666666666666666666"}' >"$credential_alias_file"
 jq -n '{api_key:"ghp_secret", "api-key":"ghp_secret", auth_header:"Bearer-secret"}' >"$api_alias_file"
-jq -n --arg digest "$operation_digest" '{pull_request:{host:"github.example.invalid",repository:"owner/repo",url:"https://github.example.invalid/owner/repo/pull/7",document_path:"docs/design.md",base_branch:"main",head_branch:"design/topic",head_commit:"abcdef1"},approval:{status:"approved",digest:$digest,scope:"merge"},pending_operation:{id:"merge-1",envelope_digest:$digest,expected_state:"open",expected_completion_state:"merged"}}' >"$draft_resume_file"
+jq -n '{operation_id:"merge-1",target:{host:"github.example.invalid",repository:"owner/repo",head_branch:"design/topic",document_path:"docs/design.md"},expected_current:{pull_request_state:"open",merge_state:"unmerged",base_branch:"main",head_commit:"abcdef1"},applied_value:{operation:"verify-merge",host:"github.example.invalid",repository:"owner/repo",document_path:"docs/design.md",base_branch:"main",head_branch:"design/topic",head_commit:"abcdef1"},expected_completion:{pull_request_state:"merged",revision_kind:"merge-commit"}}' >"$merge_envelope_file"
+chmod 600 "$merge_envelope_file"
+merge_operation_digest="$(bash "$digest_script" json --file "$merge_envelope_file")"
+jq -n --slurpfile envelope "$merge_envelope_file" --arg digest "$merge_operation_digest" --arg approval_digest "$approval_digest" '{operation_envelope:$envelope[0],pull_request:{host:"github.example.invalid",repository:"owner/repo",url:"https://github.example.invalid/owner/repo/pull/7",document_path:"docs/design.md",base_branch:"main",head_branch:"design/topic",head_commit:"abcdef1"},approval:{status:"approved",digest:$approval_digest,scope:"merge"},pending_operation:{id:"merge-1",envelope_digest:$digest,expected_state:"open",expected_completion_state:"merged"}}' >"$draft_resume_file"
 jq -n '{issues:[{key:"implementation-1",provider:"github",container:"owner/repo",host:"github.example.invalid",repository:"owner/repo",id:"7",url:"https://github.example.invalid/owner/repo/issues/7"}]}' >"$issue_mapping_file"
 jq -n '{repository:"owner/repo",target_path:"docs/design.md",base_branch:"main",origin_commit:"abcdef1",branch:"design/topic",worktree_path:"/tmp/worktree"}' >"$worktree_location_file"
 chmod 600 "$value_file" "$delta_file" "$result_file" "$secret_file" "$invalid_result_file" "$invalid_digest_file" "$invalid_type_file" "$invalid_url_file" "$credential_alias_file" "$api_alias_file" "$draft_resume_file" "$issue_mapping_file" "$worktree_location_file"
@@ -105,7 +112,7 @@ generated_workflow_id="$(jq -r '.workflow_id' "$generated_result")"
 [[ "$generated_workflow_id" =~ ^workflow-design-[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
 test -f "$generated_repository/.git/agent-workflows/$generated_workflow_id.json"
 
-# Draft PR再開、GitHub Issue対応、worktree再利用に必要なmetadataを実際のstate更新で受理することを確かめる。
+# Draft PR再開のoperation envelopeをdigestが変わらない形で往復でき、GitHub Issue対応とworktree再利用のmetadataも受理できることを確かめる。
 git init -q "$payload_repository"
 git -C "$payload_repository" -c user.name=Codex -c user.email=codex@example.invalid commit --allow-empty -m init -q
 (
@@ -127,6 +134,9 @@ git -C "$payload_repository" -c user.name=Codex -c user.email=codex@example.inva
   test "$(jq -r '.namespaces.publication.pull_request.host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
   test "$(jq -r '.namespaces.issues.issues[0].host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
   test "$(jq -r '.namespaces.workspace.worktree_path' .git/agent-workflows/payload-design.json)" = '/tmp/worktree'
+  jq -c '.namespaces.publication.operation_envelope' .git/agent-workflows/payload-design.json >"$stored_merge_envelope_file"
+  chmod 600 "$stored_merge_envelope_file"
+  test "$(bash "$digest_script" json --file "$stored_merge_envelope_file")" = "$merge_operation_digest"
 )
 
 # 別worktreeから同じstateを検証し、最初のnamespace値を保存する。

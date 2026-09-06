@@ -110,9 +110,10 @@ Agentまたは人間から修正指摘が返った場合はDocumentを公開せ�
 Push計画、Draft PR作成計画、merge確認計画をそれぞれの反映値とし、異なるoperation IDを持つoperation envelopeを作る。
 Branchのpush、Draft PR作成、人間によるmergeの確認を、operation envelopeを含む1つの成果物計画として`task-request-artifact-approval`スキルへ渡す。
 Draft PR作成計画のbase branchが、設計作業計画で確認済みのmerge先branchと一致することを確認する。
-承認後は、merge確認のoperation IDとenvelope digest、承認対象digest、承認状態、承認範囲を再開artifactとしてstateへ保存する。
-同じartifactへmerge確認計画のhost、canonical repository、Document path、base branch、head branch、head commit、期待する現在状態、期待する完了状態を保存する。
-本文とtitleは保存しない。
+承認後は、merge確認のoperation envelope全体を、入れ子構造を変えず再開artifactとしてstateへ保存する。
+同じartifactへ承認対象digest、承認状態、承認範囲、operation envelope digestを保存する。
+Merge確認計画はoperation envelopeの反映値へ入れ、host、canonical repository、Document path、base branch、head branch、head commitを含める。
+Merge確認のoperation envelopeには本文とtitleを含めない。
 承認後はpush、Draft PR作成、merge確認の順に進め、各操作の直前に対応する1件のoperation IDと承認済みoperation envelopeのdigestだけをpending operationとして保存する。
 Push計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-push-branch`スキルへ渡す。
 Draft PR作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-open-draft-pr`スキルへ渡す。
@@ -125,7 +126,9 @@ Draft PR作成後の更新には、Draft PRのURL、Document変更結果、host�
 
 Draft PRを作成した場合は、merge確認用のoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ保存し、その後で人間によるReady化とmergeを待って停止する。
 再開時はstateから検証したDraft PRのURLとDocument変更結果を取得する。
-保存済みの再開artifactからmerge確認計画、承認済みoperation envelope、merge確認の承認結果を再構成し、operation IDとenvelope digestを保存値と照合する。
+保存済みの再開artifactからmerge確認のoperation envelopeを入れ子構造のまま取得し、共通のJSON digest操作でdigestを再計算する。
+再計算したdigestを保存値と照合し、反映値からmerge確認計画を取得する。
+保存済みの承認対象digest、承認状態、承認範囲、operation ID、operation envelope digestからmerge確認の承認結果を再構成する。
 これらとDraft PRのURL、Document変更結果、pending operationを`task-verify-merged-document`スキルへ渡し、merge済みDocumentを取得する。
 pull request上で編集された本文は人間の最終承認として扱い、merge済みrevisionとdigestを正本にする。
 merge済みの正本識別情報を保存し、同じoperation IDとdigestの組を完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。

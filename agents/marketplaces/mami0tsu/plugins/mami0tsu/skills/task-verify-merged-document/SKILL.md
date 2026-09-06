@@ -31,6 +31,8 @@ pull request上の人間による編集はmerge済み本文へ反映し、その
 - merge先のpathがDocument変更結果と異なる場合は停止する。
 - Pull request経路では、承認済みoperation envelope、merge確認の承認結果、pending operationのoperation IDとdigestが一致しない場合は停止する。
 - Merge確認計画が承認済みoperation envelopeの反映値と同一でない場合は停止する。
+- Merge確認のoperation envelopeは、operation ID、対象、期待する現在値、反映値、期待する完了状態の5項目を持つJSON Objectとして扱う。
+- 対象、期待する現在値、反映値、期待する完了状態の入れ子構造を変えずにdigestを照合する。
 - Pull requestのrepository、base branch、head branch、Document pathが承認済みのmerge確認計画と異なる場合は停止する。
 - merge済み本文を承認前の本文へ戻さない。
 

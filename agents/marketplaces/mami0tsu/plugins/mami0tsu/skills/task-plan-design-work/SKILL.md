@@ -19,7 +19,7 @@ allowed-tools: >-
 
 - 要求の読み取り結果
 - 既存Issue（存在する場合）
-- `reprepare-required`結果（Issue構成の再選択時）
+- `reprepare-required`結果（Issue構成または実装境界の再選択時）
 
 ## 出力
 
