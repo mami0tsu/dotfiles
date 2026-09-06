@@ -54,4 +54,5 @@ provider上の状態を意味上の状態へ対応付け、期待する状態と
 
 ### 5. 結果を返す
 
-取得した正本URL、revision、本文digest、一致した項目、差分、意味上の状態をIssue検証結果として返す。
+入力から検証した計画上のIssue key、provider、container、正本ID、取得した正本URL、revision、本文digest、一致した項目、差分、意味上の状態をIssue検証結果として返す。
+GitHubではhostとcanonical repositoryを含め、正本IDには正の整数Issue番号を10進数の文字列に変換した値を返す。
