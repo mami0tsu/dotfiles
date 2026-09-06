@@ -141,6 +141,7 @@ git -C "$payload_repository" -c user.name=Codex -c user.email=codex@example.inva
     --namespace workspace --expected-revision 3 --value-file "$worktree_location_file" >/dev/null
   test "$(jq -r '.namespaces.publication.pull_request.host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
   test "$(jq -r '.namespaces.issues.issues[0].host' .git/agent-workflows/payload-design.json)" = 'github.example.invalid'
+  jq -e '.namespaces.issues.issues[0].id | type == "string" and test("^[1-9][0-9]*$")' .git/agent-workflows/payload-design.json >/dev/null
   test "$(jq -r '.namespaces.workspace.worktree_path' .git/agent-workflows/payload-design.json)" = '/tmp/worktree'
   jq -c '.namespaces.publication.operation_envelope' .git/agent-workflows/payload-design.json >"$stored_merge_envelope_file"
   chmod 600 "$stored_merge_envelope_file"

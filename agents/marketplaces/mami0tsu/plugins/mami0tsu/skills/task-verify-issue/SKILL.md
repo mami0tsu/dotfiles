@@ -27,7 +27,7 @@ Issueの現在値を読み取り、期待値との差分を返す。
 ## 制約
 
 - 入力にあるprovider、container、GitHubの場合はhostとcanonical repository、および正本IDを使う。
-- GitHubの正本IDには正の整数Issue番号を使い、GraphQL node IDを使わない。
+- GitHubの正本IDには、正の整数Issue番号を10進数の文字列に変換した値を使い、GraphQL node IDを使わない。
 - provider固有の状態名と意味上の状態を区別する。
 - 本文は正規化したdigestでも比較し、空白差だけで一致と判断しない。
 - 親子関係と依存関係を別々に検証する。

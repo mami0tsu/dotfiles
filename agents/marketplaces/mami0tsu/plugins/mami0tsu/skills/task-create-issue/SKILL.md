@@ -30,7 +30,7 @@ allowed-tools: >-
 
 - provider、container、title、description、状態を推測で補わない。
 - GitHubではhostとcanonical repositoryを省略せず、承認済みの保存先と一致させる。
-- GitHubの正本IDには正の整数Issue番号を使い、GraphQL node IDを使わない。
+- GitHubの正本IDには、正の整数Issue番号を10進数の文字列に変換した値を使い、GraphQL node IDを使わない。
 - JiraではIssue typeとproject metadataが要求するすべての必須fieldを推測で補わない。
 - 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
 - Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は作成しない。
@@ -56,10 +56,11 @@ providerに対応する利用可能な操作で、承認済みfieldだけを指�
 
 作成応答からIDとURLを取得し、そのIDでIssueを再取得する。
 GitHubでは正本URLから正の整数Issue番号を取得し、その番号で再取得する。
+再取得したIssue番号を10進数の文字列へ変換し、正本IDとする。
 正本IDが曖昧な場合は、同じcontainerからtitleと作成時刻が近い候補を列挙する。
 
 ### 4. 結果を返す
 
 計画上のIssue key、provider、container、正本ID、URL、作成後のfield、操作結果をIssue作成結果として返す。
-GitHubではhostとcanonical repositoryを含め、正本IDには正の整数Issue番号を返す。
+GitHubではhostとcanonical repositoryを含め、正本IDには正の整数Issue番号を10進数の文字列に変換した値を返す。
 結果が曖昧な場合は、候補と、再開時に人間が正しいIssueを対応付ける必要があることを返す。

@@ -25,7 +25,7 @@ gh issue view <number-or-url> --repo <host>/<owner>/<repo> \
 ## 結果の確認
 
 返された`number`と`url`が入力対象を示すことを確認する。
-後続操作で使う正本IDには、正の整数である`number`を採用する。
+後続操作で使う正本IDには、正の整数である`number`を10進数の文字列に変換した値を採用する。
 
 ## 停止条件
 

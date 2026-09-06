@@ -32,7 +32,7 @@ Issueの現在値を確認し、承認済みfieldの差分だけを一件へ反�
 - Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は更新しない。
 - 更新計画が承認済みoperation envelopeの反映値と一致しない場合は更新しない。
 - GitHubではhostとcanonical repositoryを省略せず、承認済みの保存先と一致させる。
-- GitHubではIssue更新計画の正本IDに正の整数Issue番号を使い、GraphQL node IDを使わない。
+- GitHubではIssue更新計画の正本IDに、正の整数Issue番号を10進数の文字列に変換した値を使い、GraphQL node IDを使わない。
 - 承認済みoperation envelopeの期待する現在値と実際の値が異なる場合は更新しない。
 - 計画にないfieldとrelationを変更しない。
 - 更新失敗時に開始前の値へ自動で戻さない。
@@ -60,4 +60,4 @@ Issue更新計画がoperation envelopeの反映値と同一であることを確
 ### 5. 結果を返す
 
 計画上のIssue key、provider、container、GitHubの場合はhostとcanonical repository、正本ID、URL、変更したfield、更新後の値、操作結果をIssue更新結果として返す。
-GitHubの正本IDには正の整数Issue番号を返す。
+GitHubの正本IDには、正の整数Issue番号を10進数の文字列に変換した値を返す。
