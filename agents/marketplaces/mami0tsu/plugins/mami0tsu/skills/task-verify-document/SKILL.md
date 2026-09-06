@@ -49,4 +49,4 @@ Documentの現在値を読み取り、期待値との差分を返す。
 
 ### 4. 結果を返す
 
-provider、container、正本ID、URL、revision、本文digest、一致した項目、差分をDocument検証結果として返す。
+provider、container、正本ID、URL、revision、最終本文、本文digest、一致した項目、差分をDocument検証結果として返す。

@@ -40,13 +40,15 @@ Git管理の変更に使うbranchとworktreeを安全に準備する。
 ### 2. 既存の作業場所を確認する
 
 同じIssueまたはDocumentのために作られたbranchとworktreeがあるか確認する。
-その作業のbase branchと起点commitを確認できる場合に限り、既存のbranchとworktreeを再利用する。
+その作業のbase branchが入力のbase branchと同一であり、記録された起点commitがそのbase branchから作業を始めた時点のtipであると確認できる場合に限り、既存のbranchとworktreeを再利用する。
+Base branchと起点commitのどちらかを確認できない場合は、既存の作業場所を再利用せず停止する。
 再利用する場合は作業場所情報を作り、後続の手順を実行せず返す。
 
 ### 3. Branchを決める
 
-入力で指定されたremoteにあるbase branchを確認する。
-確認したbase branchが入力およびリポジトリ調査結果と一致することを確かめ、そのremote上の最新commitを起点commitとする。
+入力で指定されたremoteがリポジトリ調査結果のrepository identityと一致することを確認する。
+そのremoteに入力のbase branchが存在することを別に確認し、remote上の最新commitを起点commitとする。
+リポジトリ調査結果の既定branchと入力のbase branchが異なることだけを理由に停止しない。
 リポジトリの規則と変更の目的からprefixを決める。
 変更内容を短い英語のkebab-caseで表したdesc-enを作る。
 prefixは英小文字で書く。

@@ -6,6 +6,7 @@ description: >-
 allowed-tools: >-
   Skill
   Skill(mami0tsu:tool-artifact-digest)
+  Skill(mami0tsu:tool-gh)
 ---
 
 # task-verify-pull-request
@@ -19,6 +20,7 @@ Draft PRを取得し、レビュー対象が整理済みの変更と一致する
 - 整理済みの変更
 - Draft PR作成計画
 - 成果物の承認結果
+- Draft PR作成の承認済みoperation envelope
 
 ## 出力
 
@@ -44,8 +46,9 @@ base branchとhead branchが整理済みの変更と一致することを確認�
 
 ### 3. 承認内容を確認する
 
-Draft PR作成計画を共通のJSON digest操作へ渡し、成果物の承認結果にある対応するdigestと照合する。
-Repository、base branch、head branch、title、正規化した本文が承認済み計画と一致することを確認する。
+Draft PR作成の承認済みoperation envelope全体を共通のJSON digest操作へ渡し、成果物の承認結果にある対応するdigestと照合する。
+Draft PR作成計画がoperation envelopeの反映値と同一であることを確認する。
+Host、canonical repository、base branch、head branch、title、正規化した本文が承認済み計画と一致することを確認する。
 
 ### 4. Draft状態を確認する
 
@@ -57,5 +60,5 @@ pull requestがopenかつDraftであることを確認する。
 
 ### 6. 確認結果を返す
 
-すべて一致した場合は、Draft状態、repository、base branch、head branch、title、本文digest、対象commit、URLをpull request確認結果として返す。
+すべて一致した場合は、Draft状態、host、canonical repository、base branch、head branch、title、本文digest、対象commit、URLをpull request確認結果として返す。
 不一致がある場合は、その項目と実際の値を返す。

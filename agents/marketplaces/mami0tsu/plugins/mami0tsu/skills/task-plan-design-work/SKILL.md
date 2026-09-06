@@ -47,6 +47,7 @@ allowed-tools: >-
 
 利用できるproviderとcontainerを提示し、1つずつ選んでもらう。
 既存Issueを使う場合は、そのproviderとcontainerを候補の基準にする。
+GitHubではhostとcanonical repository名を分離せず、両方をIssue保存先として計画へ記録する。
 Jiraを選ぶ場合はproject metadataを取得し、tracking、設計、実装、standaloneの各役割で利用できるIssue typeと必須fieldを提示する。
 利用者が選んだIssue typeと、必須fieldへ設定する値を役割ごとに記録する。
 必要なmetadataを取得できない場合や必須fieldの値が未確定の場合は、Issue作成を含む計画を確定しない。
@@ -77,5 +78,5 @@ Git管理Documentでは正本を置くhost、canonical repository、pathも確�
 
 ### 7. 計画を返す
 
-Issue構成、既存Issueの役割、provider、container、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画としてまとめる。
+Issue構成、既存Issueの役割、provider、container、GitHubのhostとcanonical repository、役割ごとのIssue typeと必須field、意味上の状態対応、正本、Git管理Documentのmerge先branch、基準リポジトリ、対象リポジトリ、承認単位、人間待ちを設計作業計画としてまとめる。
 計画を共通のJSON digest操作へ渡し、計画digestと設計作業計画を返す。

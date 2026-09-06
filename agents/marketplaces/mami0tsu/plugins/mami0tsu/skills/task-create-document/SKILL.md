@@ -18,6 +18,7 @@ allowed-tools: >-
 
 - Document作成計画
 - 成果物の承認結果
+- 承認済みoperation envelope
 - operation IDとdigestを含むpending operation
 
 ## 出力
@@ -27,8 +28,9 @@ allowed-tools: >-
 ## 制約
 
 - provider、container、親Document、title、本文を推測で補わない。
-- 作成計画のoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
-- Pending operationのoperation IDとdigestが作成計画および成果物の承認結果と一致しない場合は作成しない。
+- 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
+- Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は作成しない。
+- 作成計画が承認済みoperation envelopeの反映値と一致しない場合は作成しない。
 - 承認済み本文を要約、翻訳、整形し直さない。
 - 1回の実行で1件だけ作る。
 - 正本IDを確認できない場合は同じ作成操作を再実行しない。
@@ -37,7 +39,8 @@ allowed-tools: >-
 
 ### 1. 作成内容を照合する
 
-作成計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
+承認済みoperation envelope全体を共通のJSON digest操作へ渡し、そのoperation IDとdigestが成果物の承認結果およびpending operationと一致することを確認する。
+Document作成計画がoperation envelopeの反映値と同一であることを確認する。
 保存先、title、本文、公開範囲を作成計画と照合する。
 
 ### 2. Documentを作る

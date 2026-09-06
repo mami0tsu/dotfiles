@@ -36,12 +36,13 @@ allowed-tools: >-
 ### 1. 変更を正規化する
 
 対象provider、container、ObjectまたはIssue一覧、作成または更新する内容、relation、状態変更を安定した順序へ正規化する。
-各予定操作を、operation ID、対象、期待する現在値、反映値、期待する完了状態を持つ単位へ分ける。
+各予定操作を、operation ID、対象、期待する現在値、反映値、期待する完了状態を持つoperation envelopeへ分ける。
+反映値には、変更Taskへそのまま渡す作成、更新、relation、push、Draft PR作成、公開依頼、merge確認のいずれかの計画を入れる。
 新規Issueのrelationは計画上のIssue keyで正規化し、未確定の正本IDを承認対象へ混ぜない。
 
 ### 2. Digestを求める
 
-各予定操作を共通のJSON digest操作へ渡し、operation IDごとのdigestを求める。
+各operation envelope全体を共通のJSON digest操作へ渡し、operation IDごとのdigestを求める。
 Operation IDとdigestの組を安定した順序に並べ、成果物全体の承認対象digestを求める。
 
 ### 3. 変更を提示する
@@ -54,4 +55,4 @@ Operation IDとdigestの組を安定した順序に並べ、成果物全体の�
 
 ### 5. 結果を返す
 
-承認の有無、承認対象digest、operation IDごとのdigest、承認範囲、修正指摘を成果物の承認結果として返す。
+承認の有無、承認対象digest、承認済みoperation envelope、operation IDごとのdigest、承認範囲、修正指摘を成果物の承認結果として返す。

@@ -19,6 +19,7 @@ Issueの現在値を確認し、承認済みfieldの差分だけを一件へ反�
 
 - Issue更新計画
 - 成果物の承認結果
+- 承認済みoperation envelope
 - operation IDとdigestを含むpending operation
 
 ## 出力
@@ -27,9 +28,11 @@ Issueの現在値を確認し、承認済みfieldの差分だけを一件へ反�
 
 ## 制約
 
-- 更新計画のoperation IDとdigestが成果物の承認結果に含まれない場合は更新しない。
-- Pending operationのoperation IDとdigestが更新計画および成果物の承認結果と一致しない場合は更新しない。
-- pending operationの期待する現在値と実際の値が異なる場合は更新しない。
+- 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は更新しない。
+- Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は更新しない。
+- 更新計画が承認済みoperation envelopeの反映値と一致しない場合は更新しない。
+- GitHubではhostとcanonical repositoryを省略せず、承認済みの保存先と一致させる。
+- 承認済みoperation envelopeの期待する現在値と実際の値が異なる場合は更新しない。
 - 計画にないfieldとrelationを変更しない。
 - 更新失敗時に開始前の値へ自動で戻さない。
 
@@ -41,8 +44,9 @@ Issueを一件取得し、ID、URL、更新対象field、更新時刻を確認�
 
 ### 2. 更新条件を確認する
 
-更新計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
-現在値のdigestとpending operationの期待値を比較し、承認済みの差分を求める。
+承認済みoperation envelope全体を共通のJSON digest操作へ渡し、そのoperation IDとdigestが成果物の承認結果およびpending operationと一致することを確認する。
+Issue更新計画がoperation envelopeの反映値と同一であることを確認する。
+現在値のdigestと承認済みoperation envelopeの期待する現在値を比較し、承認済みの差分を求める。
 
 ### 3. Issueを更新する
 
@@ -54,4 +58,4 @@ Issueを一件取得し、ID、URL、更新対象field、更新時刻を確認�
 
 ### 5. 結果を返す
 
-IssueのID、URL、変更したfield、更新後の値、操作結果をIssue更新結果として返す。
+計画上のIssue key、provider、container、GitHubの場合はhostとcanonical repository、IssueのID、URL、変更したfield、更新後の値、操作結果をIssue更新結果として返す。

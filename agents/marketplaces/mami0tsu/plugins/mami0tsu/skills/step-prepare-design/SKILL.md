@@ -74,11 +74,14 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 `tracking-issue`では、親となるtracking Issueと子となる設計Issueの役割を既存Issueへ割り当て、足りないIssueを作成対象にする。
 既存のtracking Issueを親にする場合も、設計Issueを省略しない。
 `standalone-issue`から再選択する場合は、設計作業計画で選ばれた既存Issueの役割に従い、もう一方だけを作成対象にする。
-作成対象のIssue群と、計画上のIssue keyで表した親子関係を`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
-作成対象がある場合は、各Issueのoperation IDと承認済みdigestをpending operationとしてstateへ記録してから`task-create-issue`スキルで1件ずつ作成する。
-作成応答を受けたら、正本IDとURLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
-すべてのIDが確定したら、計画上のIssue keyからprovider、container、正本IDへの対応表を作成結果から組み立てる。
-親子関係のoperation IDと承認済みdigestをpending operationとして保存し、Issue関係計画と対応表を`task-link-issues`スキルへ渡して設計Issueを`tracking-issue`の子にする。
+各Issue作成計画とIssue関係計画を反映値にしたoperation envelopeを作る。
+作成対象のIssue群、計画上のIssue keyで表した親子関係、operation envelopeを`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
+作成対象がある場合は、各Issueのoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ記録する。
+Issue作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-create-issue`スキルへ渡し、1件ずつ作成する。
+作成応答を受けたら、計画上のIssue key、provider、container、正本ID、URLを保存し、同じoperation IDを完了済み操作へ移してpending operationを消す更新を、次の外部操作より先に`task-update-state`スキルで実行する。
+すべてのIDが確定したら、検証済みの既存Issue読取結果、現在の作成結果、stateで検証した完了済みoperationの結果から、計画上のIssue key、provider、container、正本IDの対応表を組み立てる。
+親子関係のoperation IDと承認済みoperation envelopeのdigestをpending operationとして保存し、Issue関係計画と対応表を`task-link-issues`スキルへ渡して設計Issueを`tracking-issue`の子にする。
+このとき、対応表の根拠となる検証済みIssue結果、成果物の承認結果、対応する承認済みoperation envelope、pending operationも渡す。
 関係の更新結果も、同じoperation IDを完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。
 再開時は、正本を再取得して結果が一致した完了済みoperationを飛ばす。
 Pending operationは対象の現在値を取得し、反映済みなら同じoperation IDを完了済み操作へ移してpending operationを消し、未反映を確認できた場合だけ同じoperationを再開する。

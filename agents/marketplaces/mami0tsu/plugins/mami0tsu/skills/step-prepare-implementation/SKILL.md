@@ -38,7 +38,7 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 Issueが入力の場合は、先に`task-read-issue`スキルで正本を取得する。
 Issueにある設計正本の種類がIssueの場合は、参照先を`task-read-issue`スキルで取得し、provider、container、正本ID、URLを照合する。
 Issue正本は自己参照を避けるためrevisionと本文digestを参照元へ要求せず、取得時点の本文を要求の正本として扱う。
-設計正本の種類がWikiかGit管理Documentの場合は、対応する`task-verify-document`スキルか`task-verify-merged-document`スキルで本文、URL、revision、digestを取得し、Issueに記録された値と照合する。
+設計正本の種類がWikiかGit管理Documentの場合は、対応する`task-verify-document`スキルか`task-verify-merged-document`スキルで最終本文、URL、revision、digestを取得し、Issueに記録された値と照合する。
 Git管理Documentでは、Issueに記録されたmerge先branchも照合し、revisionがそのbranchから到達可能であることを確認する。
 正本取得手段が利用できないか、revisionかdigestが一致しない場合は停止する。
 `task-read-requirements`スキルを使い、Issue読取結果と取得した設計正本を整理する。

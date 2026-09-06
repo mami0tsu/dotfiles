@@ -19,6 +19,7 @@ allowed-tools: >-
 
 - Issue作成計画
 - 成果物の承認結果
+- 承認済みoperation envelope
 - operation IDとdigestを含むpending operation
 
 ## 出力
@@ -28,9 +29,11 @@ allowed-tools: >-
 ## 制約
 
 - provider、container、title、description、状態を推測で補わない。
+- GitHubではhostとcanonical repositoryを省略せず、承認済みの保存先と一致させる。
 - JiraではIssue typeとproject metadataが要求するすべての必須fieldを推測で補わない。
-- 作成計画のoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
-- Pending operationのoperation IDとdigestが作成計画および成果物の承認結果と一致しない場合は作成しない。
+- 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は作成しない。
+- Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は作成しない。
+- 作成計画が承認済みoperation envelopeの反映値と一致しない場合は作成しない。
 - pending operationが記録されていない場合は作成しない。
 - 1回の実行で1件だけ作る。
 - 作成結果から正本IDを確認できない場合は再実行しない。
@@ -39,7 +42,8 @@ allowed-tools: >-
 
 ### 1. 作成内容を確認する
 
-作成計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
+承認済みoperation envelope全体を共通のJSON digest操作へ渡し、そのoperation IDとdigestが成果物の承認結果およびpending operationと一致することを確認する。
+Issue作成計画がoperation envelopeの反映値と同一であることを確認する。
 Provider、container、title、description、assignee、provider上の状態、意味上の状態を承認結果と照合する。
 Jiraでは承認済みのIssue typeと必須fieldをproject metadataと照合し、不足または不一致があれば作成しない。
 
@@ -54,5 +58,5 @@ providerに対応する利用可能な操作で、承認済みfieldだけを指�
 
 ### 4. 結果を返す
 
-provider、container、ID、URL、作成後のfield、操作結果をIssue作成結果として返す。
+計画上のIssue key、provider、container、GitHubの場合はhostとcanonical repository、ID、URL、作成後のfield、操作結果をIssue作成結果として返す。
 結果が曖昧な場合は、候補と、再開時に人間が正しいIssueを対応付ける必要があることを返す。

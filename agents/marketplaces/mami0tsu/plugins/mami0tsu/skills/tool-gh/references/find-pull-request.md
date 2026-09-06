@@ -4,7 +4,7 @@
 
 ## 入力
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - head branch
 
 ## 出力
@@ -21,7 +21,7 @@
 ### 1. Pull requestを検索する
 
 ```sh
-gh pr list --repo <owner>/<repo> --head <head-branch> --state all \
+gh pr list --repo <host>/<owner>/<repo> --head <head-branch> --state all \
   --json number,state,isDraft,baseRefName,headRefName,title,url
 ```
 

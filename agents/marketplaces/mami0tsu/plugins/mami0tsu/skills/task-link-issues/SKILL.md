@@ -19,7 +19,9 @@ Issue間の関係を一種類ずつ反映する。
 
 - Issue関係計画
 - 計画上のIssue keyからprovider、container、正本IDへの対応表
+- 対応表の根拠となる検証済みIssue結果
 - 成果物の承認結果
+- 承認済みoperation envelope
 - operation IDとdigestを含むpending operation
 
 ## 出力
@@ -29,13 +31,14 @@ Issue間の関係を一種類ずつ反映する。
 ## 制約
 
 - 1回の実行で親子関係または依存関係のどちらか1種類だけを扱う。
-- 対象Issueは同じproviderとcontainerに属するものだけを扱う。
+- 対象Issueは同じproviderとcontainerに属するものだけを扱い、GitHubではhostとcanonical repositoryも一致させる。
 - 管理対象として承認されていないIssueと関係を変更しない。
 - Issue関係計画の対象は計画上のIssue keyで固定し、作成後の正本IDを計画へ書き戻さない。
 - 対応表にないIssue keyや、計画と異なるproviderまたはcontainerの対応を使わない。
 - 既存関係を推測で削除しない。
-- 関係計画のoperation IDとdigestが成果物の承認結果に含まれない場合は変更しない。
-- Pending operationのoperation IDとdigestが関係計画および成果物の承認結果と一致しない場合は変更しない。
+- 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は変更しない。
+- Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は変更しない。
+- 関係計画が承認済みoperation envelopeの反映値と一致しない場合は変更しない。
 - 一部の更新に失敗しても、成功済みの関係を戻さない。
 - 更新結果が曖昧な場合は同じ操作を再実行しない。
 
@@ -47,8 +50,9 @@ Issue間の関係を一種類ずつ反映する。
 
 ### 2. 差分を決める
 
-Issue関係計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
-対応表の各Issueを正本IDで取得し、計画上のIssue key、provider、containerが作成結果および現在の正本と一致することを確認する。
+承認済みoperation envelope全体を共通のJSON digest操作へ渡し、そのoperation IDとdigestが成果物の承認結果およびpending operationと一致することを確認する。
+Issue関係計画がoperation envelopeの反映値と同一であることを確認する。
+対応表の各Issueを正本IDで取得し、計画上のIssue key、provider、containerが検証済みIssue結果と現在の正本に一致することを確認する。
 現在の関係と承認済み計画を比較する。
 追加対象と、明示的に承認された削除対象だけを抽出する。
 

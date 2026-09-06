@@ -12,13 +12,13 @@ Issueの内容、親子関係、依存関係、状態をJSONで取得する。
 
 ## 前提条件
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - Issue番号またはURL
 
 ## 推奨コマンド
 
 ```sh
-gh issue view <number-or-url> --repo <owner>/<repo> \
+gh issue view <number-or-url> --repo <host>/<owner>/<repo> \
   --json number,id,state,stateReason,title,body,assignees,labels,parent,subIssues,blockedBy,blocking,url,updatedAt
 ```
 

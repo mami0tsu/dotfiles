@@ -12,7 +12,7 @@
 
 ## 前提条件
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - title
 - 標準入力から渡す承認済み本文
 
@@ -20,7 +20,7 @@
 
 ```sh
 bash "<plugin-root>/skills/tool-gh/scripts/github-body-operation.sh" issue-create \
-  --repo <owner>/<repo> --title '<title>'
+  --repo <host>/<owner>/<repo> --title '<title>'
 ```
 
 承認済み本文を標準入力へ送り終えたらEOFを送る。

@@ -12,13 +12,13 @@ Issue作成結果が曖昧な場合に、同じ作成操作を繰り返さず候
 
 ## 前提条件
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - 承認済みtitle
 
 ## 推奨コマンド
 
 ```sh
-gh issue list --repo <owner>/<repo> --state all --limit 20 \
+gh issue list --repo <host>/<owner>/<repo> --state all --limit 20 \
   --search 'in:title "<title>" sort:created-desc' \
   --json number,state,title,url,createdAt,updatedAt
 ```

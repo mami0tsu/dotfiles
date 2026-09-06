@@ -12,7 +12,7 @@ Issueのtitle、本文、担当者、labelを承認済みの値へ更新する�
 
 ## 前提条件
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - Issue番号またはURL
 - 更新前に`read-issue`ユースケースで取得した現在値
 - 標準入力から渡す承認済み本文
@@ -23,7 +23,7 @@ Issueのtitle、本文、担当者、labelを承認済みの値へ更新する�
 
 ```sh
 bash "<plugin-root>/skills/tool-gh/scripts/github-body-operation.sh" issue-update \
-  --repo <owner>/<repo> --issue <number-or-url> --title '<title>'
+  --repo <host>/<owner>/<repo> --issue <number-or-url> --title '<title>'
 ```
 
 承認済み本文を標準入力へ送り終えたらEOFを送る。
@@ -32,10 +32,10 @@ Scriptはprivate body fileを作成し、`gh issue edit`の終了時に削除す
 承認済みの担当者またはlabelの差分がある場合は、それぞれの追加または削除optionだけを指定する。
 
 ```sh
-gh issue edit <number-or-url> --repo <owner>/<repo> --add-assignee <login>
-gh issue edit <number-or-url> --repo <owner>/<repo> --remove-assignee <login>
-gh issue edit <number-or-url> --repo <owner>/<repo> --add-label '<label>'
-gh issue edit <number-or-url> --repo <owner>/<repo> --remove-label '<label>'
+gh issue edit <number-or-url> --repo <host>/<owner>/<repo> --add-assignee <login>
+gh issue edit <number-or-url> --repo <host>/<owner>/<repo> --remove-assignee <login>
+gh issue edit <number-or-url> --repo <host>/<owner>/<repo> --add-label '<label>'
+gh issue edit <number-or-url> --repo <host>/<owner>/<repo> --remove-label '<label>'
 ```
 
 ## 結果の確認

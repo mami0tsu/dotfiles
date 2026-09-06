@@ -20,6 +20,12 @@ require_value() {
   [[ -n "$value" ]] || die "missing value for $option"
 }
 
+# GitHub Enterpriseを含む操作先をhost、owner、repositoryの三要素で固定する。
+validate_repository() {
+  local repository="$1"
+  [[ "$repository" =~ ^[^/[:space:]]+/[^/[:space:]]+/[^/[:space:]]+$ ]] || die "repository must be host/owner/repo"
+}
+
 # 成否やsignalにかかわらず、専用processが作った一時成果物を削除する。
 cleanup() {
   if [[ -n "$body_file" && ( -f "$body_file" || -L "$body_file" ) ]]; then
@@ -55,6 +61,7 @@ create_issue() {
     esac
   done
   [[ -n "$repository" && -n "$title" ]] || die "issue-create options are required"
+  validate_repository "$repository"
   prepare_body
   gh issue create --repo "$repository" --title "$title" --body-file "$body_file"
 }
@@ -71,6 +78,7 @@ update_issue() {
     esac
   done
   [[ -n "$repository" && -n "$issue" && -n "$title" ]] || die "issue-update options are required"
+  validate_repository "$repository"
   prepare_body
   gh issue edit "$issue" --repo "$repository" --title "$title" --body-file "$body_file"
 }
@@ -88,6 +96,7 @@ create_draft_pr() {
     esac
   done
   [[ -n "$repository" && -n "$base_branch" && -n "$head_branch" && -n "$title" ]] || die "pr-create options are required"
+  validate_repository "$repository"
   prepare_body
   gh pr create --repo "$repository" --draft --base "$base_branch" --head "$head_branch" --title "$title" --body-file "$body_file"
 }

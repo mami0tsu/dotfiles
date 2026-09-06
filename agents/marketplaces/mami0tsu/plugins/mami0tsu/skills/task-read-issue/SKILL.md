@@ -16,7 +16,7 @@ allowed-tools: >-
 
 ## 入力
 
-- Issueのproviderと参照
+- Issueのprovider、container、GitHubの場合はhostとcanonical repository、および参照
 
 ## 出力
 
@@ -33,7 +33,7 @@ allowed-tools: >-
 
 ### 1. Issueを特定する
 
-provider、container、IDまたは正本URLからIssueを一件に確定する。
+Provider、container、GitHubの場合はhostとcanonical repository、IDまたは正本URLからIssueを一件に確定する。
 
 ### 2. Issueを取得する
 
@@ -45,4 +45,4 @@ provider上の状態名と状態種別を保持し、設計中、進行中、設
 
 ### 4. 結果を返す
 
-provider、container、ID、URL、title、description、assignee、状態、relation、設計正本の種類、ID、URL、revision、digest、対象リポジトリ、更新時刻をIssue取得結果として返す。
+Provider、container、GitHubの場合はhostとcanonical repository、ID、URL、title、description、assignee、状態、relation、設計正本の種類、ID、URL、revision、digest、対象リポジトリ、更新時刻をIssue取得結果として返す。

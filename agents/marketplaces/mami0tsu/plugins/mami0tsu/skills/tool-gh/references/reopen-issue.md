@@ -12,14 +12,14 @@
 
 ## 前提条件
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - closeされたIssue
 - reopenの承認
 
 ## 推奨コマンド
 
 ```sh
-gh issue reopen <number-or-url> --repo <owner>/<repo>
+gh issue reopen <number-or-url> --repo <host>/<owner>/<repo>
 ```
 
 ## 結果の確認

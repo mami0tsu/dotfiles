@@ -39,13 +39,14 @@ for operation in issue-create issue-update pr-create; do
   export GH_TEST_BODY="$test_root/$operation.body"
   export GH_TEST_MODE="$test_root/$operation.mode"
   case "$operation" in
-    issue-create) arguments=(--repo owner/repo --title title) ;;
-    issue-update) arguments=(--repo owner/repo --issue 12 --title title) ;;
-    pr-create) arguments=(--repo owner/repo --base main --head topic --title title) ;;
+    issue-create) arguments=(--repo github.example.invalid/owner/repo --title title) ;;
+    issue-update) arguments=(--repo github.example.invalid/owner/repo --issue 12 --title title) ;;
+    pr-create) arguments=(--repo github.example.invalid/owner/repo --base main --head topic --title title) ;;
   esac
   printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script" "$operation" "${arguments[@]}"
   test "$(command cat "$GH_TEST_BODY")" = 'private body'
   test "$(command cat "$GH_TEST_MODE")" = '600'
+  grep -Fqx -- 'github.example.invalid/owner/repo' "$GH_TEST_ARGS"
   test ! -e "$(command cat "$GH_TEST_BODY_PATH")"
 done
 
@@ -55,10 +56,17 @@ export GH_TEST_BODY_PATH="$test_root/failure.path"
 export GH_TEST_BODY="$test_root/failure.body"
 export GH_TEST_MODE="$test_root/failure.mode"
 export GH_TEST_STATUS=7
-if printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script" issue-create --repo owner/repo --title title; then
+if printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script" issue-create --repo github.example.invalid/owner/repo --title title; then
   printf '%s\n' 'expected GitHub operation failure' >&2
   exit 1
 fi
 test ! -e "$(command cat "$GH_TEST_BODY_PATH")"
+
+# Hostを省いたrepositoryを、外部操作を始める前に拒否することを確かめる。
+unset GH_TEST_STATUS
+if printf '%s\n' 'private body' | PATH="$fake_bin:$PATH" bash "$operation_script" issue-create --repo owner/repo --title title; then
+  printf '%s\n' 'expected repository validation failure' >&2
+  exit 1
+fi
 
 printf '%s\n' 'GitHub body operation tests passed'

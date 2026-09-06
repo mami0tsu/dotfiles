@@ -17,6 +17,7 @@ allowed-tools: >-
 
 - Document作成または更新計画
 - 成果物の承認結果
+- 承認済みoperation envelope
 - operation IDとdigestを含むpending operation
 
 ## 出力
@@ -26,8 +27,9 @@ allowed-tools: >-
 ## 制約
 
 - provider、保存先、title、本文、公開範囲を省略しない。
-- 公開計画のoperation IDとdigestが成果物の承認結果に含まれない場合は依頼しない。
-- Pending operationのoperation IDとdigestが公開計画および成果物の承認結果と一致しない場合は依頼しない。
+- 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は依頼しない。
+- Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は依頼しない。
+- 公開計画が承認済みoperation envelopeの反映値と一致しない場合は依頼しない。
 - 承認済み本文を作業中に変更しない。
 - 正本IDとURLを受け取る前に公開完了と判断しない。
 - 人間が保存した本文へagentによる再承認を要求しない。
@@ -36,7 +38,8 @@ allowed-tools: >-
 
 ### 1. 保存内容を提示する
 
-公開計画を共通のJSON digest操作へ渡し、計画、成果物の承認結果、pending operationのoperation IDとdigestが三者で一致することを確認する。
+承認済みoperation envelope全体を共通のJSON digest操作へ渡し、そのoperation IDとdigestが成果物の承認結果およびpending operationと一致することを確認する。
+Document作成または更新計画がoperation envelopeの反映値と同一であることを確認する。
 provider、保存先、title、承認済み本文、公開範囲、本文digestを人間へ提示する。
 
 ### 2. 保存を依頼する

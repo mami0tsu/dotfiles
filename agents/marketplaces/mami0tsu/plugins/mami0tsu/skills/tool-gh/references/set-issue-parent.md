@@ -12,13 +12,13 @@
 
 ## 前提条件
 
-- 同じrepositoryにある子Issueと親Issue
+- `host/owner/repo`で特定した同じrepositoryにある子Issueと親Issue
 - 現在の親子関係
 
 ## 推奨コマンド
 
 ```sh
-gh issue edit <child-number-or-url> --repo <owner>/<repo> \
+gh issue edit <child-number-or-url> --repo <host>/<owner>/<repo> \
   --parent <parent-number-or-url>
 ```
 
