@@ -58,8 +58,9 @@ Linearを選ぶ場合はteamとworkflow stateのmetadataを取得し、container
 ### 3. 状態を対応付ける
 
 意味上の状態をprovider上の状態へ対応付ける。
-`standalone-issue`と実装Issueは未着手で実装可能、`tracking-issue`は進行中とする。
-設計Issueは準備時の設計中と公開時の設計完了を分け、人間が選んだprovider上の状態との対応関係を記録する。
+`standalone-issue`は準備時の設計中と公開時の未着手で実装可能を分ける。
+`tracking-issue`は進行中、設計Issueは準備時の設計中と公開時の設計完了、実装Issueは未着手で実装可能とする。
+各意味上の状態と、人間が選んだprovider上の状態との対応関係を記録する。
 
 ### 4. 設計正本を選ぶ
 

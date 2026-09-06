@@ -75,6 +75,8 @@ Issue本文、Document本文、relation、revisionの変更からsubjectを再�
 既存のtracking Issueを親にする場合も、設計Issueを省略しない。
 `standalone-issue`から再選択する場合は、設計作業計画で選ばれた既存Issueの役割に従い、もう一方だけを作成対象にする。
 各Issue作成計画とIssue関係計画を反映値にしたoperation envelopeを作る。
+準備時に作成する`standalone-issue`と設計Issueには、設計作業計画で対応付けた設計中の状態を設定する。
+準備時に作成するtracking Issueには、設計作業計画で対応付けた進行中の状態を設定する。
 作成対象のIssue群、計画上のIssue keyで表した親子関係、operation envelopeを`task-request-artifact-approval`スキルへ渡し、1回だけ承認してもらう。
 作成対象がある場合は、各Issueのoperation IDと承認済みoperation envelopeのdigestをpending operationとしてstateへ記録する。
 Issue作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-create-issue`スキルへ渡し、1件ずつ作成する。

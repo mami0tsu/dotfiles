@@ -322,7 +322,7 @@ verify_state() {
   jq '.' "$state_file"
 }
 
-# 1つのnamespaceへJSON Merge Patchを適用し、revisionを1つ進める。
+# 1つのnamespaceへJSON Merge Patchを適用し、operation envelopeは不透明な値として置換してrevisionを1つ進める。
 update_state() {
   local namespace="" expected_revision="" value_file=""
   workflow_id=""
@@ -362,10 +362,14 @@ update_state() {
     --arg namespace "$namespace" \
     --arg now "$now" \
     --argjson value "$validated_json" \
-    'def merge_patch($target; $patch):
+    'def opaque_key:
+       . == "operation_envelope" or . == "operation_envelopes";
+     def merge_patch($target; $patch):
        reduce ($patch | keys_unsorted[]) as $key ($target;
          if $patch[$key] == null then
            del(.[$key])
+         elif $key | opaque_key then
+           .[$key] = $patch[$key]
          elif ($patch[$key] | type) == "object" then
            .[$key] = merge_patch(
              (if ((.[$key] // null) | type) == "object" then .[$key] else {} end);

@@ -19,12 +19,13 @@ Issueの内容、親子関係、依存関係、状態をJSONで取得する。
 
 ```sh
 gh issue view <number-or-url> --repo <host>/<owner>/<repo> \
-  --json number,id,state,stateReason,title,body,assignees,labels,parent,subIssues,blockedBy,blocking,url,updatedAt
+  --json number,state,stateReason,title,body,assignees,labels,parent,subIssues,blockedBy,blocking,url,updatedAt
 ```
 
 ## 結果の確認
 
 返された`number`と`url`が入力対象を示すことを確認する。
+後続操作で使う正本IDには、正の整数である`number`を採用する。
 
 ## 停止条件
 

@@ -170,9 +170,11 @@ Issue更新計画、成果物の承認結果、対応する承認済みoperation
 各新規Issueもoperation IDと承認済みoperation envelopeのdigestをpending operationとして保存する。
 Issue作成計画、成果物の承認結果、対応する承認済みoperation envelope、pending operationを`task-create-issue`スキルへ渡し、一件ずつ作成する。
 更新結果、または作成した計画上のIssue key、provider、container、GitHubのhostとcanonical repository、正本ID、URLをstateへ保存する。
+GitHubの正本IDには正の整数Issue番号を保存し、GraphQL node IDを保存しない。
 Operation IDと承認済みoperation envelopeのdigestの組を完了済み操作へ移し、pending operationを消す更新として、次の外部操作より先に`task-update-state`スキルで実行する。
 すべてのIDを確定した後、検証済みの既存Issue読取結果、現在の更新結果と作成結果、stateで検証した完了済みoperationの結果から対応表を組み立てる。
 対応表には計画上のIssue key、provider、container、GitHubのhostとcanonical repository、正本IDを含める。
+GitHubの正本IDには正の整数Issue番号を使う。
 Relationごとのoperation IDと承認済みoperation envelopeのdigestをpending operationとして保存し、Issue関係計画と対応表を`task-link-issues`スキルへ渡して親子関係と依存関係を反映する。
 このとき、対応表の根拠となる検証済みIssue結果、成果物の承認結果、対応する承認済みoperation envelope、pending operationも渡す。
 各relationの更新結果も、同じoperation IDとdigestの組を完了済み操作へ移してpending operationを消す更新として、次の外部操作より先にstateへ保存する。

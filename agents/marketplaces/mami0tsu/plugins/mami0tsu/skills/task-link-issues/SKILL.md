@@ -35,6 +35,7 @@ Issue間の関係を一種類ずつ反映する。
 - 管理対象として承認されていないIssueと関係を変更しない。
 - Issue関係計画の対象は計画上のIssue keyで固定し、作成後の正本IDを計画へ書き戻さない。
 - 対応表にないIssue keyや、計画と異なるprovider、container、GitHubのhost、canonical repositoryの対応を使わない。
+- GitHubの正本IDには正の整数Issue番号を使い、GraphQL node IDを使わない。
 - 既存関係を推測で削除しない。
 - 承認済みoperation envelopeのoperation IDとdigestが成果物の承認結果に含まれない場合は変更しない。
 - Pending operationのoperation IDとdigestが承認済みoperation envelopeおよび成果物の承認結果と一致しない場合は変更しない。
