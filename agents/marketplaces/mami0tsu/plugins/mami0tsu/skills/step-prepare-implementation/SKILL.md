@@ -6,7 +6,10 @@ description: >-
 allowed-tools: >-
   Skill(mami0tsu:task-inspect-repository)
   Skill(mami0tsu:task-prepare-worktree)
-  Skill(mami0tsu:task-read-specification)
+  Skill(mami0tsu:task-read-issue)
+  Skill(mami0tsu:task-read-requirements)
+  Skill(mami0tsu:task-verify-document)
+  Skill(mami0tsu:task-verify-merged-document)
 ---
 
 # step-prepare-implementation
@@ -32,7 +35,14 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 
 ### 1. 入力を読む
 
-`task-read-specification`スキルを使い、IssueまたはDocumentの内容を取得する。
+Issueが入力の場合は、先に`task-read-issue`スキルで正本を取得する。
+Issueにある設計正本の種類がIssueの場合は、参照先を`task-read-issue`スキルで取得し、provider、container、正本ID、URLを照合する。
+Issue正本は自己参照を避けるためrevisionと本文digestを参照元へ要求せず、取得時点の本文を要求の正本として扱う。
+設計正本の種類がWikiかGit管理Documentの場合は、対応する`task-verify-document`スキルか`task-verify-merged-document`スキルで最終本文、URL、revision、digestを取得し、Issueに記録された値と照合する。
+Git管理Documentでは、Issueに記録されたmerge先branchも照合し、revisionがそのbranchから到達可能であることを確認する。
+正本取得手段が利用できないか、revisionかdigestが一致しない場合は停止する。
+`task-read-requirements`スキルを使い、Issue読取結果と取得した設計正本を整理する。
+Documentが直接入力された場合は、その内容を整理する。
 
 ### 2. 実装条件を確認する
 
@@ -40,13 +50,16 @@ IssueまたはDocumentを読み、実装を始められる状態を作る。
 
 ### 3. リポジトリを調べる
 
-現在の作業リポジトリを対象リポジトリとする。
-`task-inspect-repository`スキルへ仕様の読み取り結果と対象リポジトリを渡し、変更する場所、既存のルール、実行するtestやlintを調べる。
+IssueかDocumentに記録された対象リポジトリのhostとcanonical repository名を正とする。
+現在の作業リポジトリに設定された全remote URLを同じ形式へ正規化し、対象と一致するremoteがあることを確認する。
+対象リポジトリを特定できないとき、remoteが一致しないときは停止し、正しいcheckoutを要求する。
+一致したremoteのうち、実装branchを公開するpush先は作業場所の準備時に別途確定する。
+`task-inspect-repository`スキルへ要求の読み取り結果と対象リポジトリを渡し、変更する場所、既存のルール、実行するtestやlintを調べる。
 
 ### 4. 作業場所を準備する
 
-`task-prepare-worktree`スキルを使い、作業用のbranchとworktreeを用意する。
+要求の読み取り結果、リポジトリ調査結果、確認済みのbase branch、作業対象のIssue IDまたはDocument path、保存済みの作業場所情報がないことを`task-prepare-worktree`スキルへ渡し、作業用のbranchとworktreeを用意する。
 
 ### 5. 準備結果を返す
 
-IssueまたはDocumentへの参照、Issueの種類とID、仕様の読み取り結果、対象リポジトリのpath、remote、GitHub repository名、base branch、起点commit、確認方法、作業用branch、worktreeを実装準備結果として返す。
+IssueまたはDocumentへの参照、Issueの種類とID、要求の読み取り結果、対象リポジトリのpath、remote、GitHub repository名、base branch、起点commit、確認方法、作業用branch、worktreeを実装準備結果として返す。

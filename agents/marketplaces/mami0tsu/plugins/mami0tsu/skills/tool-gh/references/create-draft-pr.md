@@ -4,11 +4,11 @@
 
 ## 入力
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - base branch
 - head branch
 - title
-- body file
+- 標準入力から渡す承認済み本文
 - `find-pull-request`ユースケースの空の検索結果
 
 ## 出力
@@ -17,7 +17,7 @@
 
 ## 制約
 
-- base branch、head branch、title、body fileを省略しない。
+- base branch、head branch、title、本文を省略しない。
 - head branchをremoteへpush済みとする。
 - Ready for reviewのpull requestを作らない。
 - reviewerとprojectを追加しない。
@@ -27,15 +27,18 @@
 ### 1. Draft PRを作る
 
 ```sh
-gh pr create --repo <owner>/<repo> --draft \
-  --base <base-branch> --head <head-branch> \
-  --title '<title>' --body-file <body-file>
+bash "<plugin-root>/skills/tool-gh/scripts/github-body-operation.sh" pr-create \
+  --repo <host>/<owner>/<repo> --base <base-branch> --head <head-branch> \
+  --title '<title>'
 ```
+
+承認済み本文を標準入力へ送り終えたらEOFを送る。
+Scriptはprivate body fileを作成し、`gh pr create`の終了時に削除する。
 
 ### 2. 作成結果を確認する
 
 ```sh
-gh pr view <created-url> --repo <owner>/<repo> \
+gh pr view <created-url> --repo <host>/<owner>/<repo> \
   --json number,isDraft,baseRefName,headRefName,title,body,url
 ```
 

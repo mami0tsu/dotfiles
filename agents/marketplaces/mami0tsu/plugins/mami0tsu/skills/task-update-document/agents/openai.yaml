@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document更新"
+  short_description: "既存Wikiのrevisionを照合して承認済み本文だけを反映する"
+  default_prompt: "Use $task-update-document to update an approved wiki document safely."

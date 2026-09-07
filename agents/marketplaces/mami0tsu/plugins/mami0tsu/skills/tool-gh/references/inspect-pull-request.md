@@ -4,7 +4,7 @@
 
 ## 入力
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 - pull request番号またはURL
 
 ## 出力
@@ -18,6 +18,8 @@
 - commit
 - review状態
 - merge状態
+- merge commit
+- merge日時
 - 変更規模
 - 変更済みfile
 - check状態
@@ -35,8 +37,8 @@
 ### 1. Pull requestを取得する
 
 ```sh
-gh pr view <number-or-url> --repo <owner>/<repo> \
-  --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,changedFiles,additions,deletions,files,statusCheckRollup,url
+gh pr view <number-or-url> --repo <host>/<owner>/<repo> \
+  --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,mergeCommit,mergedAt,changedFiles,additions,deletions,files,statusCheckRollup,url
 ```
 
 ### 2. 結果を返す

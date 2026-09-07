@@ -1,0 +1,4 @@
+interface:
+  display_name: "State完了"
+  short_description: "完了証跡とpending操作を照合して作業stateを完了へ移す"
+  default_prompt: "Use $task-complete-state to mark verified work state complete."

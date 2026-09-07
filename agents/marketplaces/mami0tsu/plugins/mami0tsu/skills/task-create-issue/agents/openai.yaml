@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Issue"
+  short_description: "承認済み内容からIssueを1件だけ作成し正本情報と内容を確認する"
+  default_prompt: "Use $task-create-issue to create and verify one approved Issue."

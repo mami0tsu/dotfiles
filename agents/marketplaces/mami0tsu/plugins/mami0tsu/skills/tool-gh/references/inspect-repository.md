@@ -4,7 +4,7 @@
 
 ## 入力
 
-- `owner/repo`形式のrepository名
+- `host/owner/repo`形式のrepository名
 
 ## 出力
 
@@ -22,11 +22,11 @@
 ### 1. Repositoryを取得する
 
 ```sh
-gh repo view <owner>/<repo> --json nameWithOwner,url,defaultBranchRef
+gh repo view <host>/<owner>/<repo> --json nameWithOwner,url,defaultBranchRef
 ```
 
 ### 2. 結果を返す
 
-`nameWithOwner`、repositoryのURL、`defaultBranchRef.name`を返す。
+入力のhost、`nameWithOwner`、repositoryのURL、`defaultBranchRef.name`を返す。
 
 [^gh-repo-view]: [GitHub CLI `gh repo view` manual](https://cli.github.com/manual/gh_repo_view)

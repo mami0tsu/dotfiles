@@ -14,8 +14,8 @@
 | --- | --- | --- |
 | Workflow | Stepの順序と入出力の受け渡しを管理し、外部から受け取った入力を最終出力へ変換する。 | Step |
 | Step | Taskを組み合わせ、詳細な開始条件、停止条件、再実行を管理する。 | Task |
-| Task | 1つの行動を実行し、その行動に直接必要な入力から成果物を作る。 | Tool |
-| Tool | CLIや外部サービスなど、特定の実現方法に依存する操作を扱う。 | reference、asset、script、別のTool |
+| Task | 1つの行動を実行し、その行動に直接必要な入力から成果物を作る。 | Tool、MCP |
+| Tool | CLIなど、特定の実現方法に依存する操作と再利用する手順を扱う。 | reference、asset、script、別のTool |
 
 ### 制約
 
@@ -24,6 +24,9 @@
 - StepはToolやToolのresourceを直接参照しない。
 - Stepは、後続のTaskを安全に開始するために必要な条件を確認する。
 - Taskは必要な操作と期待する出力を記述し、具体的なToolの選択をToolへ委ねる。
+- MCP toolはTool階層の実現手段として扱い、Taskの`allowed-tools`から直接利用してよい。
+- 共通の判断基準、reference、asset、scriptが不要なMCP操作のために、`tool-*`スキルを追加しない。
+- CLIまたは再利用する操作手順が必要な場合は、`tool-*`スキルへ隔離する。
 - Taskは具体的なTool名、ユースケース名、command、option、認証方法、Tool固有の状態を記述しない。
 - 工程の成果物として必要な用語は、Taskの意味上の入出力として記述してよい。
 - Toolのdescriptionは、必要な操作から選択できるように書く。

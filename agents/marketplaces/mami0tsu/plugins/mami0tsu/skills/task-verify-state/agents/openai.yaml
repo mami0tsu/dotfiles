@@ -1,0 +1,4 @@
+interface:
+  display_name: "State検証"
+  short_description: "保存済みidentityと進行状況を照合して安全な再開点を判定する"
+  default_prompt: "Use $task-verify-state to verify saved state before resuming work."

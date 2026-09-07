@@ -1,10 +1,11 @@
 ---
 name: tool-git
 description: >-
-  `git`と`git wt`を使い、GitHub repositoryのlocal worktree、branch、commit、remoteとの同期を扱うためのTool。
-  worktree、branch、commit、remoteを確認または変更するときに使う。
+  `git`と`git wt`を使い、GitHub repositoryのlocal worktree、branch、commit、commit時点のfile、remoteとの同期を扱うためのTool。
+  worktree、branch、commit、file、remoteを確認または変更するときに使う。
 allowed-tools: >-
   Bash(${CLAUDE_SKILL_DIR}/scripts/inspect-worktree.sh *)
+  Bash(GIT_SEQUENCE_EDITOR=: git -C * rebase --interactive --autosquash *)
   Bash(git -C * add -- *)
   Bash(git -C * apply)
   Bash(git -C * branch -d *)
@@ -19,11 +20,12 @@ allowed-tools: >-
   Bash(git -C * rebase --abort)
   Bash(git -C * restore --staged -- *)
   Bash(git -C * restore --worktree -- *)
+  Bash(git -C * show *:* | shasum -a 256)
+  Bash(git -C * show *:*)
   Bash(git -C * switch *)
   Bash(git -C * wt --json --nocd)
   Bash(git -C * wt --json)
   Bash(git -C * wt --nocd *)
-  Bash(GIT_SEQUENCE_EDITOR=: git -C * rebase --interactive --autosquash *)
 ---
 
 # tool-git
@@ -35,6 +37,7 @@ allowed-tools: >-
 - worktreeの操作には`git wt`を使い、`git worktree`へ切り替えない[^git-wt]。
 - dirtyなworktreeを自動でstashしない。
 - submodule、stash、cherry-pick、reset、mergeは扱わない。
+- CLI referenceの検証結果は[validation](references/validation.md)で確認する。
 
 ## ユースケース
 
@@ -48,6 +51,7 @@ allowed-tools: >-
 | `inspect-remote-branch` | remote branchが存在するか確認する。 |
 | `inspect-remotes` | 設定済みのremoteとURLを取得する。 |
 | `inspect-worktree` | repository root、branch、HEAD、statusを取得する。 |
+| `read-file-at-commit` | 指定commitにあるfileの本文とdigestを取得する。 |
 
 **branchの操作**
 

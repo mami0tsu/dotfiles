@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Merged Document"
+  short_description: "merge済み設計Documentのrevisionとdigestを確定する"
+  default_prompt: "Use $task-verify-merged-document to verify a merged design document as the canonical source."

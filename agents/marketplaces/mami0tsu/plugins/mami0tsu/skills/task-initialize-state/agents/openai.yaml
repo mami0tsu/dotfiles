@@ -1,0 +1,4 @@
+interface:
+  display_name: "State初期化"
+  short_description: "Git共通領域へ安全な作業stateを新規作成して再開点を確定する"
+  default_prompt: "Use $task-initialize-state to initialize persistent work state."

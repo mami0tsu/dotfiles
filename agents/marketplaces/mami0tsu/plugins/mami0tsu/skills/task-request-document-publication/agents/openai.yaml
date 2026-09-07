@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document手動公開依頼"
+  short_description: "MCPがないWikiへの保存を人間へ依頼して正本情報を受け取る"
+  default_prompt: "Use $task-request-document-publication to hand off wiki publication to a human."

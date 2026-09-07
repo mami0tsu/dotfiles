@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clarify Requirements"
+  short_description: "調査で残った設計判断を1問ずつ確認し決定事項と根拠を揃える"
+  default_prompt: "Use $task-clarify-requirements to resolve unanswered design decisions one question at a time."

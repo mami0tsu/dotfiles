@@ -1,9 +1,12 @@
 ---
 name: tool-gh
 description: >-
-  GitHub CLIを使い、GitHub上のrepository、pull request、Actions、review commentを読み取り、Draft PR、pending review、stacked PRを扱うためのTool。
+  GitHub CLIを使い、GitHub上のrepository、Issue、pull request、Actions、review commentを読み取り、Issue、Draft PR、pending review、stacked PRを扱うためのTool。
   GitHub上の情報を確認し、対応する操作を行うときに使う。
 allowed-tools: >-
+  Bash(bash */skills/tool-gh/scripts/github-body-operation.sh *)
+  Bash(gh api --hostname * --method GET -H * repos/* -f ref=*)
+  Bash(gh api --hostname * --method GET repos/*)
   Bash(gh api graphql --paginate *)
   Bash(gh api graphql -F owner=* -F name=* -F number=* -f query=*)
   Bash(gh api graphql -F pullRequestId=* -F commitOID=* -f query=*)
@@ -11,11 +14,22 @@ allowed-tools: >-
   Bash(gh api graphql -F reviewId=* -F path=* -F line=* -F side=* -F body=@* -f query=*)
   Bash(gh api graphql -F reviewId=* -F threadId=* -F body=@* -f query=*)
   Bash(gh auth status --hostname *)
+  Bash(gh issue close * --repo * --reason completed)
+  Bash(gh issue edit * --repo * --add-assignee *)
+  Bash(gh issue edit * --repo * --add-blocked-by *)
+  Bash(gh issue edit * --repo * --add-label *)
+  Bash(gh issue edit * --repo * --parent *)
+  Bash(gh issue edit * --repo * --remove-assignee *)
+  Bash(gh issue edit * --repo * --remove-blocked-by *)
+  Bash(gh issue edit * --repo * --remove-label *)
+  Bash(gh issue edit * --repo * --remove-parent)
+  Bash(gh issue list --repo * --state all --limit * --search * --json number,state,title,url,createdAt,updatedAt)
+  Bash(gh issue reopen * --repo *)
+  Bash(gh issue view * --repo * --json number,id,state,stateReason,title,body,assignees,labels,parent,subIssues,blockedBy,blocking,url,updatedAt)
   Bash(gh pr checks * --repo * --json name,state,bucket,workflow,link)
-  Bash(gh pr create --repo * --draft --base * --head * --title * --body-file *)
   Bash(gh pr list --repo * --head * --state all --json number,state,isDraft,baseRefName,headRefName,title,url)
   Bash(gh pr view * --repo * --json number,isDraft,baseRefName,headRefName,title,body,url)
-  Bash(gh pr view * --repo * --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,changedFiles,additions,deletions,files,statusCheckRollup,url)
+  Bash(gh pr view * --repo * --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,commits,title,body,reviewDecision,mergeStateStatus,mergeCommit,mergedAt,changedFiles,additions,deletions,files,statusCheckRollup,url)
   Bash(gh pr view * --repo * --json number,url,reviews,comments)
   Bash(gh repo view * --json nameWithOwner,url,defaultBranchRef)
   Bash(gh run list --repo * --branch * --limit * --json databaseId,workflowName,status,conclusion,headSha,createdAt,url)
@@ -32,13 +46,20 @@ allowed-tools: >-
 
 - 1つの操作ごとに、対応するreferenceを1つだけ読む。
 - referenceにない操作はしない。
+- 記録済みversionと一致する通常経路では、実行前に`--help`を読まない。
+- 未収録操作、version差、構文エラーの場合だけ、対象subcommandの`--help`を読む。
 - branch、commit、rebase、pushは`tool-git`スキルへ委譲する。
-- 書き込みはDraft PR、pending review、stacked PRのreferenceに記載された操作だけに限定する。
+- 書き込みはIssue、Draft PR、pending review、stacked PRのreferenceに記載された操作だけに限定する。
 - reviewのsubmit、threadのresolve、pull requestのReady for review、close、mergeを行わない。
 - Actionsのrerun、cancel、deleteを行わない。
 - `gh auth token`を実行しない[^gh]。
 - repositoryにpull request templateがないことを確認済みの場合は、`assets/pull_request_template.md`をDraft PR本文に使う。
 - pending reviewのthread、reply、review bodyへ投稿する本文には、`assets/comment_template.md`を使う。
+- CLI referenceの検証結果は[validation](references/validation.md)で確認する。
+- GitHubへ本文を渡す操作では、専用scriptの同一process内で権限`0600`の一時body fileを作成、使用、削除する。
+- 本文操作の実装変更時は`scripts/test-github-body-operation.sh`で本文、権限、引数、成功時と失敗時の削除を確認する。
+- reference内の`<plugin-root>`は、このSkillの配置先から2階層上にあるplugin directoryへ置き換える。
+- Claude Codeでは`${CLAUDE_PLUGIN_ROOT}`、CodexではSkill catalogに表示された`SKILL.md`の絶対pathから`<plugin-root>`を解決する。
 
 ## ユースケース
 
@@ -48,6 +69,8 @@ allowed-tools: >-
 | --- | --- |
 | `inspect-authentication` | GitHub hostの認証状態を取得する。 |
 | `inspect-repository` | GitHub上の対象repositoryを取得する。 |
+| [`read-file-at-commit`](references/read-file-at-commit.md) | 完全なcommit OIDを指定し、remote repositoryのfileを読む。 |
+| [`verify-commit-reachable`](references/verify-commit-reachable.md) | Commitが指定branchから到達可能であることを確認する。 |
 
 **pull request**
 
@@ -56,6 +79,21 @@ allowed-tools: >-
 | `create-draft-pr` | Draft PRを作る。 |
 | `find-pull-request` | head branchを使うpull requestを検索する。 |
 | `inspect-pull-request` | pull requestを取得する。 |
+
+**Issue**
+
+| ユースケース | 用途 |
+| --- | --- |
+| [`add-issue-blocker`](references/add-issue-blocker.md) | Issueへ`blockedBy`関係を追加する。 |
+| [`close-issue`](references/close-issue.md) | Issueを完了理由でcloseする。 |
+| [`create-issue`](references/create-issue.md) | titleと本文からIssueを一件作る。 |
+| [`find-issues`](references/find-issues.md) | titleから作成結果の候補Issueを検索する。 |
+| [`read-issue`](references/read-issue.md) | Issueの内容、関係、状態を取得する。 |
+| [`remove-issue-blocker`](references/remove-issue-blocker.md) | Issueから`blockedBy`関係を削除する。 |
+| [`reopen-issue`](references/reopen-issue.md) | closeされたIssueをopenへ戻す。 |
+| [`set-issue-parent`](references/set-issue-parent.md) | Issueへ親Issueを設定する。 |
+| [`unset-issue-parent`](references/unset-issue-parent.md) | Issueから親Issueを外す。 |
+| [`update-issue`](references/update-issue.md) | Issueの内容、担当者、labelを更新する。 |
 
 **checkとworkflow**
 

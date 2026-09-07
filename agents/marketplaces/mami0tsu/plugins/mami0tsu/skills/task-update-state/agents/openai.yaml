@@ -1,0 +1,4 @@
+interface:
+  display_name: "State更新"
+  short_description: "検証済みstateへ一つの進行差分を原子的かつ安全に保存する"
+  default_prompt: "Use $task-update-state to persist one verified state update."

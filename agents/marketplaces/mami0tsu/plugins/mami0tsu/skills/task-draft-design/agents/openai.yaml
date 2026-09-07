@@ -1,0 +1,4 @@
+interface:
+  display_name: "Draft Design"
+  short_description: "確定要求とリポジトリの事実から検証可能な設計本文を作成する"
+  default_prompt: "Use $task-draft-design to draft a verifiable software design from confirmed requirements."

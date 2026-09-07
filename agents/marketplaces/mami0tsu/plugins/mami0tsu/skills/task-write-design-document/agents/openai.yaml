@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Design Document"
+  short_description: "承認済み設計をGit管理Documentへ反映する"
+  default_prompt: "Use $task-write-design-document to write an approved design into a repository document."

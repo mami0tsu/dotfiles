@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Design"
+  short_description: "承認済み設計正本を公開し実装Issueを検証済みの着手可能状態にする"
+  default_prompt: "Use $step-publish-design to publish an approved design and prepare implementation Issues."
