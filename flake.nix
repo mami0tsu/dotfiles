@@ -38,7 +38,11 @@
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
         inherit system;
-        config.allowUnfreePredicate = package: nixpkgs.lib.getName package == "claude-code";
+        config.allowUnfreePredicate = package:
+          builtins.elem (nixpkgs.lib.getName package) [
+            "claude-code"
+            "claude-desktop"
+          ];
       };
 
       systems = [

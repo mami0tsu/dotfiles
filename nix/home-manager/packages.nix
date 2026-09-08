@@ -27,6 +27,7 @@ in
     localPackages.apm
     localPackages.ax
     localPackages.claude-code
+    localPackages.claude-desktop
     localPackages.codex
     localPackages.difit
     docker_29 # v29.5.2
