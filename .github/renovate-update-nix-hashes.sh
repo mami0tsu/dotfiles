@@ -36,6 +36,10 @@ if [[ $# -gt 1 ]]; then
   exit 2
 fi
 
+nix_command() {
+  nix --extra-experimental-features 'nix-command flakes' "$@"
+}
+
 revision_was_changed() {
   local candidate="$1"
   local changed_revision
@@ -107,7 +111,7 @@ update_legacy_plugin_hashes() {
       if [[ "$mode" == "all" || "$mode" == "check" ]] || revision_was_changed "$revision"; then
         matched_revisions+=("$revision")
         hash="$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$revision.tar.gz")"
-        hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
+        hash="$(nix_command hash convert --hash-algo sha256 --to sri "$hash")"
         if [[ "$mode" == "check" ]]; then
           if [[ "$hash" != "$existing_hash" ]]; then
             printf 'stale hash for %s/%s at %s\n' "$owner" "$repo" "$revision" >&2
@@ -218,7 +222,7 @@ update_source_package_hash() {
   fi
 
   hash="$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$revision.tar.gz")"
-  hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
+  hash="$(nix_command hash convert --hash-algo sha256 --to sri "$hash")"
   replace_single_hash "$file" "$hash"
 }
 
@@ -228,9 +232,9 @@ update_release_package_hash() {
   local url
   local hash
 
-  url="$(nix eval --raw ".#packages.aarch64-darwin.${package}.src.url")"
+  url="$(nix_command eval --raw ".#packages.aarch64-darwin.${package}.src.url")"
   hash="$(nix-prefetch-url "$url")"
-  hash="$(nix --extra-experimental-features 'nix-command flakes' hash convert --hash-algo sha256 --to sri "$hash")"
+  hash="$(nix_command hash convert --hash-algo sha256 --to sri "$hash")"
   replace_single_hash "$file" "$hash"
 }
 
@@ -259,7 +263,7 @@ if [[ "$mode" == "changed" ]]; then
         update_release_package_hash "$package"
         ;;
       *)
-        nix run 'nixpkgs#nix-update' -- \
+        nix_command run 'nixpkgs#nix-update' -- \
           --flake \
           --system aarch64-darwin \
           --version=skip \
@@ -269,7 +273,7 @@ if [[ "$mode" == "changed" ]]; then
   done
 
   if ! git diff --quiet HEAD -- .github/textlint/package.json .github/textlint/pnpm-lock.yaml; then
-    nix run 'nixpkgs#nix-update' -- \
+    nix_command run 'nixpkgs#nix-update' -- \
       --flake \
       --system aarch64-darwin \
       --version=skip \
@@ -279,4 +283,4 @@ fi
 
 update_legacy_plugin_hashes
 
-nix flake check --no-build --no-update-lock-file
+nix_command flake check --no-build --no-update-lock-file

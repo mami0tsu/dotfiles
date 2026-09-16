@@ -88,6 +88,9 @@
         "commands": [
           ".github/renovate-update-nix-hashes.sh"
         ],
+        "installTools": {
+          "nix": {}
+        },
         "fileFilters": [
           ".github/textlint/**",
           "nix/packages/textlint.nix"
@@ -103,6 +106,9 @@
         "commands": [
           ".github/renovate-update-nix-hashes.sh"
         ],
+        "installTools": {
+          "nix": {}
+        },
         "fileFilters": [
           "flake.nix",
           "nix/**/*.nix"

@@ -46,11 +46,14 @@ jobs:
       - name: Run Renovate
         uses: renovatebot/github-action@1a96852b0384df1837619d04c60b2d10d1f9ff08 # v46.1.21
         with:
-          renovate-version: full
+          # postUpgradeTasks.installTools で Nix を導入できる標準イメージを使う
+          renovate-version: latest
           token: ${{ steps.app-token.outputs.token }}
         env:
           # renovate.json の postUpgradeTasks で使う Nix hash 更新スクリプトだけを許可する
           RENOVATE_ALLOWED_COMMANDS: '["^\\.github/renovate-update-nix-hashes\\.sh$"]'
+          # postUpgradeTasks で宣言した Nix を実行時に導入する
+          RENOVATE_BINARY_SOURCE: install
           # self-hosted Renovate では、このリポジトリの設定ファイルだけを実行対象にする
           RENOVATE_ONBOARDING: 'false'
           RENOVATE_PLATFORM: github
