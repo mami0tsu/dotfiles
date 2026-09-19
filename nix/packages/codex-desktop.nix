@@ -2,7 +2,7 @@
   fetchurl,
   lib,
   stdenvNoCC,
-  undmg,
+  unzip,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -10,11 +10,11 @@ stdenvNoCC.mkDerivation rec {
   version = "26.915.31945";
 
   src = fetchurl {
-    url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg";
-    hash = "sha256-9LyOlfkh9Fw/HRiR6tIer9vo5AYS6zTPC+FzmIwZlt0=";
+    url = "https://persistent.oaistatic.com/codex-app-prod/ChatGPT-darwin-arm64-${version}.zip";
+    hash = "sha256-OtogFa6VpEyrghhiP7SjbJ1tRi1prmwmgngBASVBgMc=";
   };
 
-  nativeBuildInputs = [ undmg ];
+  nativeBuildInputs = [ unzip ];
 
   sourceRoot = ".";
   dontFixup = true;
@@ -32,6 +32,6 @@ stdenvNoCC.mkDerivation rec {
     description = "OpenAI's official ChatGPT desktop app with Codex";
     homepage = "https://chatgpt.com/features/codex";
     license = lib.licenses.unfree;
-    platforms = lib.platforms.darwin;
+    platforms = [ "aarch64-darwin" ];
   };
 }
