@@ -7,14 +7,14 @@
 mkGithubReleaseArchive rec {
   pname = "codex";
   # renovate: datasource=github-releases depName=openai/codex extractVersion=^rust-v(?<version>.+)$
-  version = "0.147.0";
+  version = "0.155.1";
 
   assetName = "codex-package-aarch64-apple-darwin";
   archiveName = "${assetName}.tar.gz";
 
   src = fetchurl {
     url = "https://github.com/openai/codex/releases/download/rust-v${version}/${archiveName}";
-    hash = "sha256-F7KYTrIrYH49DCVyglL8kPUQ5Ha605ptn0XNsapoVDI=";
+    hash = "sha256-5uCHF9qeNbcjMu/3U1J/55qa6HYIEDPFxoIKjl9YuUM=";
   };
 
   sourceRoot = ".";
