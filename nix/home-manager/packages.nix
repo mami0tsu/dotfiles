@@ -29,6 +29,7 @@ in
     localPackages.claude-code
     localPackages.claude-desktop
     localPackages.codex
+    localPackages.codex-desktop
     localPackages.difit
     docker_29 # v29.5.2
     fzf # v0.73.1
