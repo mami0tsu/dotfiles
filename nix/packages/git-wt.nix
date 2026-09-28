@@ -8,7 +8,7 @@
 mkGithubReleaseArchive rec {
   pname = "git-wt";
   # renovate: datasource=github-releases depName=k1LoW/git-wt extractVersion=^v(?<version>.+)$
-  version = "0.27.0";
+  version = "0.29.3";
 
   assetName = "git-wt_v${version}_darwin_arm64";
   archiveName = "${assetName}.zip";
