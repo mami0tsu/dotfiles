@@ -7,7 +7,7 @@
 mkGithubReleaseBinary rec {
   pname = "gh-aw";
   # renovate: datasource=github-releases depName=github/gh-aw extractVersion=^v(?<version>.+)$
-  version = "0.83.4";
+  version = "0.89.17";
   assetName = "darwin-arm64";
 
   src = fetchurl {
