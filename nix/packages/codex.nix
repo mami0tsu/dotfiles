@@ -7,7 +7,7 @@
 mkGithubReleaseArchive rec {
   pname = "codex";
   # renovate: datasource=github-releases depName=openai/codex extractVersion=^rust-v(?<version>.+)$
-  version = "0.147.0";
+  version = "0.157.1";
 
   assetName = "codex-package-aarch64-apple-darwin";
   archiveName = "${assetName}.tar.gz";
