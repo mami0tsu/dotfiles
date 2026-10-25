@@ -28,9 +28,9 @@ stdenvNoCC.mkDerivation {
     pname = "textlint";
     version = packageJson.dependencies.textlint;
     src = ../../.github/textlint;
-    fetcherVersion = 4;
+    fetcherVersion = 5;
     inherit pnpm;
-    hash = "sha256-lblWJ9LqhZJPkWz0HsjHgD0CtIdC/XOzBjcEsiYD+Pw=";
+    hash = "sha256-W+Fsnt1xp+uepzAPHEpnJJaHhWlFB+7NGiglYZeYYHQ=";
   };
 
   dontBuild = true;
