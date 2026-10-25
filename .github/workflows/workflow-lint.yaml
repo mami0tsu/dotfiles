@@ -7,10 +7,11 @@ on:
     paths:
       - .github/workflows/**/*.y{a,}ml
       - .github/**/action.y{a,}ml
+      - .github/jactionlint.yaml
       - flake.lock
       - flake.nix
       - nix/packages/default.nix
-      - nix/packages/ghalint.nix
+      - nix/packages/jactionlint.nix
       - nix/packages/textlint.nix
       - .github/textlint/**
       - package.json
@@ -19,10 +20,11 @@ on:
     paths:
       - .github/workflows/**/*.y{a,}ml
       - .github/**/action.y{a,}ml
+      - .github/jactionlint.yaml
       - flake.lock
       - flake.nix
       - nix/packages/default.nix
-      - nix/packages/ghalint.nix
+      - nix/packages/jactionlint.nix
       - nix/packages/textlint.nix
       - .github/textlint/**
       - package.json
@@ -39,7 +41,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
-      checks: write
       contents: read
     steps:
       - name: Checkout
@@ -50,20 +51,5 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
-      - name: Lint workflows with ghalint
-        run: nix develop .#lint -c ghalint run
-
-      - name: Lint workflows with actionlint
-        uses: reviewdog/action-actionlint@d290e336d5a743810aef4404f757dc862276d2ae # v1.73.4
-        with:
-          actionlint_flags: .github/workflows/*.yaml
-          fail_level: error
-
-      - name: Audit workflows with zizmor
-        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
-        with:
-          inputs: .github
-          online-audits: false
-          min-severity: low
-          version: 1.27.0
-          advanced-security: false
+      - name: Lint workflows with jactionlint
+        run: nix develop .#lint -c jactionlint --format github --strict-exit
