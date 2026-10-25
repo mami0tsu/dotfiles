@@ -1,0 +1,6 @@
+packages:
+  - .github/actions/update-nix-hashes
+  - .github/textlint
+
+sharedWorkspaceLockfile: false
+recursiveInstall: false

@@ -30,6 +30,10 @@ node .github/actions/update-nix-hashes/dist/index.js
 For local verification, pass `--changed`, `--all`, or `--check` to that command.
 CLI arguments take precedence over the action's `INPUT_MODE` environment variable.
 
+The repository root's `package.json` pins the shared pnpm version. Both this
+action and textlint use it through `pnpm-workspace.yaml`, while each project
+keeps its own lockfile. CI and Renovate use the same root version declaration.
+
 To change the implementation:
 
 ```sh

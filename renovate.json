@@ -73,7 +73,10 @@
     },
     {
       "matchManagers": ["npm"],
-      "matchFileNames": [".github/actions/update-nix-hashes/package.json"],
+      "matchFileNames": [
+        "package.json",
+        ".github/actions/update-nix-hashes/package.json"
+      ],
       "postUpgradeTasks": {
         "commands": [
           "pnpm --dir .github/actions/update-nix-hashes install --frozen-lockfile --ignore-scripts",
@@ -83,7 +86,10 @@
           "node": {},
           "pnpm": {}
         },
-        "fileFilters": [".github/actions/update-nix-hashes/**"],
+        "fileFilters": [
+          "pnpm-lock.yaml",
+          ".github/actions/update-nix-hashes/**"
+        ],
         "executionMode": "branch"
       }
     },
