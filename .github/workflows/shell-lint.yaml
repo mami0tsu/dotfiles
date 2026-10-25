@@ -40,7 +40,7 @@ jobs:
           persist-credentials: false
 
       - name: Run ShellCheck
-        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32
+        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
         with:
           fail_level: error
           filter_mode: nofilter
