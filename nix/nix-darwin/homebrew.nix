@@ -1,12 +1,21 @@
 {
+  inputs,
   nix-homebrew,
   username,
   ...
 }:
+let
+  flakeLock = builtins.fromJSON (builtins.readFile "${inputs.self}/flake.lock");
+  brewVersion = flakeLock.nodes.brew-src.original.ref;
+in
 {
   nix-homebrew = {
     enable = true;
     user = username;
+    package = inputs.brew-src // {
+      name = "brew-${brewVersion}";
+      version = brewVersion;
+    };
 
     autoMigrate = true;
     enableRosetta = false;
