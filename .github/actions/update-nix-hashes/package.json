@@ -2,6 +2,7 @@
   "name": "update-nix-hashes-action",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@12.9.0",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --project tsconfig.test.json",

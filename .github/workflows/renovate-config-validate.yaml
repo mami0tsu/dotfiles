@@ -44,14 +44,20 @@ jobs:
           node-version: '24'
           package-manager-cache: false
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+        with:
+          package_json_file: .github/actions/update-nix-hashes/package.json
+          run_install: false
+
       - name: Build and test Nix hash action
         working-directory: .github/actions/update-nix-hashes
         run: |
-          npm ci --ignore-scripts
-          npm run typecheck
-          npm run build
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm run typecheck
+          pnpm run build
           git diff --exit-code -- dist
-          npm test
+          pnpm test
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22

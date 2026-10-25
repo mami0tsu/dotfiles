@@ -2,7 +2,7 @@
 
 This repository-local Node.js 24 action updates hashes after Renovate changes Nix
 packages or textlint dependencies. It requires Git and Nix with flake support.
-The committed `dist/index.js` runs without installing npm dependencies.
+The committed `dist/index.js` runs without installing dependencies.
 
 After checking out the repository and installing Nix, call it from a workflow:
 
@@ -34,12 +34,12 @@ To change the implementation:
 
 ```sh
 cd .github/actions/update-nix-hashes
-npm ci --ignore-scripts
-npm run typecheck
-npm run build
-npm test
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm run typecheck
+pnpm run build
+pnpm test
 ```
 
 Commit the regenerated `dist/index.js` with the TypeScript source. CI rebuilds
 the action, checks for differences, runs its tests, and invokes it as a local action.
-Renovate also rebuilds this file when it updates the action's npm dependencies.
+Renovate also rebuilds this file when it updates the action's dependencies.
