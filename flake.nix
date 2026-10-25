@@ -2,13 +2,13 @@
   description = "";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/6d12004108e0e4a5cfa4bd83b14477f040b15773"; # nixpkgs-unstable
+    nixpkgs.url = "github:nixos/nixpkgs/901c54c08bdc20e00c2b3c73716b97497b1b3c74"; # nixpkgs-unstable
     home-manager = {
-      url = "github:nix-community/home-manager/3139deb8cafbe73b39b24451255b2fdd3426077e"; # master
+      url = "github:nix-community/home-manager/2cd3234928f60bbff695a7ee56115ef7799c47cd"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/57a3171f94705599a2499248ca5758d5eb47c0e0"; # master
+      url = "github:nix-darwin/nix-darwin/bb0b90dbd54e207100de72b5dcbe3188c98a4b69"; # master
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim = {
@@ -16,11 +16,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew/842eeb863ecca0eeb463f7a814cdc51e1d925776"; # main
+      url = "github:zhaofengli/nix-homebrew/c11cccfdd36dd69b5323d70d354b2853379c2426"; # main
       inputs.brew-src.follows = "brew-src";
     };
     brew-src = {
-      url = "github:Homebrew/brew/860497fef02b98811b838f522beb1578b5c5c14c"; # master
+      url = "github:Homebrew/brew/7.0.10";
       flake = false;
     };
   };
@@ -70,7 +70,7 @@
 
       getTestTools = pkgs: [
         pkgs.go-task
-        (pkgs.python3.withPackages (pythonPackages: [
+        (pkgs.python315.withPackages (pythonPackages: [
           pythonPackages.jsonschema
           pythonPackages.pyyaml
         ]))

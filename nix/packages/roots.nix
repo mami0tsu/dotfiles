@@ -8,14 +8,14 @@
 mkGithubReleaseArchive rec {
   pname = "roots";
   # renovate: datasource=github-releases depName=k1LoW/roots extractVersion=^v(?<version>.+)$
-  version = "0.4.1";
+  version = "0.4.2";
 
   assetName = "roots_v${version}_darwin_arm64";
   archiveName = "${assetName}.zip";
 
   src = fetchurl {
     url = "https://github.com/k1LoW/roots/releases/download/v${version}/${archiveName}";
-    hash = "sha256-fWWMN1y8Mx0HWxj8qxXPJBRwRrnIjVWHiG9uLlRbiyo=";
+    hash = "sha256-TIC+SRGk9zVXU3usOmv0xBJN8GN8oIgB1lvCXbgPGJs=";
   };
 
   binaryPath = "roots";

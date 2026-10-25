@@ -2,7 +2,7 @@
   fetchPnpmDeps,
   lib,
   makeWrapper,
-  nodejs_24,
+  nodejs_26,
   pnpm,
   pnpmConfigHook,
   stdenvNoCC,
@@ -19,7 +19,7 @@ stdenvNoCC.mkDerivation {
 
   nativeBuildInputs = [
     makeWrapper
-    nodejs_24
+    nodejs_26
     pnpm
     pnpmConfigHook
   ];
@@ -28,9 +28,9 @@ stdenvNoCC.mkDerivation {
     pname = "textlint";
     version = packageJson.dependencies.textlint;
     src = ../../.github/textlint;
-    fetcherVersion = 4;
+    fetcherVersion = 5;
     inherit pnpm;
-    hash = "sha256-tvH6BdGBUEulWZhGZrd37cbsdFQgd4Gtrge5TVXKwAs=";
+    hash = "sha256-W+Fsnt1xp+uepzAPHEpnJJaHhWlFB+7NGiglYZeYYHQ=";
   };
 
   dontBuild = true;
@@ -42,7 +42,7 @@ stdenvNoCC.mkDerivation {
     mkdir -p "$package_dir" "$out/bin"
     cp -R node_modules package.json "$package_dir/"
 
-    makeWrapper ${nodejs_24}/bin/node "$out/bin/textlint" \
+    makeWrapper ${nodejs_26}/bin/node "$out/bin/textlint" \
       --add-flags "$package_dir/node_modules/textlint/bin/textlint.js" \
       --prefix NODE_PATH : "$package_dir/node_modules"
 

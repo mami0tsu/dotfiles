@@ -7,12 +7,12 @@
 mkGithubReleaseBinary rec {
   pname = "ax";
   # renovate: datasource=github-releases depName=yusukebe/ax extractVersion=^v(?<version>.+)$
-  version = "0.1.10";
+  version = "0.1.25";
   assetName = "ax-darwin-arm64";
 
   src = fetchurl {
     url = "https://github.com/yusukebe/ax/releases/download/v${version}/${assetName}";
-    hash = "sha256-FCCrnigkNiCtCHsuzpskyZaxfJGGUdltOMu2A+WKvOk=";
+    hash = "sha256-lGM/nWHHQ8/89R5TOCidl0whQo77cL0plebG7BPgYsE=";
   };
 
   executable = "ax";

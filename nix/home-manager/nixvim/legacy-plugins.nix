@@ -25,24 +25,24 @@ in
     owner = "previm";
     repo = "previm";
     # renovate: datasource=git-refs packageName=https://github.com/previm/previm currentValue=master
-    rev = "0918a3a7263a840bf9038e2d599a965d320a6b49";
-    hash = "0r0mqipcq71lwcs2cbj2d37mbjlqbfcprkzdv62pvxzfn8yhrvf5";
+    rev = "62c86c63acd88f3f86e5613ce9396fd7ce269539";
+    hash = "sha256-Y6LKcmR4zZbOJ8PvpWxUcCkKJzToFe4Xo5DGlfxz1xQ=";
   };
   vim-goimports = buildPlugin {
     pname = "vim-goimports";
     owner = "mattn";
     repo = "vim-goimports";
     # renovate: datasource=git-refs packageName=https://github.com/mattn/vim-goimports currentValue=master
-    rev = "e50dae830c3cc405003bbc79e90c2dfb5c8da7f5";
-    hash = "0xgbf1g5d758pcalba1j7xlv4i6c9m9v22vxn7qh8fmws7w24mqz";
+    rev = "66e23a2a5f76d8a18eea0258c733f23969a607a3";
+    hash = "sha256-YjuYLuMiTP9Wv5+1Dt4Rn5eXkwOJexpT8H8ZxgMLeGk=";
   };
   deol-nvim = buildPlugin {
     pname = "deol-nvim";
     owner = "Shougo";
     repo = "deol.nvim";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/deol.nvim currentValue=master
-    rev = "9c2c97b99b236bc9a0a768e696aea466b959a396";
-    hash = "092fjbb0aywiffrhf9vdcg9i7s0rs9cf65c2mnj8il5aag180ig0";
+    rev = "6903fdd4ed0c13850511655ba1b23d4b0f01bf23";
+    hash = "sha256-J9dftuSAmlkuurkA4GwYk67E4mKPow4o2FCoKsH2+zU=";
   };
 
   ddc-ui-inline = buildPlugin {
@@ -50,112 +50,112 @@ in
     owner = "Shougo";
     repo = "ddc-ui-inline";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-ui-inline currentValue=main
-    rev = "9c7103fe4262a081a8e38a7a2e3e5939403818f4";
-    hash = "15y0nl2yv9wkr799nbr45q1pai2lbc54yv9wc3yh9p1wl7d64zx5";
+    rev = "4465bc5a201122efd2ac239b81039d54ad94518f";
+    hash = "sha256-XJ7Ed022OxEK5jKvdCjrqT1DaWP1QahsAIi7fT//PWM=";
   };
   ddc-buffer = buildPlugin {
     pname = "ddc-buffer";
     owner = "matsui54";
     repo = "ddc-buffer";
     # renovate: datasource=git-refs packageName=https://github.com/matsui54/ddc-buffer currentValue=main
-    rev = "f332e16ed82ec31c4a5afe3da5117e0b5e0c6902";
-    hash = "15nsw4c7z76ax87kh2sm7yj6l0k7jbsyvn3za8avj9lspmz222hf";
+    rev = "bc2416de3629693f88e66870ca11090571f265ec";
+    hash = "sha256-snNlvHeIGsi7Iz36AWItf7IsVHopvrsEmDTf0MR8mUw=";
   };
   ddc-source-shell_native = buildPlugin {
     pname = "ddc-source-shell_native";
     owner = "Shougo";
     repo = "ddc-source-shell_native";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-shell_native currentValue=main
-    rev = "6c71c69ea84fddb9bad47cb68741c58696988e52";
-    hash = "04yijf4sav05sp75ip9s2swgj1n15prdbmvx9hhl521k7j5szk6y";
+    rev = "86686bd68cc7d26866ee5cf8cdfc1808f20c42a8";
+    hash = "sha256-x2KSFj6LPZIPLZRyqp0hOxDA7o5cLgimkSWKYomdgiw=";
   };
   ddc-source-input = buildPlugin {
     pname = "ddc-source-input";
     owner = "Shougo";
     repo = "ddc-source-input";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-input currentValue=main
-    rev = "d8d97a1f8f6657a992dd5d21dfe851a188e7177d";
-    hash = "1llvi1rim0xjd6lqc99r7vrjzb6y3akba0fc242hayhn9myhlyhh";
+    rev = "4f0def28b394c7a7e421a9f5c07e6b93b010cfaa";
+    hash = "sha256-GicKcOu380nZQowRLYpfnhnuyn2bsJ+qb8rNdice4ow=";
   };
   ddc-source-rg = buildPlugin {
     pname = "ddc-source-rg";
     owner = "Shougo";
     repo = "ddc-source-rg";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-rg currentValue=main
-    rev = "5959f0ed4d9b8d322913ebb11197c943a466bebb";
-    hash = "0f6lh29fpv6s82fwxjpqj4lfhm6ap1rbw6kww6zh0fmqqij3pra5";
+    rev = "de4f4db7fcb981683ef51c1e5816ba7411f4ec65";
+    hash = "sha256-X+DG8mpn49DQ1nBW3rRoj/XBNsFvU+EnJ2w255BKTB4=";
   };
   ddc-source-line = buildPlugin {
     pname = "ddc-source-line";
     owner = "Shougo";
     repo = "ddc-source-line";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-line currentValue=main
-    rev = "6d846d6d82ec3420eb7e01013c2821eafcc9bed1";
-    hash = "0dqjj5ahlffybhgg5f5mcq636li8a6kzf4pzk4w6jxwm33p4h72m";
+    rev = "436750c3394eb93c9316fa7dba9f1b551f9bac93";
+    hash = "sha256-hIvCOE9ITJ6pXq7ifrSqnPV/BsZNrHSnvhedD5TKW0M=";
   };
   ddc-source-cmdline = buildPlugin {
     pname = "ddc-source-cmdline";
     owner = "Shougo";
     repo = "ddc-source-cmdline";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-cmdline currentValue=main
-    rev = "a35f8f60e902098117a275609d73b89a2b39e1ae";
-    hash = "19g067v8wwiph15q6bhc7axgs9fmzqskjgqxfc8mr9amigw2294b";
+    rev = "139f85f05d2c6d83575138f8acaba4b03ce2c611";
+    hash = "sha256-dZF3sLxhNIUtZhV9IVEl0Ki3zp82rV7PlpsMy5Fiki8=";
   };
   ddc-source-cmdline-history = buildPlugin {
     pname = "ddc-source-cmdline-history";
     owner = "Shougo";
     repo = "ddc-source-cmdline-history";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-source-cmdline-history currentValue=main
-    rev = "3fe2600bec5aab81fc70cf9777cf2081f3f8753e";
-    hash = "1nysg6s6nba9hdrmj44g6m7c84vkwvs3sam882swygvssqa1qay7";
+    rev = "ffbae40f46c08a482b7a5dd60fafe04bcbb13320";
+    hash = "sha256-S0W8lqy7EyWYVaME0WHZ9dNy03KliDajkWyNlcE2ZFY=";
   };
   ddc-filter-matcher_length = buildPlugin {
     pname = "ddc-filter-matcher_length";
     owner = "Shougo";
     repo = "ddc-filter-matcher_length";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-matcher_length currentValue=main
-    rev = "fc438eaefd4ed3bc7b7f9c676a91c33f1fe5f72b";
-    hash = "1xcnciala2w1wihxycdjj1vdhqwpchf2v6r5js7ssg2sy15f6g4z";
+    rev = "003f7b05becf4e34f704800cdf20a167ac0326b2";
+    hash = "sha256-sZARUPCAocmC8pyvWe92gT0fTpcQFU/q7wA6RpNrctk=";
   };
   ddc-filter-matcher_prefix = buildPlugin {
     pname = "ddc-filter-matcher_prefix";
     owner = "Shougo";
     repo = "ddc-filter-matcher_prefix";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-matcher_prefix currentValue=main
-    rev = "06c63fe7963b423c7fb3f98634d480b60736d104";
-    hash = "0yrfvmnkg3z50vajyarrqh6l6gy79dxdff1z2q2wfrh8gyyhpkac";
+    rev = "ade87a25a56a7299b427f875a39383fe989ae3b3";
+    hash = "sha256-k4MYPQoDaK5AfCCBve2igtB1kGlLUNzhySu5emnvwhM=";
   };
   ddc-filter-matcher_vimregexp = buildPlugin {
     pname = "ddc-filter-matcher_vimregexp";
     owner = "Shougo";
     repo = "ddc-filter-matcher_vimregexp";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-matcher_vimregexp currentValue=main
-    rev = "4ae8876526d73dab337f776b2be7b76f85af3b71";
-    hash = "1267xgkd96898acvilss4406ym58binf02wankpxv5jql95n9nsi";
+    rev = "19e283abc95ebbe3785c3cff5acf3dc6fb0e29c4";
+    hash = "sha256-nX2zzm98CAzu4kFGrB+tfhlfD3DZp2/w/bYM2cnxjJY=";
   };
   ddc-filter-sorter_head = buildPlugin {
     pname = "ddc-filter-sorter_head";
     owner = "Shougo";
     repo = "ddc-filter-sorter_head";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-sorter_head currentValue=main
-    rev = "debad483b95e4a4029f87a6aa7b589277fbe21d6";
-    hash = "0cb75z2swypwrnmh6yri24s941a5pny3nxyi9h6jbmmnbxkag9bc";
+    rev = "692cb5e6af0617e1d545697fcff5fb43e4f2b6c5";
+    hash = "sha256-4PXXIASxl2HvrRCD9Xj94qZtwzZn/vETCuJc+T0PiSs=";
   };
   ddc-filter-converter_remove_overlap = buildPlugin {
     pname = "ddc-filter-converter_remove_overlap";
     owner = "Shougo";
     repo = "ddc-filter-converter_remove_overlap";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-converter_remove_overlap currentValue=main
-    rev = "f3b519bb88be428a6582544fb78ddb48e3a2df99";
-    hash = "12ah619giyh8dwc7sqavsha2kvpci9vics3nrlpmrqhd1p8m5h3v";
+    rev = "685ab33137e50d2c3e7a0f0beb89fd1b2ae81168";
+    hash = "sha256-CcJT/jHCuBTNtpQ3lVtF/K0mb2GS7G6UkC8k04cDqc8=";
   };
   ddc-filter-converter_truncate_abbr = buildPlugin {
     pname = "ddc-filter-converter_truncate_abbr";
     owner = "Shougo";
     repo = "ddc-filter-converter_truncate_abbr";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddc-filter-converter_truncate_abbr currentValue=main
-    rev = "e9a6242dd968c884e559ccc005f9ed4232c3ffb1";
-    hash = "0qijhl3xg0nfzq116idwjac2wf6ynx897r5xzri8bi7wb8b2zpa4";
+    rev = "0dd6b50a675d2fb9beb18ba4cd35dbd23b3f58dd";
+    hash = "sha256-HbnHmRj7OiJJx9vcBEdsHUjh2XtEtHn87Qz3yguuWug=";
   };
 
   ddu-vim = buildPlugin {
@@ -163,32 +163,32 @@ in
     owner = "Shougo";
     repo = "ddu.vim";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu.vim currentValue=main
-    rev = "1d5c9f11d6cdc4a8b550c3cace891e8e011cc22d";
-    hash = "0g0s33i7r2xa4ymdsghlvi9lk3jnnpd001dslvc1xc0ha09x0vvj";
+    rev = "7190c51ec461211ea1c06d74d577b5a29cc43d8c";
+    hash = "sha256-/YnFsHzLd19DMhQen/ZKIWSlZau9j9EqKaMCs+9dsKE=";
   };
   ddu-commands-vim = buildPlugin {
     pname = "ddu-commands-vim";
     owner = "Shougo";
     repo = "ddu-commands.vim";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-commands.vim currentValue=main
-    rev = "ddae8958a88324f106151462aad62dd4c8338028";
-    hash = "1p20h5qv3kshn0ck60qw1b4s28j4364a24r1afcv66m8hxz7srg5";
+    rev = "a2f7be0be57f3440e5130238816c62a486a79c74";
+    hash = "sha256-D/1liN0tuqCjhzZmrv+r2Sgd6aSt/kHkPlINmm1P9UM=";
   };
   ddu-ui-ff = buildPlugin {
     pname = "ddu-ui-ff";
     owner = "Shougo";
     repo = "ddu-ui-ff";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-ui-ff currentValue=main
-    rev = "7b20ec7c71ee6b13425234c0386baca6b6b629f8";
-    hash = "10r096469265b017fq92bakj7405j9h8icmnrf8xxfw6p3bw9ad5";
+    rev = "38c0c5d93a6c877ddb6e47371491d02b0b4a8ab9";
+    hash = "sha256-dsfGFKLxSpShtTyFbltI38xv+uqviDuzAYOBgsX+T+M=";
   };
   ddu-ui-filer = buildPlugin {
     pname = "ddu-ui-filer";
     owner = "Shougo";
     repo = "ddu-ui-filer";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-ui-filer currentValue=main
-    rev = "cb9499b0998dea6fb2ca72085b0d562f2f8a3139";
-    hash = "0l4mfgyvimj7njm68fjlr3714grl4zaslnyz19yb48c2jk6pgg61";
+    rev = "9cf6e7b1a6632eaf1c5af8a8ac89191efc879fff";
+    hash = "sha256-2GdhNuh8mZxpYNmOT0wdzSsWJBTeD/JXpUSKwtdD6eY=";
   };
   ddu-source-buffer = buildPlugin {
     pname = "ddu-source-buffer";
@@ -203,96 +203,96 @@ in
     owner = "Shougo";
     repo = "ddu-source-file";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-source-file currentValue=main
-    rev = "7cbcd568ec3446c0ea6cad83f902fc37b8e02774";
-    hash = "1jq8034fm80j8zbrwhmqfxfz50k2a11dkka3vjgn99nky28yqh23";
+    rev = "dc1f5b73bbb707bb0ab60972814822c8ab97f025";
+    hash = "sha256-KjwK7cljPy7gBj+DK2eocGxG6EkQBPLmnL/QlwYWF1Y=";
   };
   ddu-source-file_rec = buildPlugin {
     pname = "ddu-source-file_rec";
     owner = "Shougo";
     repo = "ddu-source-file_rec";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-source-file_rec currentValue=main
-    rev = "32f16fb90aa805ed16ea10dcbb347e1ae7b054a6";
-    hash = "03czcyfvy4ks7ypi0wghzgka3pnbjcqbrrkmxb8nq1fh00h9iqnh";
+    rev = "e4cd38a167bebca453f7244d999267ce66814b1b";
+    hash = "sha256-8W6q8irRJsQBA19x/SKs67uDaueNPRb9nso4svQyqTY=";
   };
   ddu-source-line = buildPlugin {
     pname = "ddu-source-line";
     owner = "Shougo";
     repo = "ddu-source-line";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-source-line currentValue=main
-    rev = "e5f21c88b7887f99cb47727516f6526c8e2df7d1";
-    hash = "0qg7didp1ihmiiczr7hnc0sk0bxx7l5ibbv7gdbmkb7lzzmlaffk";
+    rev = "e13f2bf42f3343bea5e869199e6976fe7f82a9b0";
+    hash = "sha256-SYAj9AfqjHVTELe81rxHFVjmdwkIAvw98QNd3EyhNUA=";
   };
   ddu-source-rg = buildPlugin {
     pname = "ddu-source-rg";
     owner = "shun";
     repo = "ddu-source-rg";
     # renovate: datasource=git-refs packageName=https://github.com/shun/ddu-source-rg currentValue=main
-    rev = "b993601f00aa6fabd993e16f531338368464a796";
-    hash = "1mggypajm16wv71s26fg6k2c5n1vgpjfnldmi72lk643c3d6ka47";
+    rev = "42b928ed4e921c71cf185db0bb6b3cb6c85d0399";
+    hash = "sha256-v7oOAxhTEUzLQ4XwPk3FrjemIu11ryfFB8bqh7+EFC0=";
   };
   ddu-kind-file = buildPlugin {
     pname = "ddu-kind-file";
     owner = "Shougo";
     repo = "ddu-kind-file";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-kind-file currentValue=main
-    rev = "1287d05ce63853ac9c7847d2720402eccdc4a313";
-    hash = "1qfiqkg0wkpl0s17zx1wbc4i63n7mly5s7lqsbnax0gg6b21p3y9";
+    rev = "649be2f0eee8296ea7772d1916dceb873feac3ce";
+    hash = "sha256-vR7TRZrKK4A5tPnZxS3DYo+exvvi71AzvojOccOdYuk=";
   };
   ddu-kind-word = buildPlugin {
     pname = "ddu-kind-word";
     owner = "Shougo";
     repo = "ddu-kind-word";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-kind-word currentValue=main
-    rev = "833fc9b99f3a948f8a1d61983b6bcc4bfe38d33c";
-    hash = "0aan45xm9pgi22j7n09srlmpvlp3v77cgkqz79g47vnyq1hxrqpg";
+    rev = "4d4b6f707887eb6fe0a2e99410d434db100981b4";
+    hash = "sha256-nLH0HvPxzl5G9SQRJ1fXXKQ9i7yhoIdqxT0oySFDP98=";
   };
   ddu-filter-matcher_files = buildPlugin {
     pname = "ddu-filter-matcher_files";
     owner = "Shougo";
     repo = "ddu-filter-matcher_files";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-filter-matcher_files currentValue=main
-    rev = "adf5ec3af025190c45ff40ac40f79a52afc9be2b";
-    hash = "0l1s620i46qk0ndsjwcwiq487ci331nacis561frs6agxw8xp12w";
+    rev = "21a40f6ceb528f486af8e20c7783cd8bf29fe411";
+    hash = "sha256-qaJIelWaVRot+1OElEz9tIKdCy4BT1Mpv0qShS9mm70=";
   };
   ddu-filter-matcher_relative = buildPlugin {
     pname = "ddu-filter-matcher_relative";
     owner = "Shougo";
     repo = "ddu-filter-matcher_relative";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-filter-matcher_relative currentValue=main
-    rev = "b94f477541f0e0a3f538041ac321d48ad7e486a5";
-    hash = "09vzmvda8zls6hka8as6j8sfqhalb99wsa1lbv60jwgxgbgk0i2g";
+    rev = "5102718f559d5644a6d08070ca6f7024b687ddf4";
+    hash = "sha256-vVnMcpzVwCfH7NcmYYCdsGn1iQSwwdtl1jgp4jS2JOo=";
   };
   ddu-filter-matcher_substring = buildPlugin {
     pname = "ddu-filter-matcher_substring";
     owner = "Shougo";
     repo = "ddu-filter-matcher_substring";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-filter-matcher_substring currentValue=main
-    rev = "3ce57b5293f5922ea84d6dc934abbfc1c5c38d7f";
-    hash = "113zsirz16xclari2666a4r2wfng801hhrx42dg24rvawmzyx1nl";
+    rev = "01eae40a1aedec5093d6b20f48441acc8bc4436c";
+    hash = "sha256-GhlaKrspqJHgW/Brsu6GBTsHk7q6qvREzOmysSX1Mjk=";
   };
   ddu-filter-sorter_alpha = buildPlugin {
     pname = "ddu-filter-sorter_alpha";
     owner = "Shougo";
     repo = "ddu-filter-sorter_alpha";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-filter-sorter_alpha currentValue=main
-    rev = "91df49ceed7cf344b166016fe0a1ca911a709d05";
-    hash = "1jxwij2hgm78lzs2mfl2wbh94v0yaxmk9d8d25gph4sd3d3bpz99";
+    rev = "7bf4e74ac8ee11bfbef30b1b50b1b6c0b248a5c6";
+    hash = "sha256-G6MjjRM4F8wtc/NbgddTCjNKqBmQVzAIbT+hjKu1MIw=";
   };
   ddu-column-filename = buildPlugin {
     pname = "ddu-column-filename";
     owner = "Shougo";
     repo = "ddu-column-filename";
     # renovate: datasource=git-refs packageName=https://github.com/Shougo/ddu-column-filename currentValue=main
-    rev = "03506e0e20c2de3069c5457a5ed1099b550db3f1";
-    hash = "00aw0r496nrzs6d5myssfgsj2h38g1msza8ah841ifxfkih4q4bb";
+    rev = "be74daf08ebe715574b758e4a4ee86db33833c16";
+    hash = "sha256-LhBw8YRAtAKu8KexGOBVQ7z74y1cG1/kbajCxak1FNU=";
   };
   moody-nvim = buildPlugin {
     pname = "moody-nvim";
     owner = "svampkorg";
     repo = "moody.nvim";
     # renovate: datasource=git-refs packageName=https://github.com/svampkorg/moody.nvim currentValue=main
-    rev = "263f5f89277f40932c1cd7aca010bd38256fda17";
-    hash = "0xp4grqy4ygc8hyq47isjvqrq7c89syi97cbdrjsvw4z0iwl3zwz";
+    rev = "a969f9e4325a3b2c225df3b635e1fd62f1769029";
+    hash = "sha256-GrulZ/xvPjpo/xCGgxua6LOVWbANTWxZ0G3/btHoTW8=";
     nvimSkipModules = [ "moody.statuscolumn" ];
   };
 }
