@@ -7,12 +7,12 @@
 mkGithubReleaseBinary rec {
   pname = "gh-stack";
   # renovate: datasource=github-releases depName=github/gh-stack extractVersion=^v(?<version>.+)$
-  version = "0.1.0";
+  version = "0.2.1";
   assetName = "darwin-arm64";
 
   src = fetchurl {
     url = "https://github.com/github/gh-stack/releases/download/v${version}/${assetName}";
-    hash = "sha256-XKmCQaJl1t4BgJXNrl88QNpcp4JFDuwOqRqo4+sYMQM=";
+    hash = "sha256-xNYtxmc0PW3Y/xy2Dc/50OCXwkYN6jJokvNtXS6DXXY=";
   };
 
   executable = "gh-stack";

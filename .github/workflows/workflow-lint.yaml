@@ -11,6 +11,8 @@ on:
       - flake.nix
       - nix/packages/default.nix
       - nix/packages/ghalint.nix
+      - nix/packages/textlint.nix
+      - .github/textlint/**
   push:
     branches: [main]
     paths:
@@ -20,6 +22,8 @@ on:
       - flake.nix
       - nix/packages/default.nix
       - nix/packages/ghalint.nix
+      - nix/packages/textlint.nix
+      - .github/textlint/**
 
 permissions: {}
 

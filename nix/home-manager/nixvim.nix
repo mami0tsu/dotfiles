@@ -1,5 +1,6 @@
 {
   inputs,
+  pkgs,
   ...
 }:
 {
@@ -11,6 +12,7 @@
   programs.nixvim = {
     enable = true;
     enableMan = false;
+    dependencies.go.package = pkgs.go_1_27;
     nixpkgs.source = inputs.nixpkgs;
 
     extraConfigLua = builtins.readFile ../../nvim/init.lua;

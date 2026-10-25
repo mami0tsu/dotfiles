@@ -7,11 +7,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "claude-desktop";
-  version = "2.2553.1";
+  version = "3.6556.2";
 
   src = fetchurl {
-    url = "https://downloads.claude.ai/releases/darwin/universal/${version}/Claude-c38127e27202ddc1c8c187102f7798a93b1b8ede.zip";
-    hash = "sha256-GMWR59il2fdnwjiNBO7lGyKtkiLFhyxtKoCh4b/g3dk=";
+    url = "https://downloads.claude.ai/releases/darwin/universal/${version}/Claude-20c019a1e61fa5b687616af57d31f97bb3181723.zip";
+    hash = "sha256-Xz42vQxQDw4CzKhISPXK9FM3IRfsZkFT2xh7NydUxno=";
   };
 
   nativeBuildInputs = [ unzip ];

@@ -9,21 +9,21 @@ in
 {
   home.packages = with pkgs; [
     bat # v0.26.1
-    coreutils # v9.11
-    curl # v8.20.0
-    delta # v0.19.2
-    d2 # v0.7.1
-    eza # v0.23.4
-    findutils # v4.10.0
+    coreutils # v9.12
+    curl # v8.22.0
+    delta # v0.20.1
+    d2 # v0.9.0
+    eza # v0.23.5
+    findutils # v4.11.0
     gnugrep # v3.12
-    gnused # v4.9
+    gnused # v4.10
     gojq # v0.12.19
     # jq
-    sops # v3.13.2
+    sops # v3.13.3
     tree # v2.3.2
-    ripgrep # v15.1.0
+    ripgrep # v15.2.0
 
-    awscli2 # v2.34.24
+    awscli2 # v2.36.31
     localPackages.apm
     localPackages.ax
     localPackages.claude-code
@@ -31,18 +31,18 @@ in
     localPackages.codex
     localPackages.codex-desktop
     localPackages.difit
-    docker_29 # v29.5.2
-    fzf # v0.73.1
-    ghq # v1.9.4
+    docker_29 # v29.9.1
+    fzf # v0.74.5
+    ghq # v1.10.1
     git-secrets # v1.3.0
-    go-task # v3.48.0
-    tree-sitter # v0.26.8
+    go-task # v3.53.1
+    tree-sitter # v0.26.11
 
-    deno # v2.8.0
+    deno # v2.9.7
     fnm # v1.39.0
-    go # v1.26.3
-    rustup # v1.29.0
-    tenv # v4.12.2
-    uv # v0.11.17
+    go_1_27 # v1.27.3
+    rustup # v1.29.2
+    tenv # v4.15.1
+    uv # v0.13.4
   ];
 }
