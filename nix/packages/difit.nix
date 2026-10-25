@@ -4,35 +4,35 @@
   fetchPnpmDeps,
   lib,
   makeWrapper,
-  nodejs,
-  pnpm_10,
+  nodejs_26,
+  pnpm,
   pnpmConfigHook,
 }:
 
 stdenvNoCC.mkDerivation rec {
   pname = "difit";
   # renovate: datasource=github-releases depName=yoshiko-pg/difit extractVersion=^v(?<version>.+)$
-  version = "4.0.5";
+  version = "5.0.12";
 
   src = fetchFromGitHub {
     owner = "yoshiko-pg";
     repo = "difit";
     tag = "v${version}";
-    hash = "sha256-01x0CfNNgg7BGQrQ+fTUSZYE+3lVgWG+2W0FbxiYJPc=";
+    hash = "sha256-1EoC5t+8KjNmwKg5lFLig26tzCnp2byhkeGjctVdRls=";
   };
 
   nativeBuildInputs = [
     makeWrapper
-    nodejs
-    pnpm_10
+    nodejs_26
+    pnpm
     pnpmConfigHook
   ];
 
   pnpmDeps = fetchPnpmDeps {
     inherit pname version src;
-    fetcherVersion = 3;
-    pnpm = pnpm_10;
-    hash = "sha256-fh7YhyOIZvaFoWxgazn464bZ7VeWBlFs1Iow/6TSkpg=";
+    fetcherVersion = 4;
+    inherit pnpm;
+    hash = "sha256-vuQxZ8U0PQ+f6o1DMmKii+Bs4XHML6N2ZlB5C3JKxqo=";
   };
 
   buildPhase = ''
@@ -51,7 +51,7 @@ stdenvNoCC.mkDerivation rec {
     cp -R dist node_modules package.json README.md "$package_dir/"
     find "$package_dir/node_modules" -xtype l -delete
 
-    makeWrapper ${nodejs}/bin/node "$out/bin/difit" \
+    makeWrapper ${nodejs_26}/bin/node "$out/bin/difit" \
       --add-flags "$package_dir/dist/cli/index.js"
 
     runHook postInstall
