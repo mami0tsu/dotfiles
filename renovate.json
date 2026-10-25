@@ -1,13 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "timezone": "Asia/Tokyo",
-  "schedule": [
-    "at any time"
-  ],
+  "schedule": ["at any time"],
   "prConcurrentLimit": 10,
+  "rebaseWhen": "behind-base-branch",
   "minimumReleaseAge": "7 days",
   "minimumReleaseAgeBehaviour": "timestamp-required",
   "internalChecksFilter": "strict",
@@ -22,20 +19,14 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": [
-      "at any time"
-    ]
+    "schedule": ["at any time"]
   },
   "customManagers": [
     {
       "customType": "regex",
       "description": "Update local Nix package versions.",
-      "managerFilePatterns": [
-        "/^nix/packages/.*\\.nix$/"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) extractVersion=(?<extractVersion>\\S+)\\s+version = \"(?<currentValue>[^\"]+)\";"
-      ],
+      "managerFilePatterns": ["/^nix/packages/.*\\.nix$/"],
+      "matchStrings": ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) extractVersion=(?<extractVersion>\\S+)\\s+version = \"(?<currentValue>[^\"]+)\";"],
       "versioningTemplate": "semver"
     },
     {
@@ -45,49 +36,31 @@
         "/^nix/packages/.*-src\\.nix$/",
         "/^nix/home-manager/nixvim/legacy-plugins\\.nix$/"
       ],
-      "matchStrings": [
-        "# renovate: datasource=git-refs packageName=(?<packageName>https://github\\.com/(?<depName>\\S+)) currentValue=(?<currentValue>\\S+)\\s+rev = \"(?<currentDigest>[a-f0-9]{40})\";"
-      ],
+      "matchStrings": ["# renovate: datasource=git-refs packageName=(?<packageName>https://github\\.com/(?<depName>\\S+)) currentValue=(?<currentValue>\\S+)\\s+rev = \"(?<currentDigest>[a-f0-9]{40})\";"],
       "datasourceTemplate": "git-refs"
     }
   ],
   "packageRules": [
     {
-      "matchManagers": [
-        "nix"
-      ],
-      "matchUpdateTypes": [
-        "lockFileMaintenance"
-      ],
+      "matchManagers": ["nix"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
       "groupName": "flake.lock maintenance",
       "commitMessageAction": "refresh",
       "commitMessageTopic": "flake.lock"
     },
     {
-      "matchFileNames": [
-        ".github/textlint/pnpm-lock.yaml"
-      ],
-      "matchManagers": [
-        "npm"
-      ],
-      "matchUpdateTypes": [
-        "lockFileMaintenance"
-      ],
+      "matchFileNames": [".github/textlint/pnpm-lock.yaml"],
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
       "groupName": "pnpm-lock.yaml maintenance",
       "commitMessageAction": "refresh",
       "commitMessageTopic": "pnpm-lock.yaml"
     },
     {
-      "matchManagers": [
-        "npm"
-      ],
-      "matchFileNames": [
-        ".github/textlint/package.json"
-      ],
+      "matchManagers": ["npm"],
+      "matchFileNames": [".github/textlint/package.json"],
       "postUpgradeTasks": {
-        "commands": [
-          ".github/renovate-update-nix-hashes.sh"
-        ],
+        "commands": [".github/renovate-update-nix-hashes.sh"],
         "installTools": {
           "nix": {}
         },
@@ -99,13 +72,9 @@
       }
     },
     {
-      "matchManagers": [
-        "custom.regex"
-      ],
+      "matchManagers": ["custom.regex"],
       "postUpgradeTasks": {
-        "commands": [
-          ".github/renovate-update-nix-hashes.sh"
-        ],
+        "commands": [".github/renovate-update-nix-hashes.sh"],
         "installTools": {
           "nix": {}
         },
