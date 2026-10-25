@@ -42,6 +42,7 @@
           builtins.elem (nixpkgs.lib.getName package) [
             "claude-code"
             "claude-desktop"
+            "codex-desktop"
           ];
       };
 

@@ -10,6 +10,7 @@ in
   claude-code = callPackage ./claude-code.nix { inherit mkGithubReleaseArchive; };
   claude-desktop = callPackage ./claude-desktop.nix { };
   codex = callPackage ./codex.nix { inherit mkGithubReleaseArchive; };
+  codex-desktop = callPackage ./codex-desktop.nix { };
   difit = callPackage ./difit.nix { };
   gh-aw = callPackage ./gh-aw.nix { inherit mkGithubReleaseBinary; };
   ghalint = callPackage ./ghalint.nix { };
