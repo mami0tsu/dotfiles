@@ -13,6 +13,7 @@ on:
       - nix/packages/ghalint.nix
       - nix/packages/textlint.nix
       - .github/textlint/**
+      - package.json
   push:
     branches: [main]
     paths:
@@ -24,6 +25,7 @@ on:
       - nix/packages/ghalint.nix
       - nix/packages/textlint.nix
       - .github/textlint/**
+      - package.json
 
 permissions: {}
 

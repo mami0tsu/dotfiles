@@ -34,6 +34,11 @@ pnpm の共通バージョンは、リポジトリルートの `package.json` �
 このアクションと textlint は `pnpm-workspace.yaml` を通じて共通の指定を参照し、lockfile はそれぞれのプロジェクトで保持します。
 CI と Renovate も、ルートのバージョン指定を使います。
 
+Node.js の共通バージョンは、ルートの `package.json` の `engines.node` で指定します。
+CI の `setup-node` と、Nix で構築する textlint と difit はこの指定を参照します。
+アクションの `runs.using: node24` は GitHub Actions が提供する実行環境の指定です。
+メジャーバージョンを変更する場合は、`runs.using` と `@types/node` の対応も確認します。
+
 実装を変更する場合は、次のコマンドで型検査、ビルド、テストを実行します。
 
 ```sh

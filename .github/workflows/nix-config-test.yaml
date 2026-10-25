@@ -9,6 +9,7 @@ on:
       - flake.lock
       - flake.nix
       - nix/**
+      - package.json
   push:
     branches: [main]
     paths:
@@ -16,6 +17,7 @@ on:
       - flake.lock
       - flake.nix
       - nix/**
+      - package.json
 
 # ワークフローレベルではパーミッションを設定しない
 permissions: {}

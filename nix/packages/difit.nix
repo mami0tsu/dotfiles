@@ -4,7 +4,7 @@
   fetchPnpmDeps,
   lib,
   makeWrapper,
-  nodejs_26,
+  nodejs,
   pnpm,
   pnpmConfigHook,
 }:
@@ -23,7 +23,7 @@ stdenvNoCC.mkDerivation rec {
 
   nativeBuildInputs = [
     makeWrapper
-    nodejs_26
+    nodejs
     pnpm
     pnpmConfigHook
   ];
@@ -51,7 +51,7 @@ stdenvNoCC.mkDerivation rec {
     cp -R dist node_modules package.json README.md "$package_dir/"
     find "$package_dir/node_modules" -xtype l -delete
 
-    makeWrapper ${nodejs_26}/bin/node "$out/bin/difit" \
+    makeWrapper ${nodejs}/bin/node "$out/bin/difit" \
       --add-flags "$package_dir/dist/cli/index.js"
 
     runHook postInstall
