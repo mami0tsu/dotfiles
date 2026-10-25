@@ -5,15 +5,13 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - .github/renovate-update-nix-hashes.sh
-      - .github/scripts/test-renovate-update-nix-hashes.py
+      - .github/actions/update-nix-hashes/**
       - .github/workflows/renovate-config-validate.yaml
       - renovate.json
   push:
     branches: [main]
     paths:
-      - .github/renovate-update-nix-hashes.sh
-      - .github/scripts/test-renovate-update-nix-hashes.py
+      - .github/actions/update-nix-hashes/**
       - .github/workflows/renovate-config-validate.yaml
       - renovate.json
 
@@ -40,11 +38,27 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Test Nix hash updates
-        run: python3 .github/scripts/test-renovate-update-nix-hashes.py
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Build and test Nix hash action
+        working-directory: .github/actions/update-nix-hashes
+        run: |
+          npm ci --ignore-scripts
+          npm run typecheck
+          npm run build
+          git diff --exit-code -- dist
+          npm test
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+
+      - name: Run Nix hash action
+        # Exercise the action rebuilt in this checkout.
+        uses: ./.github/actions/update-nix-hashes # zizmor: ignore[self-repository]
 
       - name: Validate Renovate Config
         run: nix shell nixpkgs#renovate -c renovate-config-validator renovate.json

@@ -1,0 +1,9 @@
+name: Update Nix hashes
+description: Update Nix package hashes or verify pinned Neovim plugin hashes.
+inputs:
+  mode:
+    description: changed updates modified packages and plugins; all updates every plugin; check verifies every plugin.
+    default: changed
+runs:
+  using: node24
+  main: dist/index.js

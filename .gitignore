@@ -5,4 +5,5 @@
 /apm.lock.yaml
 /.apm.lock.yaml.*
 .github/textlint/node_modules/
+.github/actions/*/node_modules/
 apm_modules/

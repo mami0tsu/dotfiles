@@ -50,8 +50,10 @@ jobs:
           renovate-version: latest
           token: ${{ steps.app-token.outputs.token }}
         env:
-          # renovate.json の postUpgradeTasks で使う Nix hash 更新スクリプトだけを許可する
-          RENOVATE_ALLOWED_COMMANDS: '["^\\.github/renovate-update-nix-hashes\\.sh$"]'
+          # postUpgradeTasks では Nix hash の更新とアクションのビルドだけを許可する
+          RENOVATE_ALLOWED_COMMANDS: >-
+            ["^node \\.github/actions/update-nix-hashes/dist/index\\.js$",
+             "^npm --prefix \\.github/actions/update-nix-hashes (ci --ignore-scripts|run build)$"]
           # postUpgradeTasks で宣言した Nix を実行時に導入する
           RENOVATE_BINARY_SOURCE: install
           # self-hosted Renovate では、このリポジトリの設定ファイルだけを実行対象にする
