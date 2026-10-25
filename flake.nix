@@ -53,12 +53,18 @@
 
       forAllSystems = nixpkgs.lib.genAttrs systems;
 
-      localPackages = import ./nix/packages { inherit (pkgs) callPackage; };
+      localPackages = import ./nix/packages {
+        inherit pkgs;
+        inherit (pkgs) callPackage;
+      };
 
       getLintTools =
         pkgs:
         let
-          lintPackages = import ./nix/packages { inherit (pkgs) callPackage; };
+          lintPackages = import ./nix/packages {
+            inherit pkgs;
+            inherit (pkgs) callPackage;
+          };
         in
         [
           pkgs.actionlint

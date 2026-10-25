@@ -12,6 +12,7 @@ on:
       - flake.nix
       - nix/packages/default.nix
       - nix/packages/textlint.nix
+      - package.json
 
 # ワークフローレベルではパーミッションを設定しない
 permissions: {}

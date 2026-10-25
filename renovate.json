@@ -60,7 +60,7 @@
       "matchManagers": ["npm"],
       "matchFileNames": [".github/textlint/package.json"],
       "postUpgradeTasks": {
-        "commands": [".github/renovate-update-nix-hashes.sh"],
+        "commands": ["node .github/actions/update-nix-hashes/dist/index.js"],
         "installTools": {
           "nix": {}
         },
@@ -72,9 +72,31 @@
       }
     },
     {
+      "matchManagers": ["npm"],
+      "matchFileNames": [
+        "package.json",
+        ".github/actions/update-nix-hashes/package.json"
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "pnpm --dir .github/actions/update-nix-hashes install --frozen-lockfile --ignore-scripts",
+          "pnpm --dir .github/actions/update-nix-hashes run build"
+        ],
+        "installTools": {
+          "node": {},
+          "pnpm": {}
+        },
+        "fileFilters": [
+          "pnpm-lock.yaml",
+          ".github/actions/update-nix-hashes/**"
+        ],
+        "executionMode": "branch"
+      }
+    },
+    {
       "matchManagers": ["custom.regex"],
       "postUpgradeTasks": {
-        "commands": [".github/renovate-update-nix-hashes.sh"],
+        "commands": ["node .github/actions/update-nix-hashes/dist/index.js"],
         "installTools": {
           "nix": {}
         },
