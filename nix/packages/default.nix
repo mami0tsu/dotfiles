@@ -16,10 +16,10 @@ in
   codex-desktop = callPackage ./codex-desktop.nix { };
   difit = callPackage ./difit.nix { inherit nodejs; };
   gh-aw = callPackage ./gh-aw.nix { inherit mkGithubReleaseBinary; };
-  ghalint = callPackage ./ghalint.nix { };
   gh-stack = callPackage ./gh-stack.nix { inherit mkGithubReleaseBinary; };
   git-open-src = callPackage ./git-open-src.nix { };
   git-wt = callPackage ./git-wt.nix { inherit mkGithubReleaseArchive; };
+  jactionlint = callPackage ./jactionlint.nix { };
   roots = callPackage ./roots.nix { inherit mkGithubReleaseArchive; };
   textlint = callPackage ./textlint.nix { inherit nodejs; };
   zsh-defer-src = callPackage ./zsh-defer-src.nix { };

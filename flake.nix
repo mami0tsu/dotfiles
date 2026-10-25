@@ -67,12 +67,10 @@
           };
         in
         [
-          pkgs.actionlint
-          lintPackages.ghalint
+          lintPackages.jactionlint
           pkgs.shellcheck
           lintPackages.textlint
           pkgs.yamllint
-          pkgs.zizmor
         ];
 
       getTestTools = pkgs: [
