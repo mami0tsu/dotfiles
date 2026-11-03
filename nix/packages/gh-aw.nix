@@ -7,12 +7,12 @@
 mkGithubReleaseBinary rec {
   pname = "gh-aw";
   # renovate: datasource=github-releases depName=github/gh-aw extractVersion=^v(?<version>.+)$
-  version = "0.93.3";
+  version = "0.93.5";
   assetName = "darwin-arm64";
 
   src = fetchurl {
     url = "https://github.com/github/gh-aw/releases/download/v${version}/${assetName}";
-    hash = "sha256-qdoXtWjHlTx6nOm8DKWmXGrlavHVx4dZabXRKdy1B5Y=";
+    hash = "sha256-8HC/MixtqZCsr9gwCT1uezNqX+ZpDBlVAFVUmWM/o+c=";
   };
 
   executable = "gh-aw";
