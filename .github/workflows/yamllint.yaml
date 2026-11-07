@@ -1,5 +1,5 @@
 ---
-name: YAML Lint
+name: yamllint
 
 on:
   pull_request:
@@ -25,7 +25,7 @@ concurrency:
 
 jobs:
   yamllint:
-    name: YAML Lint
+    name: yamllint
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
@@ -39,5 +39,5 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
-      - name: Lint YAML
+      - name: yamllint
         run: nix develop .#lint -c yamllint --config-file .github/yamllint.yaml --strict .

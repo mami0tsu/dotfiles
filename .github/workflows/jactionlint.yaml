@@ -1,35 +1,43 @@
 ---
-name: Markdown Lint
+name: jactionlint
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - '**/*.md'
-      - .github/workflows/markdown-lint.yaml
-      - .github/textlint/**
+      - .github/workflows/**/*.y{a,}ml
+      - .github/**/action.y{a,}ml
+      - .github/jactionlint.yaml
       - flake.lock
       - flake.nix
       - nix/packages/default.nix
+      - nix/packages/jactionlint.nix
       - nix/packages/textlint.nix
+      - .github/textlint/**
+      - package.json
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/**/*.y{a,}ml
+      - .github/**/action.y{a,}ml
+      - .github/jactionlint.yaml
+      - flake.lock
+      - flake.nix
+      - nix/packages/default.nix
+      - nix/packages/jactionlint.nix
+      - nix/packages/textlint.nix
+      - .github/textlint/**
       - package.json
 
-# ワークフローレベルではパーミッションを設定しない
 permissions: {}
 
-# デフォルトシェルでパイプエラーを有効化する
-defaults:
-  run:
-    shell: bash
-
-# ワークフローが同じブランチで複数起動したらキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   lint:
-    name: Lint Markdown
+    name: jactionlint
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
@@ -43,14 +51,5 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
-      - name: Lint Markdown
-        working-directory: .github/textlint
-        run: |
-          git -C ../.. ls-files -z -- '*.md' |
-            while IFS= read -r -d '' file; do
-              printf '../../%s\0' "$file"
-            done |
-            xargs -0 nix develop '../..#lint' -c textlint \
-              --config .textlintrc.json \
-              --ignore-path .textlintignore \
-              --
+      - name: jactionlint
+        run: nix develop .#lint -c jactionlint --format github --strict-exit
