@@ -1,6 +1,8 @@
 ---
-name: YAML Lint
+# リポジトリ内の YAML を共通ルールに従って yamllint で検証する
+name: yamllint
 
+# YAML と lint 環境の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -17,27 +19,30 @@ on:
       - flake.nix
       - nix/packages/**
 
+# 権限はジョブごとに必要なものだけを付与する
 permissions: {}
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   yamllint:
-    name: YAML Lint
+    name: yamllint
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        uses: DeterminateSystems/nix-installer-action@v22
 
-      - name: Lint YAML
+      # 共通ルールで YAML 全体を検証し、警告も失敗として扱う
+      - name: yamllint
         run: nix develop .#lint -c yamllint --config-file .github/yamllint.yaml --strict .

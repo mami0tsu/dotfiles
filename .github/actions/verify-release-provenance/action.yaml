@@ -1,0 +1,12 @@
+name: Verify release provenance
+description: Verify available release attestations for changed Nix packages.
+inputs:
+  base-sha:
+    description: Base commit used to find changed packages.
+    required: true
+  head-sha:
+    description: Head commit used to find changed packages.
+    required: true
+runs:
+  using: node24
+  main: index.js

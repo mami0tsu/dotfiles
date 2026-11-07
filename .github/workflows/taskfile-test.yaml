@@ -1,6 +1,8 @@
 ---
+# Taskfile と読み込むタスク定義をリポジトリの検証タスクで確認する
 name: Taskfile Test
 
+# Taskfile と読み込むタスク定義の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -15,8 +17,10 @@ on:
       - taskfile.yaml
       - taskfiles/**
 
+# 権限はジョブごとに必要なものだけを付与する
 permissions: {}
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -30,14 +34,15 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
 
       - name: Install Task
-        uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
+        uses: go-task/setup-task@v2.2.0
         with:
           version: 3.40.1
 
+      # リポジトリで定義した Taskfile 検証タスクを実行する
       - name: Test Taskfile
         run: task validate:taskfile

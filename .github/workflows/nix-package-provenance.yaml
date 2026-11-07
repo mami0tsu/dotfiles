@@ -1,0 +1,45 @@
+---
+# Nix パッケージのリリース成果物について提供されている attestation を検証する
+name: Nix Package Provenance
+
+# パッケージ定義または検証処理が変わった PR で配布元の証明を確認する
+on:
+  pull_request:
+    paths:
+      - .github/actions/verify-release-provenance/**
+      - .github/workflows/nix-package-provenance.yaml
+      - nix/packages/**
+
+# リリース情報の取得とチェックアウトに必要な読み取り権限だけを付与する
+permissions:
+  contents: read
+
+# 同じ PR またはブランチの古い実行をキャンセルする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify Nix Package Provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6.1.0
+        with:
+          # PR の base と head を比較できるように履歴を取得する
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/nix-installer-action@v22
+      # 外部通信を模擬し、対象選定と証明の検証処理をテストする
+      - name: Test provenance action
+        run: node --test .github/actions/verify-release-provenance/test/*.test.js
+      # Nix のリリース情報から対象を選び、共通処理の変更時は全件を検証する
+      # attestation が未提供の場合はスキップし、提供されている証明を検証する
+      - name: Verify Nix Package Provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        uses: ./.github/actions/verify-release-provenance # zizmor: ignore[self-repository]
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          head-sha: ${{ github.event.pull_request.head.sha }}

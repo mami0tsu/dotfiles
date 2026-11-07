@@ -1,12 +1,14 @@
 ---
-name: Markdown Lint
+# Git 管理下の Markdown を共通の文章校正ルールに従って textlint で検証する
+name: textlint
 
+# Markdown と文章校正ルール、lint 環境の変更を PR で検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '**/*.md'
-      - .github/workflows/markdown-lint.yaml
+      - .github/workflows/textlint.yaml
       - .github/textlint/**
       - flake.lock
       - flake.nix
@@ -29,21 +31,23 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint Markdown
+    name: textlint
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        uses: DeterminateSystems/nix-installer-action@v22
 
-      - name: Lint Markdown
+      # Git 管理下の Markdown を、校正設定のディレクトリから参照できるパスに変換する
+      # ファイル名は NUL 区切りで渡し、空白を含むパスでも分割しない
+      - name: textlint
         working-directory: .github/textlint
         run: |
           git -C ../.. ls-files -z -- '*.md' |
