@@ -1,0 +1,35 @@
+---
+name: Nix Package Provenance
+
+on:
+  pull_request:
+    paths:
+      - .github/actions/verify-release-provenance/**
+      - .github/workflows/nix-package-provenance.yaml
+      - nix/packages/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify Nix Package Provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      - name: Verify Nix Package Provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        uses: ./.github/actions/verify-release-provenance # zizmor: ignore[self-repository]
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          head-sha: ${{ github.event.pull_request.head.sha }}
