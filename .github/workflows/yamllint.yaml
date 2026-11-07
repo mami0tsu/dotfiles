@@ -6,10 +6,16 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - '**/*.y{a,}ml'
+      - flake.lock
+      - flake.nix
+      - nix/packages/**
   push:
     branches: [main]
     paths:
       - '**/*.y{a,}ml'
+      - flake.lock
+      - flake.nix
+      - nix/packages/**
 
 permissions: {}
 
@@ -20,10 +26,9 @@ concurrency:
 jobs:
   yamllint:
     name: YAML Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
     permissions:
-      checks: write
       contents: read
     steps:
       - name: Checkout
@@ -31,10 +36,8 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+
       - name: Lint YAML
-        uses: reviewdog/action-yamllint@de68272fdca5f2a961fb309e0d2e13c2eb186d9e # v1.23.1
-        with:
-          fail_level: error
-          filter_mode: nofilter
-          reporter: github-check
-          yamllint_flags: --config-file .github/yamllint.yaml --strict .
+        run: nix develop .#lint -c yamllint --config-file .github/yamllint.yaml --strict .
