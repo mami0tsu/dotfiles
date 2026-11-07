@@ -31,7 +31,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
-      # 変更対象を検証し、対象がなければ全対応パッケージを検証する
+      # 外部通信を模擬し、対象選定と証明の検証処理をテストする
+      - name: Test provenance action
+        run: node --test .github/actions/verify-release-provenance/test/*.test.js
+      # Nix のリリース情報から対象を選び、共通処理の変更時は全件を検証する
       # attestation が未提供の場合はスキップし、提供されている証明を検証する
       - name: Verify Nix Package Provenance
         env:
