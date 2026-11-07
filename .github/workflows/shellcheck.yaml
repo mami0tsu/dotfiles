@@ -1,16 +1,22 @@
-name: Shell Lint
+name: ShellCheck
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '**/*.sh'
-      - .github/workflows/shell-lint.yaml
+      - .github/workflows/shellcheck.yaml
+      - flake.lock
+      - flake.nix
+      - nix/packages/**
   push:
     branches: [main]
     paths:
       - '**/*.sh'
-      - .github/workflows/shell-lint.yaml
+      - .github/workflows/shellcheck.yaml
+      - flake.lock
+      - flake.nix
+      - nix/packages/**
 
 # ワークフローレベルではパーミッションを設定しない
 permissions: {}
@@ -28,10 +34,9 @@ concurrency:
 jobs:
   shellcheck:
     name: ShellCheck
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     permissions:
-      checks: write
       contents: read
     steps:
       - name: Checkout
@@ -39,11 +44,10 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+
       - name: Run ShellCheck
-        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
-        with:
-          fail_level: error
-          filter_mode: nofilter
-          path: .
-          pattern: '*.sh'
-          reporter: github-check
+        run: |
+          git ls-files -z -- '*.sh' |
+            xargs -0 -r nix develop .#lint -c shellcheck --severity=error --
