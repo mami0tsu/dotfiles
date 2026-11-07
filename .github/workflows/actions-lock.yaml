@@ -1,0 +1,45 @@
+---
+# ワークフローのアクション依存が lockfile と一致し固定コミットが有効であることを検証する
+name: Actions Lock
+
+# 外部アクションの参照と lockfile の変更を検証する
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/**
+      - .github/**/action.y{a,}ml
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/**
+      - .github/**/action.y{a,}ml
+
+# 権限はジョブごとに必要なものだけを付与する
+permissions: {}
+
+# 同じ PR またはブランチの古い実行をキャンセルする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify Actions Lock
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.1.0
+        with:
+          persist-credentials: false
+
+      # 公式 CLI で lockfile の不足と固定コミットの到達可能性を検証する
+      - name: Verify workflow dependency lockfile
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install github/gh-actions-lock --pin v0.4.1
+          gh actions-lock --verify --ignore-local-actions --no-interactive

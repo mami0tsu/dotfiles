@@ -9,7 +9,6 @@ on:
     paths:
       - .github/workflows/**/*.y{a,}ml
       - .github/**/action.y{a,}ml
-      - .github/workflows/actions.lock
       - .github/jactionlint.yaml
       - flake.lock
       - flake.nix
@@ -23,7 +22,6 @@ on:
     paths:
       - .github/workflows/**/*.y{a,}ml
       - .github/**/action.y{a,}ml
-      - .github/workflows/actions.lock
       - .github/jactionlint.yaml
       - flake.lock
       - flake.nix
@@ -60,11 +58,3 @@ jobs:
       # Nix で固定したツールを使い、診断を GitHub の注釈として出力する
       - name: jactionlint
         run: nix develop .#lint -c jactionlint --format github --strict-exit
-
-      # 公式 CLI で lockfile の不足と固定コミットの到達可能性を検証する
-      - name: Verify workflow dependency lockfile
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh extension install github/gh-actions-lock --pin v0.4.1
-          gh actions-lock --verify --ignore-local-actions --no-interactive
