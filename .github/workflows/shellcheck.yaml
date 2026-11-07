@@ -1,5 +1,7 @@
+# Git 管理下のシェルスクリプトを ShellCheck で検証する
 name: ShellCheck
 
+# シェルスクリプトと lint 環境の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -47,6 +49,8 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
+      # Git 管理下の .sh を対象にし、従来どおり error レベルで失敗させる
+      # NUL 区切りで空白を含むファイル名に対応し、対象がなければ実行しない
       - name: Run ShellCheck
         run: |
           git ls-files -z -- '*.sh' |

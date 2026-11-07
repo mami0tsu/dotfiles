@@ -1,6 +1,8 @@
 ---
+# CI 用の macOS 構成をビルドし flake に定義したチェックを実行する
 name: Nix Config Test
 
+# Nix 設定と依存の変更を macOS 上でビルドして検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -49,14 +51,17 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
+      # GitHub Actions キャッシュは main への push 時だけ有効にする
       - name: Cache Nix
         uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         with:
           use-gha-cache: ${{ github.event_name == 'push' && 'enabled' || 'disabled' }}
           use-flakehub: disabled
 
+      # CI 用の構成をビルドし、ロックファイルを更新せずに検証する
       - name: Build Darwin Configuration
         run: nix build --no-link --no-update-lock-file --print-build-logs .#darwinConfigurations.ci.system
 
+      # flake に定義したパッケージのスモークテストと構文チェックも実行する
       - name: Run Flake Checks
         run: nix flake check --no-update-lock-file

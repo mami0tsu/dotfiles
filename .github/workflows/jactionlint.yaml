@@ -1,6 +1,8 @@
 ---
+# GitHub Actions のワークフローとローカルアクションを jactionlint で検証する
 name: jactionlint
 
+# ワークフロー、ローカルアクション、lint 環境の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -29,8 +31,10 @@ on:
       - .github/textlint/**
       - package.json
 
+# 権限はジョブごとに必要なものだけを付与する
 permissions: {}
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -51,5 +55,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
+      # Nix で固定したツールを使い、診断を GitHub の注釈として出力する
       - name: jactionlint
         run: nix develop .#lint -c jactionlint --format github --strict-exit

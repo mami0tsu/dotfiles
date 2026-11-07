@@ -1,6 +1,8 @@
 ---
+# Taskfile と読み込むタスク定義をリポジトリの検証タスクで確認する
 name: Taskfile Test
 
+# Taskfile と読み込むタスク定義の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -15,8 +17,10 @@ on:
       - taskfile.yaml
       - taskfiles/**
 
+# 権限はジョブごとに必要なものだけを付与する
 permissions: {}
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -39,5 +43,6 @@ jobs:
         with:
           version: 3.40.1
 
+      # リポジトリで定義した Taskfile 検証タスクを実行する
       - name: Test Taskfile
         run: task validate:taskfile

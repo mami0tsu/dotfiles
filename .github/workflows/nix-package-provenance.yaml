@@ -1,6 +1,8 @@
 ---
+# Nix パッケージのリリース成果物について提供されている attestation を検証する
 name: Nix Package Provenance
 
+# パッケージ定義または検証処理が変わった PR で配布元の証明を確認する
 on:
   pull_request:
     paths:
@@ -8,9 +10,11 @@ on:
       - .github/workflows/nix-package-provenance.yaml
       - nix/packages/**
 
+# リリース情報の取得とチェックアウトに必要な読み取り権限だけを付与する
 permissions:
   contents: read
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -23,9 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          # PR の base と head を比較できるように履歴を取得する
           fetch-depth: 0
           persist-credentials: false
       - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      # 変更対象を検証し、対象がなければ全対応パッケージを検証する
+      # attestation が未提供の場合はスキップし、提供されている証明を検証する
       - name: Verify Nix Package Provenance
         env:
           GH_TOKEN: ${{ github.token }}

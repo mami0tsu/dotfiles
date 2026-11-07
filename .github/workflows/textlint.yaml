@@ -1,6 +1,8 @@
 ---
+# Git 管理下の Markdown を共通の文章校正ルールに従って textlint で検証する
 name: textlint
 
+# Markdown と文章校正ルール、lint 環境の変更を PR で検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -43,6 +45,8 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
+      # Git 管理下の Markdown を、校正設定のディレクトリから参照できるパスに変換する
+      # ファイル名は NUL 区切りで渡し、空白を含むパスでも分割しない
       - name: textlint
         working-directory: .github/textlint
         run: |

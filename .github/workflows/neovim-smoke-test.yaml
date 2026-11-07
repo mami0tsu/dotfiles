@@ -1,6 +1,8 @@
 ---
+# Home Manager で生成した設定を使い Neovim がヘッドレスで起動できることを確認する
 name: Neovim Smoke Test
 
+# Neovim 本体とプラグイン、生成に使う Nix 設定の変更を検証する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -21,12 +23,14 @@ on:
       - nix/home-manager/nixvim/**
       - nvim/**
 
+# 権限はジョブごとに必要なものだけを付与する
 permissions: {}
 
 defaults:
   run:
     shell: bash
 
+# 同じ PR またはブランチの古い実行をキャンセルする
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -48,12 +52,14 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
 
+      # GitHub Actions キャッシュは main への push 時だけ有効にする
       - name: Cache Nix
         uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         with:
           use-gha-cache: ${{ github.event_name == 'push' && 'enabled' || 'disabled' }}
           use-flakehub: disabled
 
+      # 設定を実環境へ適用せず、生成物のパスを次のステップへ渡す
       - name: Build Home Manager Configuration
         id: build
         run: |
@@ -61,6 +67,7 @@ jobs:
             '.#darwinConfigurations.ci.config.home-manager.users.ci.home.activationPackage')
           echo "generation=$generation" >> "$GITHUB_OUTPUT"
 
+      # 生成した設定で起動し、キャッシュと状態は一時ディレクトリへ分離する
       - name: Test Neovim
         env:
           HOME_MANAGER_GENERATION: ${{ steps.build.outputs.generation }}
