@@ -61,9 +61,6 @@
       "matchFileNames": [".github/textlint/package.json"],
       "postUpgradeTasks": {
         "commands": ["node .github/actions/update-nix-hashes/dist/index.js"],
-        "installTools": {
-          "nix": {}
-        },
         "fileFilters": [
           ".github/textlint/**",
           "nix/packages/textlint.nix"
@@ -82,10 +79,6 @@
           "pnpm --dir .github/actions/update-nix-hashes install --frozen-lockfile --ignore-scripts",
           "pnpm --dir .github/actions/update-nix-hashes run build"
         ],
-        "installTools": {
-          "node": {},
-          "pnpm": {}
-        },
         "fileFilters": [
           "pnpm-lock.yaml",
           ".github/actions/update-nix-hashes/**"
@@ -97,9 +90,6 @@
       "matchManagers": ["custom.regex"],
       "postUpgradeTasks": {
         "commands": ["node .github/actions/update-nix-hashes/dist/index.js"],
-        "installTools": {
-          "nix": {}
-        },
         "fileFilters": [
           "flake.nix",
           "nix/**/*.nix"
@@ -113,7 +103,6 @@
       ],
       "postUpgradeTasks": {
         "commands": [
-          "install-tool gh 2.103.3",
           "gh extension install github/gh-actions-lock --pin v0.4.1",
           "gh actions-lock --ignore-local-actions --no-interactive"
         ],
