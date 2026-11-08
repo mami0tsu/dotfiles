@@ -21,7 +21,9 @@ Renovate が Nix パッケージや textlint の依存関係を変更した後�
 どのモードでも、処理が成功すると最後に `nix flake check --no-build --no-update-lock-file` を実行します。
 
 Renovate の `postUpgradeTasks` は、変更をコミットする前にコマンドを実行します。
-Renovate コンテナ内でも、同じエントリーポイントを呼び出します。
+Renovate は GitHub ランナー上で実行し、事前に導入した Nix と Node.js、pnpm、gh を使います。
+Nix の保存先を `/nix/store` に保つことで、公式バイナリキャッシュを利用できます。
+PR の設定検証と Renovate の実行前に、保存先と `nix-update` の起動を確認します。
 
 ```sh
 node .github/actions/update-nix-hashes/dist/index.js

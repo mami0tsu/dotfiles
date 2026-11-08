@@ -25,7 +25,6 @@ workflows:
         - 'actions/setup-node@v6.5.0'
         - 'determinatesystems/nix-installer-action@v22'
         - 'pnpm/action-setup@v6.0.10'
-        - 'renovatebot/github-action@v46.1.21'
     '.github/workflows/shellcheck.yaml':
         - 'actions/checkout@v6.1.0'
         - 'determinatesystems/nix-installer-action@v22'
@@ -74,8 +73,3 @@ dependencies:
         commit: 'sha1-0977fd99725f1db4007ccb2928dbb4e90d06cc86'
         owner_id: 21320719
         repo_id: 262289747
-    'renovatebot/github-action@v46.1.21':
-        ref: 'v46.1.21'
-        commit: 'sha1-1a96852b0384df1837619d04c60b2d10d1f9ff08'
-        owner_id: 38656520
-        repo_id: 252754603
