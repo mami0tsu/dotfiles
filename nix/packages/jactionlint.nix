@@ -7,7 +7,7 @@
 buildGo127Module rec {
   pname = "jactionlint";
   # renovate: datasource=github-releases depName=jdx/jactionlint extractVersion=^v(?<version>.+)$
-  version = "2.3.0";
+  version = "2.4.0";
 
   src = fetchFromGitHub {
     owner = "jdx";
