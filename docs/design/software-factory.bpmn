@@ -1,0 +1,846 @@
+<?xml version='1.0' encoding='utf-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_SoftwareFactory" targetNamespace="urn:software-factory:bpmn">
+  <bpmn:process id="SoftwareFactory" name="アイデアの登録からタスクの完了まで" isExecutable="false">
+    <bpmn:laneSet id="FactoryLanes">
+      <bpmn:lane id="HumanLane" name="人間">
+        <bpmn:flowNodeRef>HumanStart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Manual</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Join</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Adopt</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>HumanReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConsiderIdea</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConsiderGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IdeaDeferred</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>HumanReviewDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ApproveArtifact</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="MainAILane" name="メイン AI">
+        <bpmn:flowNodeRef>ResearchStart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ResearchTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReviewTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RegisterTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TicketTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>WorkTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ArtifactReviewTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubmitTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PrepareTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PrepareReviewTrigger</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="SubAILane" name="サブ AI">
+        <bpmn:flowNodeRef>Research</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReviewIdea</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReviewGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Register</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Tickets</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Ready</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Work</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AIReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Submit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Rejected</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReleaseReady</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>InvestigateIdea</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PrepareReview</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="HumanStart">
+      <bpmn:outgoing>Flow_HumanStart_Manual</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="ResearchStart" name="定期調査">
+      <bpmn:outgoing>Flow_ResearchStart_ResearchTrigger</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="ScheduledResearch" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="Manual" name="アイデアを&#10;登録する">
+      <bpmn:incoming>Flow_HumanStart_Manual</bpmn:incoming>
+      <bpmn:outgoing>Flow_Manual_Join</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Manual">
+        <bpmn:dataOutput id="Data_Manual_0" />
+        <bpmn:inputSet />
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_Manual_0</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataOutputAssociation id="Association_Manual_0">
+        <bpmn:sourceRef>Data_Manual_0</bpmn:sourceRef>
+        <bpmn:targetRef>IdeaRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+    <bpmn:task id="ResearchTrigger" name="調査スキルを&#10;起動する">
+      <bpmn:incoming>Flow_ResearchStart_ResearchTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_ResearchTrigger_Research</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Research" name="リポジトリを&#10;調査する">
+      <bpmn:incoming>Flow_ResearchTrigger_Research</bpmn:incoming>
+      <bpmn:outgoing>Flow_Research_ReviewTrigger</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ReviewTrigger" name="レビュースキルを&#10;起動する">
+      <bpmn:incoming>Flow_Research_ReviewTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewTrigger_ReviewIdea</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ReviewIdea" name="アイデアを&#10;レビューする">
+      <bpmn:incoming>Flow_ReviewTrigger_ReviewIdea</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewIdea_ReviewGate</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ReviewGate" gatewayDirection="Diverging" default="Flow_Reject">
+      <bpmn:incoming>Flow_ReviewIdea_ReviewGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewGate_RegisterTrigger</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Reject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="RegisterTrigger" name="登録スキルを&#10;起動する">
+      <bpmn:incoming>Flow_ReviewGate_RegisterTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_RegisterTrigger_Register</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Register" name="アイデアを&#10;登録する">
+      <bpmn:incoming>Flow_RegisterTrigger_Register</bpmn:incoming>
+      <bpmn:outgoing>Flow_Register_Join</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Register">
+        <bpmn:dataOutput id="Data_Register_0" />
+        <bpmn:inputSet />
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_Register_0</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataOutputAssociation id="Association_Register_0">
+        <bpmn:sourceRef>Data_Register_0</bpmn:sourceRef>
+        <bpmn:targetRef>IdeaRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Join" gatewayDirection="Converging">
+      <bpmn:incoming>Flow_Manual_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_Register_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_Join_PrepareTrigger</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="PrepareTrigger" name="調査スキルを&#10;起動する">
+      <bpmn:incoming>Flow_Join_PrepareTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrepareTrigger_Investigate</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="InvestigateIdea" name="登録済みの&#10;アイデアを調査する">
+      <bpmn:incoming>Flow_PrepareTrigger_Investigate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Investigate_PrepareReviewTrigger</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_InvestigateIdea">
+        <bpmn:dataInput id="Data_InvestigateIdea_0" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_InvestigateIdea_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet />
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_InvestigateIdea_0">
+        <bpmn:sourceRef>IdeaRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_InvestigateIdea_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:task>
+    <bpmn:task id="PrepareReviewTrigger" name="レビュースキルを&#10;起動する">
+      <bpmn:incoming>Flow_Investigate_PrepareReviewTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_Trigger_PrepareReview</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="PrepareReview" name="調査結果を&#10;レビューする">
+      <bpmn:incoming>Flow_Trigger_PrepareReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrepareReview_Consider</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_PrepareReview">
+        <bpmn:dataOutput id="Data_PrepareReview_0" />
+        <bpmn:inputSet />
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_PrepareReview_0</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataOutputAssociation id="Association_PrepareReview_0">
+        <bpmn:sourceRef>Data_PrepareReview_0</bpmn:sourceRef>
+        <bpmn:targetRef>IdeaRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:userTask id="ConsiderIdea" name="アイデアを&#10;レビューする">
+      <bpmn:incoming>Flow_PrepareReview_Consider</bpmn:incoming>
+      <bpmn:outgoing>Flow_Consider_Gate</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_ConsiderIdea">
+        <bpmn:dataInput id="Data_ConsiderIdea_0" />
+        <bpmn:dataOutput id="Data_ConsiderIdea_1" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_ConsiderIdea_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_ConsiderIdea_1</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_ConsiderIdea_0">
+        <bpmn:sourceRef>IdeaRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_ConsiderIdea_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="Association_ConsiderIdea_1">
+        <bpmn:sourceRef>Data_ConsiderIdea_1</bpmn:sourceRef>
+        <bpmn:targetRef>IdeaRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="ConsiderGate" gatewayDirection="Diverging" default="Flow_Defer">
+      <bpmn:incoming>Flow_Consider_Gate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Proceed_Adopt</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Defer</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="IdeaDeferred" name="見送り">
+      <bpmn:incoming>Flow_Defer</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Adopt" name="アイデアを&#10;採用する">
+      <bpmn:incoming>Flow_Proceed_Adopt</bpmn:incoming>
+      <bpmn:outgoing>Flow_Adopt_TicketTrigger</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Adopt">
+        <bpmn:dataOutput id="Data_Adopt_0" />
+        <bpmn:inputSet />
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_Adopt_0</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataOutputAssociation id="Association_Adopt_0">
+        <bpmn:sourceRef>Data_Adopt_0</bpmn:sourceRef>
+        <bpmn:targetRef>IdeaRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+    <bpmn:task id="TicketTrigger" name="起票スキルを&#10;起動する">
+      <bpmn:incoming>Flow_Adopt_TicketTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_TicketTrigger_Tickets</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Tickets" name="合意した内容で&#10;タスクを起票する">
+      <bpmn:incoming>Flow_TicketTrigger_Tickets</bpmn:incoming>
+      <bpmn:outgoing>Flow_Tickets_Ready</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Tickets">
+        <bpmn:dataInput id="Data_Tickets_0" />
+        <bpmn:dataOutput id="Data_Tickets_1" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_Tickets_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_Tickets_1</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_Tickets_0">
+        <bpmn:sourceRef>IdeaRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_Tickets_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="Association_Tickets_1">
+        <bpmn:sourceRef>Data_Tickets_1</bpmn:sourceRef>
+        <bpmn:targetRef>TicketRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="Ready" name="着手可能になった">
+      <bpmn:incoming>Flow_Tickets_Ready</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ready_WorkTrigger</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="WhenReady">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">タスクが着手条件を満たしている</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="WorkTrigger" name="作業スキルを&#10;起動する">
+      <bpmn:incoming>Flow_Ready_WorkTrigger</bpmn:incoming>
+      <bpmn:incoming>Flow_Revision_WorkTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_WorkTrigger_Work</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Work" name="成果物を作る">
+      <bpmn:incoming>Flow_WorkTrigger_Work</bpmn:incoming>
+      <bpmn:outgoing>Flow_Work_ArtifactReviewTrigger</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Work">
+        <bpmn:dataInput id="Data_Work_0" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_Work_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet />
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_Work_0">
+        <bpmn:sourceRef>TicketRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_Work_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:task>
+    <bpmn:task id="ArtifactReviewTrigger" name="レビュースキルを&#10;起動する">
+      <bpmn:incoming>Flow_Work_ArtifactReviewTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_ArtifactReviewTrigger_AIReview</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="AIReview" name="成果物を&#10;レビューする">
+      <bpmn:incoming>Flow_ArtifactReviewTrigger_AIReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_AIReview_HumanReview</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_AIReview">
+        <bpmn:dataOutput id="Data_AIReview_0" />
+        <bpmn:inputSet />
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_AIReview_0</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataOutputAssociation id="Association_AIReview_0">
+        <bpmn:sourceRef>Data_AIReview_0</bpmn:sourceRef>
+        <bpmn:targetRef>ReviewRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:userTask id="HumanReview" name="成果物を&#10;レビューする">
+      <bpmn:incoming>Flow_AIReview_HumanReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_HumanReview_Gateway</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_HumanReview">
+        <bpmn:dataInput id="Data_HumanReview_0" />
+        <bpmn:dataOutput id="Data_HumanReview_1" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_HumanReview_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_HumanReview_1</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_HumanReview_0">
+        <bpmn:sourceRef>ReviewRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_HumanReview_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="Association_HumanReview_1">
+        <bpmn:sourceRef>Data_HumanReview_1</bpmn:sourceRef>
+        <bpmn:targetRef>ReviewRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="HumanReviewDecision" gatewayDirection="Diverging" default="Flow_Revision_WorkTrigger">
+      <bpmn:incoming>Flow_HumanReview_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_NoIssues_Approval</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Revision_WorkTrigger</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="ApproveArtifact" name="成果物を&#10;承認する">
+      <bpmn:incoming>Flow_NoIssues_Approval</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approval_SubmitTrigger</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:task id="SubmitTrigger" name="リリーススキルを&#10;起動する">
+      <bpmn:incoming>Flow_Approval_SubmitTrigger</bpmn:incoming>
+      <bpmn:outgoing>Flow_Trigger_ReleaseReady</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="ReleaseReady" name="リリース可能になった">
+      <bpmn:incoming>Flow_Trigger_ReleaseReady</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReleaseReady_Submit</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="WhenReleaseReady">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">タスクがリリース可能な状態にある</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Submit" name="承認済みの&#10;成果物をリリースする">
+      <bpmn:incoming>Flow_ReleaseReady_Submit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Submit_End</bpmn:outgoing>
+      <bpmn:ioSpecification id="IO_Submit">
+        <bpmn:dataInput id="Data_Submit_0" />
+        <bpmn:dataOutput id="Data_Submit_1" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>Data_Submit_0</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>Data_Submit_1</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="Association_Submit_0">
+        <bpmn:sourceRef>ReviewRef</bpmn:sourceRef>
+        <bpmn:targetRef>Data_Submit_0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="Association_Submit_1">
+        <bpmn:sourceRef>Data_Submit_1</bpmn:sourceRef>
+        <bpmn:targetRef>ArtifactRef</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:endEvent id="End" name="処理終了">
+      <bpmn:incoming>Flow_Submit_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Rejected" name="登録しない">
+      <bpmn:incoming>Flow_Reject</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_HumanStart_Manual" sourceRef="HumanStart" targetRef="Manual" />
+    <bpmn:sequenceFlow id="Flow_ResearchStart_ResearchTrigger" sourceRef="ResearchStart" targetRef="ResearchTrigger" />
+    <bpmn:sequenceFlow id="Flow_ResearchTrigger_Research" sourceRef="ResearchTrigger" targetRef="Research" />
+    <bpmn:sequenceFlow id="Flow_Research_ReviewTrigger" sourceRef="Research" targetRef="ReviewTrigger" />
+    <bpmn:sequenceFlow id="Flow_ReviewTrigger_ReviewIdea" sourceRef="ReviewTrigger" targetRef="ReviewIdea" />
+    <bpmn:sequenceFlow id="Flow_ReviewIdea_ReviewGate" sourceRef="ReviewIdea" targetRef="ReviewGate" />
+    <bpmn:sequenceFlow id="Flow_ReviewGate_RegisterTrigger" sourceRef="ReviewGate" targetRef="RegisterTrigger" />
+    <bpmn:sequenceFlow id="Flow_RegisterTrigger_Register" sourceRef="RegisterTrigger" targetRef="Register" />
+    <bpmn:sequenceFlow id="Flow_Manual_Join" sourceRef="Manual" targetRef="Join" />
+    <bpmn:sequenceFlow id="Flow_Register_Join" sourceRef="Register" targetRef="Join" />
+    <bpmn:sequenceFlow id="Flow_Consider_Gate" sourceRef="ConsiderIdea" targetRef="ConsiderGate" />
+    <bpmn:sequenceFlow id="Flow_Proceed_Adopt" sourceRef="ConsiderGate" targetRef="Adopt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">人間がアイデアを採用する</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Defer" sourceRef="ConsiderGate" targetRef="IdeaDeferred" />
+    <bpmn:sequenceFlow id="Flow_Adopt_TicketTrigger" sourceRef="Adopt" targetRef="TicketTrigger" />
+    <bpmn:sequenceFlow id="Flow_TicketTrigger_Tickets" sourceRef="TicketTrigger" targetRef="Tickets" />
+    <bpmn:sequenceFlow id="Flow_Tickets_Ready" sourceRef="Tickets" targetRef="Ready" />
+    <bpmn:sequenceFlow id="Flow_Ready_WorkTrigger" sourceRef="Ready" targetRef="WorkTrigger" />
+    <bpmn:sequenceFlow id="Flow_WorkTrigger_Work" sourceRef="WorkTrigger" targetRef="Work" />
+    <bpmn:sequenceFlow id="Flow_Work_ArtifactReviewTrigger" sourceRef="Work" targetRef="ArtifactReviewTrigger" />
+    <bpmn:sequenceFlow id="Flow_ArtifactReviewTrigger_AIReview" sourceRef="ArtifactReviewTrigger" targetRef="AIReview" />
+    <bpmn:sequenceFlow id="Flow_AIReview_HumanReview" sourceRef="AIReview" targetRef="HumanReview" />
+    <bpmn:sequenceFlow id="Flow_HumanReview_Gateway" sourceRef="HumanReview" targetRef="HumanReviewDecision" />
+    <bpmn:sequenceFlow id="Flow_NoIssues_Approval" sourceRef="HumanReviewDecision" targetRef="ApproveArtifact" name="問題なし">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">問題がない</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Revision_WorkTrigger" sourceRef="HumanReviewDecision" targetRef="WorkTrigger" name="修正" />
+    <bpmn:sequenceFlow id="Flow_Approval_SubmitTrigger" sourceRef="ApproveArtifact" targetRef="SubmitTrigger" />
+    <bpmn:sequenceFlow id="Flow_Trigger_ReleaseReady" sourceRef="SubmitTrigger" targetRef="ReleaseReady" />
+    <bpmn:sequenceFlow id="Flow_ReleaseReady_Submit" sourceRef="ReleaseReady" targetRef="Submit" />
+    <bpmn:sequenceFlow id="Flow_Submit_End" sourceRef="Submit" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_Reject" sourceRef="ReviewGate" targetRef="Rejected" name="見送り" />
+    <bpmn:sequenceFlow id="Flow_Join_PrepareTrigger" sourceRef="Join" targetRef="PrepareTrigger" />
+    <bpmn:sequenceFlow id="Flow_PrepareTrigger_Investigate" sourceRef="PrepareTrigger" targetRef="InvestigateIdea" />
+    <bpmn:sequenceFlow id="Flow_Investigate_PrepareReviewTrigger" sourceRef="InvestigateIdea" targetRef="PrepareReviewTrigger" />
+    <bpmn:sequenceFlow id="Flow_Trigger_PrepareReview" sourceRef="PrepareReviewTrigger" targetRef="PrepareReview" />
+    <bpmn:sequenceFlow id="Flow_PrepareReview_Consider" sourceRef="PrepareReview" targetRef="ConsiderIdea" />
+    <bpmn:dataStoreReference id="IdeaRef" name="アイデアの保管場所" dataStoreRef="IdeaStore" />
+    <bpmn:dataStoreReference id="TicketRef" name="タスクの保管場所" dataStoreRef="TicketStore" />
+    <bpmn:dataStoreReference id="ReviewRef" name="成果物の一時保管場所" dataStoreRef="ReviewStore" />
+    <bpmn:dataStoreReference id="ArtifactRef" name="成果物の保管場所" dataStoreRef="ArtifactStore" />
+    <bpmn:textAnnotation id="PerTicket" textFormat="text/plain">
+      <bpmn:text>タスクごとに処理する</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="ReviewNote" textFormat="text/plain">
+      <bpmn:text>レビューで必要に応じて
+修正し、再レビューする</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="ReviewNoteAssociation" sourceRef="ReviewNote" targetRef="AIReview" associationDirection="None" />
+    <bpmn:association id="PerTicketAssociation" sourceRef="PerTicket" targetRef="Ready" associationDirection="None" />
+  </bpmn:process>
+  <bpmn:collaboration id="SoftwareFactoryCollaboration">
+    <bpmn:participant id="FactoryPool" processRef="SoftwareFactory" />
+  </bpmn:collaboration>
+  <bpmn:dataStore id="IdeaStore" name="アイデアの保管場所" />
+  <bpmn:dataStore id="TicketStore" name="タスクの保管場所" />
+  <bpmn:dataStore id="ReviewStore" name="成果物の一時保管場所" />
+  <bpmn:dataStore id="ArtifactStore" name="成果物の保管場所" />
+  <bpmndi:BPMNDiagram id="Diagram_SoftwareFactory">
+    <bpmndi:BPMNPlane id="Plane_SoftwareFactory" bpmnElement="SoftwareFactoryCollaboration">
+      <bpmndi:BPMNShape id="FactoryPool_di" bpmnElement="FactoryPool" isHorizontal="false">
+        <dc:Bounds x="24" y="24" width="600" height="2920" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HumanLane_di" bpmnElement="HumanLane" isHorizontal="false">
+        <dc:Bounds x="24" y="54" width="200" height="2890" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MainAILane_di" bpmnElement="MainAILane" isHorizontal="false">
+        <dc:Bounds x="224" y="54" width="200" height="2890" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubAILane_di" bpmnElement="SubAILane" isHorizontal="false">
+        <dc:Bounds x="424" y="54" width="200" height="2890" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HumanStart_di" bpmnElement="HumanStart">
+        <dc:Bounds x="106" y="86" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ResearchStart_di" bpmnElement="ResearchStart">
+        <dc:Bounds x="306" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="345" y="94" width="70" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Manual_di" bpmnElement="Manual">
+        <dc:Bounds x="54" y="160" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ResearchTrigger_di" bpmnElement="ResearchTrigger">
+        <dc:Bounds x="254" y="160" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Research_di" bpmnElement="Research">
+        <dc:Bounds x="454" y="250" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewTrigger_di" bpmnElement="ReviewTrigger">
+        <dc:Bounds x="254" y="340" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewIdea_di" bpmnElement="ReviewIdea">
+        <dc:Bounds x="454" y="430" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewGate_di" bpmnElement="ReviewGate" isMarkerVisible="true">
+        <dc:Bounds x="504" y="520" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RegisterTrigger_di" bpmnElement="RegisterTrigger">
+        <dc:Bounds x="254" y="610" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Register_di" bpmnElement="Register">
+        <dc:Bounds x="454" y="700" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Join_di" bpmnElement="Join" isMarkerVisible="true">
+        <dc:Bounds x="104" y="790" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Adopt_di" bpmnElement="Adopt">
+        <dc:Bounds x="54" y="1490" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TicketTrigger_di" bpmnElement="TicketTrigger">
+        <dc:Bounds x="254" y="1580" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Tickets_di" bpmnElement="Tickets">
+        <dc:Bounds x="454" y="1670" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ready_di" bpmnElement="Ready">
+        <dc:Bounds x="506" y="1770" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="1778" width="125" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WorkTrigger_di" bpmnElement="WorkTrigger">
+        <dc:Bounds x="254" y="1860" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Work_di" bpmnElement="Work">
+        <dc:Bounds x="454" y="1950" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ArtifactReviewTrigger_di" bpmnElement="ArtifactReviewTrigger">
+        <dc:Bounds x="254" y="2040" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AIReview_di" bpmnElement="AIReview">
+        <dc:Bounds x="454" y="2130" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HumanReview_di" bpmnElement="HumanReview">
+        <dc:Bounds x="54" y="2220" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubmitTrigger_di" bpmnElement="SubmitTrigger">
+        <dc:Bounds x="254" y="2560" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Submit_di" bpmnElement="Submit">
+        <dc:Bounds x="454" y="2750" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_di" bpmnElement="End">
+        <dc:Bounds x="506" y="2860" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="2900" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Rejected_di" bpmnElement="Rejected">
+        <dc:Bounds x="506" y="610" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="550" y="618" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewNote_di" bpmnElement="ReviewNote">
+        <dc:Bounds x="660" y="2080" width="200" height="75" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PerTicket_di" bpmnElement="PerTicket">
+        <dc:Bounds x="660" y="1810" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IdeaRef_di" bpmnElement="IdeaRef">
+        <dc:Bounds x="715" y="740" width="52" height="46" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="670" y="790" width="145" height="22" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TicketRef_di" bpmnElement="TicketRef">
+        <dc:Bounds x="715" y="1680" width="52" height="46" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="670" y="1730" width="145" height="22" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewRef_di" bpmnElement="ReviewRef">
+        <dc:Bounds x="715" y="2225" width="52" height="46" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="670" y="2275" width="145" height="22" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ArtifactRef_di" bpmnElement="ArtifactRef">
+        <dc:Bounds x="715" y="2755" width="52" height="46" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="670" y="2805" width="145" height="22" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_HumanStart_Manual_di" bpmnElement="Flow_HumanStart_Manual">
+        <di:waypoint x="124" y="122" />
+        <di:waypoint x="124" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ResearchStart_ResearchTrigger_di" bpmnElement="Flow_ResearchStart_ResearchTrigger">
+        <di:waypoint x="324" y="122" />
+        <di:waypoint x="324" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ResearchTrigger_Research_di" bpmnElement="Flow_ResearchTrigger_Research">
+        <di:waypoint x="324" y="220" />
+        <di:waypoint x="324" y="235" />
+        <di:waypoint x="524" y="235" />
+        <di:waypoint x="524" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Research_ReviewTrigger_di" bpmnElement="Flow_Research_ReviewTrigger">
+        <di:waypoint x="524" y="310" />
+        <di:waypoint x="524" y="325" />
+        <di:waypoint x="324" y="325" />
+        <di:waypoint x="324" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewTrigger_ReviewIdea_di" bpmnElement="Flow_ReviewTrigger_ReviewIdea">
+        <di:waypoint x="324" y="400" />
+        <di:waypoint x="324" y="415" />
+        <di:waypoint x="524" y="415" />
+        <di:waypoint x="524" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewIdea_ReviewGate_di" bpmnElement="Flow_ReviewIdea_ReviewGate">
+        <di:waypoint x="524" y="490" />
+        <di:waypoint x="524" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewGate_RegisterTrigger_di" bpmnElement="Flow_ReviewGate_RegisterTrigger">
+        <di:waypoint x="504" y="540" />
+        <di:waypoint x="324" y="540" />
+        <di:waypoint x="324" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RegisterTrigger_Register_di" bpmnElement="Flow_RegisterTrigger_Register">
+        <di:waypoint x="324" y="670" />
+        <di:waypoint x="324" y="685" />
+        <di:waypoint x="524" y="685" />
+        <di:waypoint x="524" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Manual_Join_di" bpmnElement="Flow_Manual_Join">
+        <di:waypoint x="124" y="220" />
+        <di:waypoint x="124" y="790" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Register_Join_di" bpmnElement="Flow_Register_Join">
+        <di:waypoint x="524" y="760" />
+        <di:waypoint x="524" y="810" />
+        <di:waypoint x="144" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ConsiderIdea_di" bpmnElement="ConsiderIdea">
+        <dc:Bounds x="54" y="1215" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConsiderGate_di" bpmnElement="ConsiderGate" isMarkerVisible="true">
+        <dc:Bounds x="104" y="1305" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IdeaDeferred_di" bpmnElement="IdeaDeferred">
+        <dc:Bounds x="40" y="1307" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="34" y="1348" width="48" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Consider_Gate_di" bpmnElement="Flow_Consider_Gate">
+        <di:waypoint x="124" y="1275" />
+        <di:waypoint x="124" y="1305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Proceed_Adopt_di" bpmnElement="Flow_Proceed_Adopt">
+        <di:waypoint x="124" y="1345" />
+        <di:waypoint x="124" y="1490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Defer_di" bpmnElement="Flow_Defer">
+        <di:waypoint x="104" y="1325" />
+        <di:waypoint x="76" y="1325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Adopt_TicketTrigger_di" bpmnElement="Flow_Adopt_TicketTrigger">
+        <di:waypoint x="124" y="1550" />
+        <di:waypoint x="124" y="1565" />
+        <di:waypoint x="324" y="1565" />
+        <di:waypoint x="324" y="1580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TicketTrigger_Tickets_di" bpmnElement="Flow_TicketTrigger_Tickets">
+        <di:waypoint x="324" y="1640" />
+        <di:waypoint x="324" y="1655" />
+        <di:waypoint x="524" y="1655" />
+        <di:waypoint x="524" y="1670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Tickets_Ready_di" bpmnElement="Flow_Tickets_Ready">
+        <di:waypoint x="524" y="1730" />
+        <di:waypoint x="524" y="1770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Ready_WorkTrigger_di" bpmnElement="Flow_Ready_WorkTrigger">
+        <di:waypoint x="524" y="1806" />
+        <di:waypoint x="524" y="1830" />
+        <di:waypoint x="324" y="1830" />
+        <di:waypoint x="324" y="1860" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WorkTrigger_Work_di" bpmnElement="Flow_WorkTrigger_Work">
+        <di:waypoint x="324" y="1920" />
+        <di:waypoint x="324" y="1935" />
+        <di:waypoint x="524" y="1935" />
+        <di:waypoint x="524" y="1950" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Work_ArtifactReviewTrigger_di" bpmnElement="Flow_Work_ArtifactReviewTrigger">
+        <di:waypoint x="524" y="2010" />
+        <di:waypoint x="524" y="2025" />
+        <di:waypoint x="324" y="2025" />
+        <di:waypoint x="324" y="2040" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ArtifactReviewTrigger_AIReview_di" bpmnElement="Flow_ArtifactReviewTrigger_AIReview">
+        <di:waypoint x="324" y="2100" />
+        <di:waypoint x="324" y="2115" />
+        <di:waypoint x="524" y="2115" />
+        <di:waypoint x="524" y="2130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AIReview_HumanReview_di" bpmnElement="Flow_AIReview_HumanReview">
+        <di:waypoint x="524" y="2190" />
+        <di:waypoint x="524" y="2205" />
+        <di:waypoint x="124" y="2205" />
+        <di:waypoint x="124" y="2220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="HumanReviewDecision_di" bpmnElement="HumanReviewDecision" isMarkerVisible="true">
+        <dc:Bounds x="104" y="2315" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ApproveArtifact_di" bpmnElement="ApproveArtifact">
+        <dc:Bounds x="54" y="2390" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_HumanReview_Gateway_di" bpmnElement="Flow_HumanReview_Gateway">
+        <di:waypoint x="124" y="2280" />
+        <di:waypoint x="124" y="2315" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NoIssues_Approval_di" bpmnElement="Flow_NoIssues_Approval">
+        <di:waypoint x="124" y="2355" />
+        <di:waypoint x="124" y="2390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="135" y="2360" width="65" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Revision_WorkTrigger_di" bpmnElement="Flow_Revision_WorkTrigger">
+        <di:waypoint x="104" y="2335" />
+        <di:waypoint x="34" y="2335" />
+        <di:waypoint x="34" y="1840" />
+        <di:waypoint x="324" y="1840" />
+        <di:waypoint x="324" y="1860" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="38" y="2295" width="54" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Approval_SubmitTrigger_di" bpmnElement="Flow_Approval_SubmitTrigger">
+        <di:waypoint x="124" y="2450" />
+        <di:waypoint x="124" y="2490" />
+        <di:waypoint x="324" y="2490" />
+        <di:waypoint x="324" y="2560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ReleaseReady_di" bpmnElement="ReleaseReady">
+        <dc:Bounds x="506" y="2650" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="2658" width="152" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Trigger_ReleaseReady_di" bpmnElement="Flow_Trigger_ReleaseReady">
+        <di:waypoint x="324" y="2620" />
+        <di:waypoint x="324" y="2635" />
+        <di:waypoint x="524" y="2635" />
+        <di:waypoint x="524" y="2650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReleaseReady_Submit_di" bpmnElement="Flow_ReleaseReady_Submit">
+        <di:waypoint x="524" y="2686" />
+        <di:waypoint x="524" y="2750" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Submit_End_di" bpmnElement="Flow_Submit_End">
+        <di:waypoint x="524" y="2810" />
+        <di:waypoint x="524" y="2860" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Reject_di" bpmnElement="Flow_Reject">
+        <di:waypoint x="524" y="560" />
+        <di:waypoint x="524" y="610" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="550" y="575" width="65" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ReviewNoteAssociation_di" bpmnElement="ReviewNoteAssociation">
+        <di:waypoint x="660" y="2107" />
+        <di:waypoint x="594" y="2150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="PerTicketAssociation_di" bpmnElement="PerTicketAssociation">
+        <di:waypoint x="660" y="1835" />
+        <di:waypoint x="542" y="1788" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Manual_0_di" bpmnElement="Association_Manual_0">
+        <di:waypoint x="124" y="160" />
+        <di:waypoint x="124" y="140" />
+        <di:waypoint x="635" y="140" />
+        <di:waypoint x="635" y="710" />
+        <di:waypoint x="741" y="710" />
+        <di:waypoint x="741" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Register_0_di" bpmnElement="Association_Register_0">
+        <di:waypoint x="594" y="730" />
+        <di:waypoint x="665" y="730" />
+        <di:waypoint x="665" y="752" />
+        <di:waypoint x="715" y="752" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_ConsiderIdea_0_di" bpmnElement="Association_ConsiderIdea_0">
+        <di:waypoint x="715" y="763" />
+        <di:waypoint x="675" y="763" />
+        <di:waypoint x="675" y="1200" />
+        <di:waypoint x="210" y="1200" />
+        <di:waypoint x="210" y="1230" />
+        <di:waypoint x="194" y="1230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Adopt_0_di" bpmnElement="Association_Adopt_0">
+        <di:waypoint x="194" y="1505" />
+        <di:waypoint x="635" y="1505" />
+        <di:waypoint x="635" y="785" />
+        <di:waypoint x="715" y="785" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Tickets_0_di" bpmnElement="Association_Tickets_0">
+        <di:waypoint x="767" y="763" />
+        <di:waypoint x="805" y="763" />
+        <di:waypoint x="805" y="1685" />
+        <di:waypoint x="594" y="1685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Tickets_1_di" bpmnElement="Association_Tickets_1">
+        <di:waypoint x="594" y="1703" />
+        <di:waypoint x="715" y="1703" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Work_0_di" bpmnElement="Association_Work_0">
+        <di:waypoint x="767" y="1703" />
+        <di:waypoint x="785" y="1703" />
+        <di:waypoint x="785" y="1980" />
+        <di:waypoint x="594" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_AIReview_0_di" bpmnElement="Association_AIReview_0">
+        <di:waypoint x="594" y="2160" />
+        <di:waypoint x="650" y="2160" />
+        <di:waypoint x="650" y="2237" />
+        <di:waypoint x="715" y="2237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_HumanReview_0_di" bpmnElement="Association_HumanReview_0">
+        <di:waypoint x="715" y="2248" />
+        <di:waypoint x="665" y="2248" />
+        <di:waypoint x="665" y="2210" />
+        <di:waypoint x="194" y="2210" />
+        <di:waypoint x="194" y="2235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_HumanReview_1_di" bpmnElement="Association_HumanReview_1">
+        <di:waypoint x="194" y="2265" />
+        <di:waypoint x="715" y="2265" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Submit_0_di" bpmnElement="Association_Submit_0">
+        <di:waypoint x="767" y="2248" />
+        <di:waypoint x="805" y="2248" />
+        <di:waypoint x="805" y="2765" />
+        <di:waypoint x="594" y="2765" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Submit_1_di" bpmnElement="Association_Submit_1">
+        <di:waypoint x="594" y="2778" />
+        <di:waypoint x="715" y="2778" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="PrepareTrigger_di" bpmnElement="PrepareTrigger">
+        <dc:Bounds x="254" y="855" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="InvestigateIdea_di" bpmnElement="InvestigateIdea">
+        <dc:Bounds x="454" y="945" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareReviewTrigger_di" bpmnElement="PrepareReviewTrigger">
+        <dc:Bounds x="254" y="1035" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareReview_di" bpmnElement="PrepareReview">
+        <dc:Bounds x="454" y="1125" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Join_PrepareTrigger_di" bpmnElement="Flow_Join_PrepareTrigger">
+        <di:waypoint x="124" y="830" />
+        <di:waypoint x="124" y="842" />
+        <di:waypoint x="324" y="842" />
+        <di:waypoint x="324" y="855" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PrepareTrigger_Investigate_di" bpmnElement="Flow_PrepareTrigger_Investigate">
+        <di:waypoint x="324" y="915" />
+        <di:waypoint x="324" y="930" />
+        <di:waypoint x="524" y="930" />
+        <di:waypoint x="524" y="945" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Investigate_PrepareReviewTrigger_di" bpmnElement="Flow_Investigate_PrepareReviewTrigger">
+        <di:waypoint x="524" y="1005" />
+        <di:waypoint x="524" y="1020" />
+        <di:waypoint x="324" y="1020" />
+        <di:waypoint x="324" y="1035" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Trigger_PrepareReview_di" bpmnElement="Flow_Trigger_PrepareReview">
+        <di:waypoint x="324" y="1095" />
+        <di:waypoint x="324" y="1110" />
+        <di:waypoint x="524" y="1110" />
+        <di:waypoint x="524" y="1125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PrepareReview_Consider_di" bpmnElement="Flow_PrepareReview_Consider">
+        <di:waypoint x="524" y="1185" />
+        <di:waypoint x="524" y="1200" />
+        <di:waypoint x="124" y="1200" />
+        <di:waypoint x="124" y="1215" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_InvestigateIdea_0_di" bpmnElement="Association_InvestigateIdea_0">
+        <di:waypoint x="767" y="763" />
+        <di:waypoint x="835" y="763" />
+        <di:waypoint x="835" y="975" />
+        <di:waypoint x="594" y="975" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_PrepareReview_0_di" bpmnElement="Association_PrepareReview_0">
+        <di:waypoint x="594" y="1155" />
+        <di:waypoint x="650" y="1155" />
+        <di:waypoint x="650" y="787" />
+        <di:waypoint x="741" y="787" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_ConsiderIdea_1_di" bpmnElement="Association_ConsiderIdea_1">
+        <di:waypoint x="194" y="1260" />
+        <di:waypoint x="635" y="1260" />
+        <di:waypoint x="635" y="775" />
+        <di:waypoint x="715" y="775" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
