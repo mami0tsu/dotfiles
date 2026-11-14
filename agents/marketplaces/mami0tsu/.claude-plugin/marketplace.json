@@ -6,6 +6,10 @@
   },
   "plugins": [
     {
+      "name": "factory",
+      "source": "./plugins/factory"
+    },
+    {
       "name": "dev",
       "source": "./plugins/dev"
     },
