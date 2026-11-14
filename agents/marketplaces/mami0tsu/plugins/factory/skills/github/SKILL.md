@@ -28,7 +28,6 @@ allowed-tools: >-
   mcp__codex_apps__github_fetch_file
   mcp__codex_apps__github_create_file
   mcp__codex_apps__github_update_file
-  mcp__codex_apps__github_search_prs
   mcp__codex_apps__github_get_pr_info
   mcp__codex_apps__github_create_pull_request
   mcp__codex_apps__github_list_pull_request_reviews
