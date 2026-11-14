@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory GitHub"
+  short_description: "GitHub のアイデア、成果物、変更提案を共通契約で操作する"
+  default_prompt: "Use $github to handle a factory adapter request for GitHub."
