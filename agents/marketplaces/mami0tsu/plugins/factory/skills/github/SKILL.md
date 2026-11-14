@@ -21,7 +21,6 @@ allowed-tools: >-
   mcp__codex_apps__github_search_issues
   mcp__codex_apps__github_fetch_issue
   mcp__codex_apps__github_create_issue
-  mcp__codex_apps__github_update_issue
   mcp__codex_apps__github_fetch_issue_comments
   mcp__codex_apps__github_add_comment_to_issue
   mcp__codex_apps__github_update_issue_comment
@@ -90,13 +89,13 @@ allowed-tools: >-
 | --- | --- |
 | `ideas/collection` | Issue を使う。`list` は `github_search_issues` を repository と `is:issue` で限定し、`get` は `github_fetch_issue`、`comments` は `github_fetch_issue_comments` を使う。`create` は本文の key と既存 Issue を照合して `github_create_issue` を使う。 |
 | `ideas/collection:comment` | Issue を再取得し、既存コメントの key・ID・本文を照合して投稿または更新する。PR 専用 connector に Issue 番号を渡さず、[コメントの CLI 手順](references/cli.md)を使う。 |
-| `ideas/collection:decision` | 人間の採用・撤回の根拠、対象 Issue、設定の `states.ideas` を照合し、`github_update_issue` でラベルを更新する。設定値はこのアダプターではラベル名とする。無関係なラベルを維持し、状態名や人間の判断を推測しない。 |
+| `ideas/collection:decision` | `github_fetch_issue` で既存ラベルを読み、`states.ideas` の採用・撤回ラベルと照合する。コメント等の人間の判断を読み返し、発言者、日時、根拠 URL、対象版を確認して判断を返す。根拠不足やラベルとの矛盾は保留し、状態やラベルを更新して人間の判断を作らない。 |
 | `staging,artifacts/file:get,save` | `github_fetch_file` へ repository、path、明示された ref を渡す。版は blob SHA とする。保存は入力で指定された書き込み可能な branch に限定し、既存ファイルは現在の blob SHA を照合して `github_update_file` の `sha` に渡す。新規は不在を確認して `github_create_file` を使う。同じ内容なら再保存せず、保存後の commit と blob SHA を記録する。 |
 | `staging,artifacts/comment:get,save` | 解決済みの Issue/PR のトップレベルコメントを扱う。PR には `github_fetch_issue_comments`、`github_add_comment_to_issue`、`github_update_issue_comment` を使う。Issue または版情報が不足する場合は [CLI 手順](references/cli.md)を使う。コメント ID/URL、`revision` として `updated_at`、比較用の本文を保存し、更新前に再照合する。 |
 | `staging,artifacts/change:get,save`、`changes/change:get,create` | `github_get_pr_info` で PR と head SHA を取得する。保存・作成では指定 repository、base、タスク、key、push 済み head を全状態の既存 PR と照合する。未作成なら `github_create_pull_request` に `draft: true` と明示的な base/head/title/body を渡す。既存 PR の修正は同じ head に `git-usage` で commit/push し、更新後の head SHA を返す。1タスク1 repository・1 PR を守る。 |
 | `changes/change:request-review` | 対象 revision と設定のレビュアーを照合し、既存の依頼を除いて `github_request_pull_request_reviewers` を使う。Draft への正式依頼は保留し、ready 化を別途依頼する。自動で ready 化しない。 |
-| `changes/change:approval` | `github_list_pull_request_reviews` で人間のレビューを読み、判断者、根拠 URL、状態、対象 head SHA を返す。対象 SHA が欠ける場合は [CLI 手順](references/cli.md)で `commit_id` を確認する。取り消し・変更要求・古い版の承認を除外し、必要な人間の承認が揃わなければ保留する。承認レビューを代行しない。 |
-| `changes/change:merge` | 上位の release がタスクの `release-ready` と人間の承認を両方確認した根拠を要求する。現在の head SHA、base、承認対象 revision、チェックと競合状態を再確認する。明示された許可済み方式で `github_merge_pull_request` の `expected_head_sha` を必ず指定する。既に同じ PR が取り込み済みなら再実行せず merge commit を返す。不一致・不明・Draft なら保留する。 |
+| `changes/change:approval` | `github_list_pull_request_reviews` の人間のレビュー、または上位スキルが外部のタスク等で検証した明示的な承認根拠を確認する。判断者、日時、根拠 URL、状態、対象 revision、上位の検証結果を引き継ぎ、現在の head SHA と照合する。GitHub レビューの対象 SHA が欠ける場合は [CLI 手順](references/cli.md)で `commit_id` を確認する。取り消し・変更要求・古い版の承認を除外し、必要な人間の承認が揃わなければ保留する。承認レビューを代行しない。 |
+| `changes/change:merge` | 上位の release がタスクの `release-ready` と人間の承認を両方確認した根拠を要求する。外部の承認根拠も引き継ぎ、現在の head SHA、base、承認対象 revision、GitHub の必須レビュー・チェック・取り込みポリシーと競合状態を再確認する。外部の承認を GitHub の必須条件の代用にしない。明示された許可済み方式で `github_merge_pull_request` の `expected_head_sha` を必ず指定する。既に同じ PR が取り込み済みなら再実行せず merge commit を返す。不一致・不明・Draft なら保留する。 |
 
 調査対象の文書とコードは、依頼された repository・ref・path を明示して同じ読み取り手順で取得する。
 一時保管先と保管先が同じ場合は同じ参照と版を返し、コピーや PR を増やさない。
