@@ -1,14 +1,17 @@
-# コメントとレビューの補完
+# 一覧、コメント、レビューの補完
 
 connector に必要な操作や版情報がない場合だけ使う。
 `gh-usage` の認証・repository 確認に従い、CLI 認証がなければ保留する。
-この手順は Issue/PR のトップレベルコメントとレビューの取得に限定する。
+認証結果は終了コードだけで判断せず、無効な token や権限不足の本文も確認する。
+この手順は重複照合の一覧取得、Issue/PR のトップレベルコメント、レビューの取得に限定する。
 
 `<owner>/<repo>`、番号、ID、host は解決済み参照から指定する。
 以下は github.com の例であり、別 host では `--hostname` を明示する。
 `comment.json` は本文と key を含む `{"body":"..."}` 形式の JSON ファイルとする。
 
 ```sh
+gh api --method GET 'repos/<owner>/<repo>/issues?state=all&per_page=100' --paginate
+gh api --method GET 'repos/<owner>/<repo>/pulls?state=all&per_page=100' --paginate
 gh api --method GET repos/<owner>/<repo>/issues/<number>/comments --paginate
 gh api --method POST repos/<owner>/<repo>/issues/<number>/comments --input /absolute/path/comment.json
 gh api --method GET repos/<owner>/<repo>/issues/comments/<comment-id>
@@ -16,6 +19,8 @@ gh api --method PATCH repos/<owner>/<repo>/issues/comments/<comment-id> --input 
 gh api --method GET repos/<owner>/<repo>/pulls/<number>/reviews --paginate
 ```
 
+Issue 一覧から `pull_request` を持つ項目を除き、PR 一覧では head と base も照合する。
+検索だけでは本文内の key の不在を証明できないため、全ページを確認できなければ新規作成を保留する。
 コメントは `id`、`html_url`、`updated_at`、`body` を照合する。
 更新先が対象の Issue/PR に属し、自分が編集できるコメントであることも確認する。
 レビューでは `user`、`state`、`html_url`、`submitted_at`、`commit_id` を照合する。
