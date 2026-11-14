@@ -87,7 +87,7 @@ allowed-tools: >-
 
 | ケース | 操作と確認 |
 | --- | --- |
-| `ideas/collection` | Issue を使う。`list` は `github_search_issues` を repository と `is:issue` で限定し、`get` は `github_fetch_issue`、`comments` は `github_fetch_issue_comments` を使う。`create` は本文の key と既存 Issue を照合して `github_create_issue` を使う。 |
+| `ideas/collection` | Issue を使う。`github_search_issues` は repository と `is:issue` で限定した候補発見に使い、網羅的な `list` は [一覧の CLI 手順](references/cli.md)で全ページを取得する。取得範囲が不足すれば保留する。`get` は `github_fetch_issue`、`comments` は `github_fetch_issue_comments` を使う。`create` は本文の key と既存 Issue を照合して `github_create_issue` を使う。 |
 | `ideas/collection:comment` | Issue を再取得し、既存コメントの key・ID・本文を照合して投稿または更新する。PR 専用 connector に Issue 番号を渡さず、[コメントの CLI 手順](references/cli.md)を使う。 |
 | `ideas/collection:decision` | `github_fetch_issue` で既存ラベルを読み、`states.ideas` の採用・撤回ラベルと照合する。コメント等の人間の判断を読み返し、発言者、日時、根拠 URL、対象版を確認して判断を返す。根拠不足やラベルとの矛盾は保留し、状態やラベルを更新して人間の判断を作らない。 |
 | `staging,artifacts/file:get,save` | `github_fetch_file` へ repository、path、明示された ref を渡す。版は blob SHA とする。保存は入力で指定された書き込み可能な branch に限定し、既存ファイルは現在の blob SHA を照合して `github_update_file` の `sha` に渡す。新規は不在を確認して `github_create_file` を使う。同じ内容なら再保存せず、保存後の commit と blob SHA を記録する。 |
