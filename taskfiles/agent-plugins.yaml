@@ -5,6 +5,7 @@ vars:
   agent_plugin_legacy_marketplace_name: dotfiles
   dev_plugin_ref: 'dev@{{.agent_plugin_marketplace_name}}'
   doc_plugin_ref: 'doc@{{.agent_plugin_marketplace_name}}'
+  factory_plugin_ref: 'factory@{{.agent_plugin_marketplace_name}}'
   mami0tsu_plugin_ref: 'mami0tsu@{{.agent_plugin_marketplace_name}}'
   development_plugin_ref: 'development@{{.agent_plugin_marketplace_name}}'
   documentation_plugin_ref: 'documentation@{{.agent_plugin_marketplace_name}}'
@@ -21,6 +22,7 @@ tasks:
       - task: clean:dev
       - task: clean:doc
       - task: clean:mami0tsu
+      - task: clean:factory
       - task: codex:remove-marketplace-if-configured
         vars:
           MARKETPLACE_NAME: '{{.agent_plugin_marketplace_name}}'
@@ -34,6 +36,7 @@ tasks:
       - task: deploy:dev
       - task: deploy:doc
       - task: deploy:mami0tsu
+      - task: deploy:factory
 
   deploy:dev:
     desc: Deploy the dev plugin to Codex CLI and Claude Code.
@@ -58,6 +61,14 @@ tasks:
       - task: deploy-plugin
         vars:
           PLUGIN_REF: '{{.mami0tsu_plugin_ref}}'
+
+  deploy:factory:
+    desc: Deploy the factory plugin to Codex CLI and Claude Code.
+    cmds:
+      - task: clean:factory
+      - task: deploy-plugin
+        vars:
+          PLUGIN_REF: '{{.factory_plugin_ref}}'
 
   migrate:
     desc: Remove legacy plugins and deploy the renamed plugins in Codex CLI and Claude Code.
@@ -92,6 +103,13 @@ tasks:
       - task: clean-plugin
         vars:
           PLUGIN_REF: '{{.mami0tsu_plugin_ref}}'
+
+  clean:factory:
+    desc: Remove the factory plugin from Codex CLI and Claude Code.
+    cmds:
+      - task: clean-plugin
+        vars:
+          PLUGIN_REF: '{{.factory_plugin_ref}}'
 
   deploy-plugin:
     internal: true

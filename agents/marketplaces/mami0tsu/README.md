@@ -10,6 +10,7 @@ Marketplace name は `mami0tsu` です。
 | --- | --- |
 | `dev` | 開発フロー、Git/GitHub 操作、共通 MCP server を扱うプラグイン |
 | `doc` | 日本語の技術文書と D2 diagram を作成するプラグイン |
+| `factory` | アイデアから成果物のリリースまでを進めるプラグインの基盤（スキルは追加予定） |
 
 ## セットアップと削除
 

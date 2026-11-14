@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "factory",
+  "version": "0.1.0",
+  "description": "Workflows for a software factory.",
+  "author": {
+    "name": "mami0tsu"
+  },
+  "license": "MIT"
+}
