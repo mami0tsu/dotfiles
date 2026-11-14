@@ -47,7 +47,9 @@ allowed-tools: >-
 2. `ideas` と `tasks` は設定の同名 role と照合する。
    `staging` と `artifacts` はタスクが選んだ1つの `outputs[input.output]` と照合する。
    未指定、不明、複数の output や、記録済み対象と設定の不一致は `wait` を返す。
-3. [linear-usage](../../../dev/skills/linear-usage/SKILL.md) と [ticket contract](../../../dev/skills/ticket-usage/references/contract.md) を読み、ID 解決、親子と依存の更新、更新前後の検証を再利用する。
+3. 導入済みスキルのカタログから dev の `linear-usage` と `ticket-usage` の実在パスを解決し、両スキルと `ticket-usage` が参照する契約資料を読む。
+   未導入かパスを解決できない場合は `wait` を返し、プラグイン同士の配置を仮定しない。
+   ID 解決、親子と依存の更新、更新前後の検証を再利用する。
    provider 選択は factory の設定で確定しているため、Git 設定による選択は行わない。
    接続中の Linear ツールのスキーマと権限を確認し、必要な操作が使えなければ不足を示して `wait` を返す。
    以下は操作名の末尾だけを記し、frontmatter は確認済み接続のツール名を示す。
