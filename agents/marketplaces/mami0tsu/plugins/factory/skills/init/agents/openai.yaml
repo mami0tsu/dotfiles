@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Init"
+  short_description: "CUE 定義から factory の JSON 設定を生成または検証する"
+  default_prompt: "Use $init to create or validate a factory configuration."
