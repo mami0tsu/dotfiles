@@ -74,6 +74,7 @@
         ];
 
       getTestTools = pkgs: [
+        pkgs.cue
         pkgs.go-task
         (pkgs.python315.withPackages (pythonPackages: [
           pythonPackages.jsonschema

@@ -10,6 +10,7 @@ in
   home.packages = with pkgs; [
     bat # v0.26.1
     coreutils # v9.12
+    cue # v0.17.1
     curl # v8.22.0
     delta # v0.20.1
     d2 # v0.9.0
