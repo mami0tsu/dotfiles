@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Plan"
+  short_description: "採用済みアイデアをタスクへ分解し、重複を照合して起票する"
+  default_prompt: "Use $plan to break an adopted factory idea into tasks and create or resume them."
