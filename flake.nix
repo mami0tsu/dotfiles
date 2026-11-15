@@ -73,24 +73,15 @@
           pkgs.yamllint
         ];
 
-      getTestTools =
-        pkgs:
-        let
-          testPackages = import ./nix/packages {
-            inherit pkgs;
-            inherit (pkgs) callPackage;
-          };
-        in
-        [
-          pkgs.cue
-          pkgs.go-task
-          testPackages.knap
-          (pkgs.python315.withPackages (pythonPackages: [
-            pythonPackages.jsonschema
-            pythonPackages.pyyaml
-          ]))
-          pkgs.renovate
-        ];
+      getTestTools = pkgs: [
+        pkgs.cue
+        pkgs.go-task
+        (pkgs.python315.withPackages (pythonPackages: [
+          pythonPackages.jsonschema
+          pythonPackages.pyyaml
+        ]))
+        pkgs.renovate
+      ];
 
       getDarwinConfig =
         username: useremail:
