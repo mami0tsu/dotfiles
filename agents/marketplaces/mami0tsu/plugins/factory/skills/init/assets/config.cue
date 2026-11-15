@@ -3,7 +3,7 @@ import "struct"
 
 #Text:   string & !=""
 #Name:   string & =~"^[a-z][a-z0-9-]*$"
-#Worker: "research" | "review" | "register" | "plan" | "design" | "implement" | "respond"
+#Worker: "research" | "review" | "register" | "create-task" | "plan" | "design" | "implement" | "respond"
 #Limit: {
 	// 同時に処理する対象の件数の上限を指定する。
 	concurrency: *1 | (int & >0)
@@ -79,8 +79,12 @@ import "struct"
 				// 未クローズのアイデア Issue の上限を指定する。
 				maxOpenIssues?: int & >0
 			}
-			review:    #Limit
-			register:  #Limit
+			review:   #Limit
+			register: #Limit
+			"create-task": {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+			}
 			plan:      #Limit
 			design:    #Limit
 			implement: #Limit
