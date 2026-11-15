@@ -42,6 +42,7 @@ in
     deno # v2.9.7
     fnm # v1.39.0
     go_1_27 # v1.27.3
+    python315
     rustup # v1.29.2
     tenv # v4.15.1
     uv # v0.13.4
