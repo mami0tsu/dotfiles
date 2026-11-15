@@ -3,7 +3,7 @@
 connector に必要な操作や版情報がない場合だけ使う。
 `gh-usage` の認証・repository 確認に従い、CLI 認証がなければ保留する。
 認証結果は終了コードだけで判断せず、無効な token や権限不足の本文も確認する。
-この手順は重複照合の一覧取得、Issue/PR のトップレベルコメント、レビューの取得に限定する。
+この手順は重複照合の一覧取得、Issue/PR のトップレベルコメントの取得と保存、レビューとインラインコメントの取得に限定する。
 
 `<owner>/<repo>`、番号、ID、host は解決済み参照から指定する。
 以下は github.com の例であり、別 host では `--hostname` を明示する。
@@ -17,11 +17,20 @@ gh api --method POST repos/<owner>/<repo>/issues/<number>/comments --input /abso
 gh api --method GET repos/<owner>/<repo>/issues/comments/<comment-id>
 gh api --method PATCH repos/<owner>/<repo>/issues/comments/<comment-id> --input /absolute/path/comment.json
 gh api --method GET repos/<owner>/<repo>/pulls/<number>/reviews --paginate
+gh api --method GET repos/<owner>/<repo>/pulls/<number>/comments --paginate
 ```
 
 Issue 一覧から `pull_request` を持つ項目を除き、PR 一覧では head と base も照合する。
 検索だけでは本文内の key の不在を証明できないため、全ページを確認できなければ新規作成を保留する。
 コメントは `id`、`html_url`、`updated_at`、`body` を照合する。
+`changes.comments` は Conversation、レビュー本文、インラインコメントをそれぞれ全ページ取得し、種類を付けて返す。
+各コメントの `user`、`created_at` または `submitted_at`、親の `in_reply_to_id` も保持する。
+インラインコメントは親の連鎖で root を解決し、`commit_id`、path、line も保持する。
+トップレベルには親がないことを明示し、root は自身とする。
+コメントの版は `updated_at`、成果物の版は PR の head SHA として区別する。
+レビュー本文の更新日時など必要な版を取得できなければ、その返信は `wait` とする。
+親、root、ページ取得の完了を確認できない場合も保留し、欠落を空値で補わない。
+この読み取りを根拠に未対応の返信形式をトップレベル投稿へ変換しない。
 更新先が対象の Issue/PR に属し、自分が編集できるコメントであることも確認する。
 レビューでは `user`、`state`、`html_url`、`submitted_at`、`commit_id` を照合する。
 人間として確認された判断者の最新レビューを評価し、`DISMISSED`、`CHANGES_REQUESTED`、対象外の版を承認として扱わない。

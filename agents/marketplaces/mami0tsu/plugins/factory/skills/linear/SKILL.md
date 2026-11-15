@@ -29,7 +29,7 @@ allowed-tools: >-
 | role | target.kind | operation |
 | --- | --- | --- |
 | `ideas` | `collection` | `list`, `get`, `create`, `comments`, `comment`, `decision` |
-| `tasks` | `collection` | `list`, `get`, `create`, `update`, `comment` |
+| `tasks` | `collection` | `list`, `get`, `create`, `update`, `comments`, `comment` |
 | `staging`, `artifacts` | `comment` | `get`, `save` |
 
 この表以外の組み合わせ、`file`、`change`、プロジェクトを集合とする操作は未対応として `wait` を返す。
@@ -76,7 +76,7 @@ allowed-tools: >-
   `parentId`、`blockedBy`、`blocks` は別々の関係として同じ作成呼び出しへ渡し、更新では取得済み集合との差分だけを指定する。
   元アイデア、output、成果物参照は description に保持し、既存本文を置換するときも消さない。
   1タスクには output キーを1つだけ記録し、変更提案の場合は1リポジトリの1 PRに対応するか確認する。
-- `ideas.comments` と両 role の `comment` は下記のコメント手順で、それぞれ一覧を取得し、保存する。
+- 両 role の `comments` と `comment` は下記のコメント手順で、それぞれ一覧を取得し、保存する。
 - `ideas.decision` は issue の状態と `stateHistory`、必要ならコメントを読み、人間の採用か取消の根拠を返す読み取り操作とする。
   `states.ideas.adopted` と `withdrawn`、タスクの `states.tasks.ready` と `release-ready` は実在する状態名と照合する。
   人間の判断は発言者、日時、対象の版を確認できる記録と照合し、状態名だけで採用、取消、承認、リリース可能を決めない。
@@ -84,7 +84,13 @@ allowed-tools: >-
 
 ## コメントのケース
 
-`ideas.comments` と `staging/artifacts.get` は `list_comments(issueId: <解決済みissue ID>)` を全ページ取得する。
+`ideas.comments`、`tasks.comments`、`staging/artifacts.get` は `list_comments(issueId: <解決済みissue ID>)` を全ページ取得する。
+ツールのページ情報と実際の入力スキーマを確認し、続きがあれば取得する。
+全件取得を確認できなければ `wait` を返す。
+`comments` は既存の応答も含む一覧を返し、`parentId`、root の参照、発言者、作成日時、種類を保持する。
+親なしを確認したトップレベルコメントは自身を root とし、`quotedText` がある項目はインラインとして区別する。
+発言者は `author` と `onBehalfOf` を保持し、代理投稿を人間本人の判断と推測しない。
+親の連鎖から root を解決できない場合や、対象外の同期スレッドは不足を示して保留する。
 `get` は `input.commentId` の完全一致で選び、取得結果からコメント ID、本文、作成者、更新日時を返す。
 `revision` は取得したコメントの `updatedAt` とし、取得できなければ版を確認できないため `wait` を返す。
 `url` はツールが返すコメント URL を使い、なければ確認済みの issue URL と `commentId` を対で返す。

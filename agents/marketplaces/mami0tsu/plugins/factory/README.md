@@ -45,13 +45,17 @@ CUE は Home Manager のパッケージと Nix の test 環境に含めます。
 | 役割 | 操作先の種類 | 操作 |
 | --- | --- | --- |
 | `ideas` | `collection` | `list`, `get`, `create`, `comments`, `comment`, `decision` |
-| `tasks` | `collection` | `list`, `get`, `create`, `update`, `comment` |
+| `tasks` | `collection` | `list`, `get`, `create`, `update`, `comments`, `comment` |
 | `staging`, `artifacts` | `file`, `comment`, `change` | `get`, `save` |
-| `changes` | `change` | `get`, `create`, `request-review`, `approval`, `merge` |
+| `changes` | `change` | `get`, `comments`, `create`, `request-review`, `approval`, `merge` |
 
 操作先の識別子はアダプターが接続先の表現へ変換します。
 実行前に、指定スキルの存在と、役割、操作先の種類、操作への対応を確認します。
 未対応なら停止または保留し、別のアダプターへ暗黙に切り替えません。
+`comments` は対象の既存会話を全ページ取得する読み取り操作です。
+コメントの種類、親と root の参照、発言者、日時、本文、版を区別し、取得範囲や必要な参照が不足する場合は保留します。
+初期の応答投稿は、各アダプターが対応するトップレベルコメントに限ります。
+スレッド返信やインライン返信への未対応は保留し、別形式へ変換しません。
 
 依頼には `role`、`target`、`operation`、`input`、更新時には再試行を照合する安定した `key` を渡します。
 コメントの `subject` は、現在処理中のアイデアやタスク、または固定 URL を指します。
