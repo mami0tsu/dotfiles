@@ -1,8 +1,0 @@
-{
-  "github_pr": {"content":[{"type":"text","text":"Action completed."}],"structuredContent":{"url":"https://github.com/mami0tsu/dotfiles/pull/106","number":106,"state":"closed","draft":false,"body":"fixture","title":"fixture","base":"main","head":"feature/P-99/impl-flow","head_sha":"5e2d7a4a36912df3b3240b26d3143167cad20adf"},"isError":false},
-  "github_file": {"content":[{"type":"text","text":"Action completed."}],"structuredContent":{"content":"# dotfiles\n","encoding":"utf-8","sha":"c80e6a6472930f07b0faf19f96f037ff85ded8b3","display_url":"https://github.com/mami0tsu/dotfiles/blob/main/README.md","display_title":"README.md"},"isError":false},
-  "github_get": {"content":[{"type":"text","text":"Action completed."}],"structuredContent":{"content":"[]"},"isError":false},
-  "github_error": {"content":[{"type":"text","text":"GitHub API error 404"}],"structuredContent":{"error":"GitHub API error 404","error_code":"NOT_FOUND","error_data":{"status":"404"}},"isError":true},
-  "linear_comments": {"content":[{"type":"text","text":"{\"comments\":[],\"hasNextPage\":false}"}],"structuredContent":null,"isError":false},
-  "linear_issue": {"content":[{"type":"text","text":"{\"id\":\"P-106\",\"uuid\":\"f3670367-7125-4c37-a6ef-b4e1d542dc7c\",\"title\":\"fixture\",\"description\":\"fixture\",\"url\":\"https://linear.app/mami0tsu/issue/P-106\",\"updatedAt\":\"2026-11-14T11:01:06.894Z\",\"teamId\":\"e144bce9-a34b-4fa5-b69c-68234b565d6a\",\"status\":\"In Review\"}"}],"structuredContent":null,"isError":false}
-}

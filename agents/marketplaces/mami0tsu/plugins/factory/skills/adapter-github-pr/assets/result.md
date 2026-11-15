@@ -1,5 +1,5 @@
 - status: success / wait / error
-- complete / binding / operation:
-- items: id / url / revision / key
-- call / context:
+- complete: 全件取得と必要な事後確認が済んだ場合だけ true
+- binding: adapter / definition / target / output / role
+- items: id / url / revision / body と確認済みの key など
 - reason / 再開に必要な入力:
