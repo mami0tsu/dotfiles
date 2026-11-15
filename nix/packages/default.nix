@@ -20,6 +20,7 @@ in
   git-open-src = callPackage ./git-open-src.nix { };
   git-wt = callPackage ./git-wt.nix { inherit mkGithubReleaseArchive; };
   jactionlint = callPackage ./jactionlint.nix { };
+  knap = callPackage ./knap.nix { inherit nodejs; };
   roots = callPackage ./roots.nix { inherit mkGithubReleaseArchive; };
   textlint = callPackage ./textlint.nix { inherit nodejs; };
   zsh-defer-src = callPackage ./zsh-defer-src.nix { };

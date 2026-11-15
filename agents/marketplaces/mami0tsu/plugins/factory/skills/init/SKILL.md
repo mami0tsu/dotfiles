@@ -1,9 +1,6 @@
 ---
 name: init
-description: >-
-  factory の設定を初期化する。
-  利用者が初期設定を依頼したとき、または loop が設定の不存在を確認したときに使う。
-  既存の設定は検証し、無断で上書きしない。
+description: factory の設定を作成、修正、検証する。
 compatibility: Requires CUE.
 allowed-tools: >-
   Read
@@ -14,26 +11,40 @@ allowed-tools: >-
 
 # Init
 
-1. 出力先の `factory.json` の絶対パスを確定する。
-   loop からは設定パスを受け取り、別の場所を推測しない。
-2. 既存ファイルがあれば次の検証コマンドを実行し、不正なら停止する。
-   不正なファイルを未作成として扱わない。
-   有効な既存設定は再生成せず、その検証結果を返す。
-3. 新規作成では [config.cue](assets/config.cue) のコメントから必要値を確認し、利用者の回答を一時 JSON に記録する。
-   アイデアとタスクの管理先、名前付きの出力先をそれぞれ確認する。
-   CUE の編集は求めない。
-   自動実行で必須値が不明なら推測せず、不足項目を返して保留する。
-4. 未作成の場合だけ次の生成コマンドを実行する。
-   `--force` や出力リダイレクトは使わず、失敗したら停止する。
-   同じ出力先への初期化は直列に実行する。
-5. [出力テンプレート](assets/result.md)でパスと結果、保留時の不足項目を報告する。
+## 入力
+
+| 項目 | 内容 |
+| --- | --- |
+| 設定パス | `factory.json` の絶対パス |
+| 設定値 | [config.cue](assets/config.cue) に定義された値。アイデアの保存先には GitHub リポジトリの URL を指定する |
+| 不足項目 | 呼び出し元が必要とする設定値 |
+
+## 出力
+
+| 成果物 | 内容 |
+| --- | --- |
+| `factory.json` | 検証済みの factory 設定 |
+
+## 手順
+
+1. 設定パスを確定する。
+   指定がない場合は作業ディレクトリの `factory.json` を使う。
+1. 既存ファイルがあれば検証し、不足項目も満たしていれば結果を返す。
+1. CUE 定義と呼び出し元の不足項目を確認し、不足や不正な値、構造の修正に必要な情報を利用者に確認する。
+   タスクを管理するサービス名、タスクの ID を構成するキー、着手可能な状態を示すサービス上の状態名を確認する。
+   成果物の出力先は、調査対象リポジトリへのプルリクエスト、Wiki の記事、タスクへのコメントから選ぶ。
+   プルリクエストではリポジトリ、Wiki ではサービス名を確認する。
+   JSON を読み取れない場合も内容を確認し、修正内容を特定できなければ保留する。
+1. 既存の無関係な値を保持し、修正内容を反映した一時 JSON を作成する。
+1. 同じ出力先への初期化を直列に実行する。
+   一時 JSON を検証し、不足項目も満たす場合に生成結果を設定パスに保存する。
+   検証に失敗した場合や CUE が使えない場合は元のファイルを変更せず保留する。
+1. [出力テンプレート](assets/result.md)で設定パスと結果、保留時の理由を返す。
 
 ```sh
-cue export <skill-dir>/assets/config.cue json: /absolute/path/answers.json --out json --outfile /absolute/path/factory.json
+cue export <skill-dir>/assets/config.cue json: /absolute/path/answers.json --out json --outfile /absolute/path/validated.json
 cue export <skill-dir>/assets/config.cue json: /absolute/path/factory.json --out json
 ```
 
+1 行目は一時 JSON の検証と生成、2 行目は設定ファイルの検証に使う。
 `<skill-dir>` はこのスキルのディレクトリに置き換える。
-各処理スキルは開始時に同じ検証コマンドを実行し、成功時に標準出力へ返る既定値補完済み JSON を使う。
-検証は既存ファイルを書き換えない。
-CUE が使えない場合は自動インストールせず保留する。

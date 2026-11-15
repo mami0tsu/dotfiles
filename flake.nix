@@ -73,15 +73,24 @@
           pkgs.yamllint
         ];
 
-      getTestTools = pkgs: [
-        pkgs.cue
-        pkgs.go-task
-        (pkgs.python315.withPackages (pythonPackages: [
-          pythonPackages.jsonschema
-          pythonPackages.pyyaml
-        ]))
-        pkgs.renovate
-      ];
+      getTestTools =
+        pkgs:
+        let
+          testPackages = import ./nix/packages {
+            inherit pkgs;
+            inherit (pkgs) callPackage;
+          };
+        in
+        [
+          pkgs.cue
+          pkgs.go-task
+          testPackages.knap
+          (pkgs.python315.withPackages (pythonPackages: [
+            pythonPackages.jsonschema
+            pythonPackages.pyyaml
+          ]))
+          pkgs.renovate
+        ];
 
       getDarwinConfig =
         username: useremail:
@@ -134,6 +143,26 @@
             ''
         ) (pkgs.lib.filterAttrs (_: package: package.meta ? mainProgram) localPackages)
         // {
+          knap-issue-template = pkgs.runCommand "knap-issue-template" { nativeBuildInputs = [ localPackages.knap ]; } ''
+            cat > data.json <<'JSON'
+            {
+              "summary": "Improve the reader.",
+              "background": "The reader is slow.",
+              "repositories": [{"name": "example/repo", "url": "https://example.com/repo", "description": "It contains the reader."}],
+              "files": [{"name": "reader.py", "url": "https://example.com/repo/blob/abc/reader.py", "description": "It implements the reader."}],
+              "in_scope": ["Improve parsing."],
+              "out_of_scope": ["Change the API."],
+              "risks": ["The output may change."]
+            }
+            JSON
+            knap render ${./agents/marketplaces/mami0tsu/plugins/factory/skills/research/assets/issue_template.md} --data data.json --output result.md
+            grep -F '| [example/repo](https://example.com/repo) | It contains the reader. |' result.md
+            grep -F '| [reader.py](https://example.com/repo/blob/abc/reader.py) | It implements the reader. |' result.md
+            grep -F -- '- Improve parsing.' result.md
+            grep -F -- '- Change the API.' result.md
+            grep -F -- '- The output may change.' result.md
+            touch "$out"
+          '';
           git-open-src-syntax = pkgs.runCommand "git-open-src-syntax" { nativeBuildInputs = [ pkgs.zsh ]; } ''
             zsh -n ${localPackages.git-open-src}/git-open
             touch "$out"
