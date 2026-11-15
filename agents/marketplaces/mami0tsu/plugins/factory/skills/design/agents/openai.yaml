@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Design"
+  short_description: "設計タスクの要求と受け入れ条件から成果物を作成して修正する"
+  default_prompt: "Use $design to create or revise a design artifact for a ready factory task."
