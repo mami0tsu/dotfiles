@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Linear"
+  short_description: "factory のアイデアとタスクを管理し、コメント成果物を読み書きする"
+  default_prompt: "Use $linear to manage factory ideas, tasks, or comment artifacts through Linear."
