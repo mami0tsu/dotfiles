@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Review"
+  short_description: "候補、調査結果、成果物を同じ手順でレビューし、対象版と判定を記録する"
+  default_prompt: "Use $review to review a factory candidate, research result, or artifact."
