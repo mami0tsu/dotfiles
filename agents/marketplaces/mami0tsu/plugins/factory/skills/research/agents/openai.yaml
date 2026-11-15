@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Research"
+  short_description: "定期調査、アイデア調査、調査タスクの結果と根拠を記録する"
+  default_prompt: "Use $research to investigate a repository, registered idea, or research task."
