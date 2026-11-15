@@ -23,7 +23,7 @@ allowed-tools: >-
 
 ## 出力
 
-status/complete/binding/items を返し、items の id/url/revision/body と確認済み項目を保持する。
+status/complete/binding/items と元の request を返し、items の id/url/revision/body と確認済み項目を保持する。
 未確定の key は省略し、metadata の復元と決定論的な照合は呼び出し元の worker に渡す。
 
 ## 制約
