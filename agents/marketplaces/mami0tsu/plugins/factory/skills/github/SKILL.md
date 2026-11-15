@@ -46,7 +46,7 @@ allowed-tools: >-
 | --- | --- | --- |
 | `ideas` | `collection` | `list`, `get`, `create`, `comments`, `comment`, `decision` |
 | `staging`, `artifacts` | `file`, `comment`, `change` | `get`, `save` |
-| `changes` | `change` | `get`, `comments`, `create`, `request-review`, `approval`, `merge` |
+| `changes` | `change` | `get`, `comments`, `comment`, `create`, `request-review`, `approval`, `merge` |
 
 `tasks/collection`、Discussion、インラインレビューコメントの更新は未対応として保留する。
 別のアダプターへ暗黙に切り替えない。
@@ -95,6 +95,7 @@ allowed-tools: >-
 | `staging,artifacts/comment:get,save` | 解決済みの Issue/PR のトップレベルコメントを扱う。PR には `github_fetch_issue_comments`、`github_add_comment_to_issue`、`github_update_issue_comment` を使う。Issue または版情報が不足する場合は [CLI 手順](references/cli.md)を使う。コメント ID/URL、`revision` として `updated_at`、比較用の本文を保存し、更新前に再照合する。 |
 | `staging,artifacts/change:get,save`、`changes/change:get,create` | `github_get_pr_info` で PR と head SHA を取得する。保存・作成では指定 repository、base、タスク、key、push 済み head を全状態の既存 PR と照合する。未作成なら `github_create_pull_request` に `draft: true` と明示的な base/head/title/body を渡す。既存 PR の修正は同じ head に `git-usage` で commit/push し、更新後の head SHA を返す。1タスク1 repository・1 PR を守る。 |
 | `changes/change:comments` | 解決済み PR の `github_fetch_pr_comments` で Conversation、レビュー本文、インラインコメントを種類別に取得する。全ページ取得と必要な参照を確認できない場合は [コメントとレビューの CLI 手順](references/cli.md)で補完する。初期の投稿対応はトップレベルの Conversation comment に限り、レビュー本文への返信、インライン返信、スレッド返信は保留する。 |
+| `changes/change:comment` | 同じ output の解決済み PR にトップレベルの Conversation comment を保存する。`github_get_pr_info` で PR と期待する head SHA を照合し、`github_fetch_issue_comments` で全件の応答 ID、key、本文を確認する。新規は `github_add_comment_to_issue`、既存応答は所属、権限、期待する `updated_at` を照合して `github_update_issue_comment` を使う。版情報が不足すれば [CLI 手順](references/cli.md)で補完し、結果不明なら再送しない。投稿後は再取得し、コメントの ID/URL/版、参照コメント、成果物の head SHA を返す。未対応の返信形式は変換せず保留する。 |
 | `changes/change:request-review` | 対象 revision と設定のレビュアーを照合し、既存の依頼を除いて `github_request_pull_request_reviewers` を使う。Draft への正式依頼は保留し、ready 化を別途依頼する。自動で ready 化しない。 |
 | `changes/change:approval` | `github_list_pull_request_reviews` の人間のレビュー、または上位スキルが外部のタスク等で検証した明示的な承認根拠を確認する。判断者、日時、根拠 URL、状態、対象 revision、上位の検証結果を引き継ぎ、現在の head SHA と照合する。GitHub レビューの対象 SHA が欠ける場合は [CLI 手順](references/cli.md)で `commit_id` を確認する。取り消し・変更要求・古い版の承認を除外し、必要な人間の承認が揃わなければ保留する。承認レビューを代行しない。 |
 | `changes/change:merge` | 上位の release がタスクの `release-ready` と人間の承認を両方確認した根拠を要求する。外部の承認根拠も引き継ぎ、現在の head SHA、base、承認対象 revision、GitHub の必須レビュー・チェック・取り込みポリシーと競合状態を再確認する。外部の承認を GitHub の必須条件の代用にしない。明示された許可済み方式で `github_merge_pull_request` の `expected_head_sha` を必ず指定する。既に同じ PR が取り込み済みなら再実行せず merge commit を返す。不一致・不明・Draft なら保留する。 |

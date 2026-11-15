@@ -47,7 +47,7 @@ CUE は Home Manager のパッケージと Nix の test 環境に含めます。
 | `ideas` | `collection` | `list`, `get`, `create`, `comments`, `comment`, `decision` |
 | `tasks` | `collection` | `list`, `get`, `create`, `update`, `comments`, `comment` |
 | `staging`, `artifacts` | `file`, `comment`, `change` | `get`, `save` |
-| `changes` | `change` | `get`, `comments`, `create`, `request-review`, `approval`, `merge` |
+| `changes` | `change` | `get`, `comments`, `comment`, `create`, `request-review`, `approval`, `merge` |
 
 操作先の識別子はアダプターが接続先の表現へ変換します。
 実行前に、指定スキルの存在と、役割、操作先の種類、操作への対応を確認します。
