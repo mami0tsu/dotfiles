@@ -32,6 +32,7 @@ in
     localPackages.codex
     localPackages.codex-desktop
     localPackages.difit
+    localPackages.knap
     docker_29 # v29.9.1
     fzf # v0.74.5
     ghq # v1.10.1

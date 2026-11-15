@@ -13,6 +13,8 @@
         <bpmn:flowNodeRef>IdeaDeferred</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>HumanReviewDecision</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ApproveArtifact</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Submit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="MainAILane" name="メイン AI">
         <bpmn:flowNodeRef>ResearchStart</bpmn:flowNodeRef>
@@ -22,7 +24,6 @@
         <bpmn:flowNodeRef>TicketTrigger</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>WorkTrigger</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ArtifactReviewTrigger</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>SubmitTrigger</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>PrepareTrigger</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>PrepareReviewTrigger</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -35,10 +36,7 @@
         <bpmn:flowNodeRef>Ready</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Work</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AIReview</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Submit</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Rejected</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ReleaseReady</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>InvestigateIdea</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>PrepareReview</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -294,21 +292,10 @@
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="ApproveArtifact" name="成果物を&#10;承認する">
       <bpmn:incoming>Flow_NoIssues_Approval</bpmn:incoming>
-      <bpmn:outgoing>Flow_Approval_SubmitTrigger</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Approval_Submit</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:task id="SubmitTrigger" name="リリーススキルを&#10;起動する">
-      <bpmn:incoming>Flow_Approval_SubmitTrigger</bpmn:incoming>
-      <bpmn:outgoing>Flow_Trigger_ReleaseReady</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:intermediateCatchEvent id="ReleaseReady" name="リリース可能になった">
-      <bpmn:incoming>Flow_Trigger_ReleaseReady</bpmn:incoming>
-      <bpmn:outgoing>Flow_ReleaseReady_Submit</bpmn:outgoing>
-      <bpmn:conditionalEventDefinition id="WhenReleaseReady">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression">タスクがリリース可能な状態にある</bpmn:condition>
-      </bpmn:conditionalEventDefinition>
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="Submit" name="承認済みの&#10;成果物をリリースする">
-      <bpmn:incoming>Flow_ReleaseReady_Submit</bpmn:incoming>
+    <bpmn:userTask id="Submit" name="承認済みの&#10;成果物を&#10;リリースする">
+      <bpmn:incoming>Flow_Approval_Submit</bpmn:incoming>
       <bpmn:outgoing>Flow_Submit_End</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_Submit">
         <bpmn:dataInput id="Data_Submit_0" />
@@ -328,7 +315,7 @@
         <bpmn:sourceRef>Data_Submit_1</bpmn:sourceRef>
         <bpmn:targetRef>ArtifactRef</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
-    </bpmn:task>
+    </bpmn:userTask>
     <bpmn:endEvent id="End" name="処理終了">
       <bpmn:incoming>Flow_Submit_End</bpmn:incoming>
     </bpmn:endEvent>
@@ -363,9 +350,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">問題がない</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_Revision_WorkTrigger" sourceRef="HumanReviewDecision" targetRef="WorkTrigger" name="修正" />
-    <bpmn:sequenceFlow id="Flow_Approval_SubmitTrigger" sourceRef="ApproveArtifact" targetRef="SubmitTrigger" />
-    <bpmn:sequenceFlow id="Flow_Trigger_ReleaseReady" sourceRef="SubmitTrigger" targetRef="ReleaseReady" />
-    <bpmn:sequenceFlow id="Flow_ReleaseReady_Submit" sourceRef="ReleaseReady" targetRef="Submit" />
+    <bpmn:sequenceFlow id="Flow_Approval_Submit" sourceRef="ApproveArtifact" targetRef="Submit" />
     <bpmn:sequenceFlow id="Flow_Submit_End" sourceRef="Submit" targetRef="End" />
     <bpmn:sequenceFlow id="Flow_Reject" sourceRef="ReviewGate" targetRef="Rejected" name="見送り" />
     <bpmn:sequenceFlow id="Flow_Join_PrepareTrigger" sourceRef="Join" targetRef="PrepareTrigger" />
@@ -474,16 +459,13 @@
       <bpmndi:BPMNShape id="HumanReview_di" bpmnElement="HumanReview">
         <dc:Bounds x="54" y="2220" width="140" height="60" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SubmitTrigger_di" bpmnElement="SubmitTrigger">
-        <dc:Bounds x="254" y="2560" width="140" height="60" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Submit_di" bpmnElement="Submit">
-        <dc:Bounds x="454" y="2750" width="140" height="60" />
+        <dc:Bounds x="54" y="2560" width="140" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_di" bpmnElement="End">
-        <dc:Bounds x="506" y="2860" width="36" height="36" />
+        <dc:Bounds x="106" y="2670" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="480" y="2900" width="90" height="20" />
+          <dc:Bounds x="80" y="2710" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Rejected_di" bpmnElement="Rejected">
@@ -669,31 +651,13 @@
           <dc:Bounds x="38" y="2295" width="54" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Approval_SubmitTrigger_di" bpmnElement="Flow_Approval_SubmitTrigger">
+      <bpmndi:BPMNEdge id="Flow_Approval_Submit_di" bpmnElement="Flow_Approval_Submit">
         <di:waypoint x="124" y="2450" />
-        <di:waypoint x="124" y="2490" />
-        <di:waypoint x="324" y="2490" />
-        <di:waypoint x="324" y="2560" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ReleaseReady_di" bpmnElement="ReleaseReady">
-        <dc:Bounds x="506" y="2650" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="545" y="2658" width="152" height="24" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_Trigger_ReleaseReady_di" bpmnElement="Flow_Trigger_ReleaseReady">
-        <di:waypoint x="324" y="2620" />
-        <di:waypoint x="324" y="2635" />
-        <di:waypoint x="524" y="2635" />
-        <di:waypoint x="524" y="2650" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ReleaseReady_Submit_di" bpmnElement="Flow_ReleaseReady_Submit">
-        <di:waypoint x="524" y="2686" />
-        <di:waypoint x="524" y="2750" />
+        <di:waypoint x="124" y="2560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Submit_End_di" bpmnElement="Flow_Submit_End">
-        <di:waypoint x="524" y="2810" />
-        <di:waypoint x="524" y="2860" />
+        <di:waypoint x="124" y="2620" />
+        <di:waypoint x="124" y="2670" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Reject_di" bpmnElement="Flow_Reject">
         <di:waypoint x="524" y="560" />
@@ -774,11 +738,13 @@
       <bpmndi:BPMNEdge id="Association_Submit_0_di" bpmnElement="Association_Submit_0">
         <di:waypoint x="767" y="2248" />
         <di:waypoint x="805" y="2248" />
-        <di:waypoint x="805" y="2765" />
-        <di:waypoint x="594" y="2765" />
+        <di:waypoint x="805" y="2575" />
+        <di:waypoint x="194" y="2575" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_Submit_1_di" bpmnElement="Association_Submit_1">
-        <di:waypoint x="594" y="2778" />
+        <di:waypoint x="194" y="2600" />
+        <di:waypoint x="680" y="2600" />
+        <di:waypoint x="680" y="2778" />
         <di:waypoint x="715" y="2778" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="PrepareTrigger_di" bpmnElement="PrepareTrigger">
