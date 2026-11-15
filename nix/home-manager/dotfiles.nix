@@ -44,7 +44,7 @@ in
     ".editorconfig".source = "${self}/.editorconfig";
     ".codex/AGENTS.md".source = "${self}/AGENTS.md";
     ".codex/rules/default.rules".text = codexPermissions;
-    ".claude/CLAUDE.md".source = "${self}/CLAUDE.md";
+    ".claude/CLAUDE.md".source = "${self}/AGENTS.md";
     ".claude/permissions.json".text = claudePermissions;
   };
 }

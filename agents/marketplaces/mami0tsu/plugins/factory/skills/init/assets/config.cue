@@ -7,6 +7,8 @@ import "struct"
 #Limit: {
 	// 同時に処理する対象の件数の上限を指定する。
 	concurrency: *1 | (int & >0)
+	// 定期実行するスキルの間隔を秒数で指定する。
+	intervalSeconds?: int & >0
 }
 #Config: {
 	// 最新のデフォルトブランチを定期調査するリポジトリを指定する。
@@ -15,10 +17,6 @@ import "struct"
 		url: #Text
 		paths: *["."] | [...#Text]
 	}]
-	research: {
-		// 前回の定期調査から次の調査までの秒数を指定する。
-		intervalSeconds: *86400 | (int & >0)
-	}
 	// アイデアは GitHub Issue に保存し、タスクは指定したサービスで管理する。
 	roles: {
 		ideas: {
@@ -75,7 +73,12 @@ import "struct"
 		concurrency: *1 | (int & >0)
 		// 全体上限と各スキルの上限を同時に守る。
 		skills: {
-			research:  #Limit
+			research: {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+				// 未クローズのアイデア Issue の上限を指定する。
+				maxOpenIssues?: int & >0
+			}
 			review:    #Limit
 			register:  #Limit
 			plan:      #Limit
