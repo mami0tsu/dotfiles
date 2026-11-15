@@ -79,7 +79,10 @@ import "struct"
 				// 未クローズのアイデア Issue の上限を指定する。
 				maxOpenIssues?: int & >0
 			}
-			review:    #Limit
+			review: {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+			}
 			register:  #Limit
 			plan:      #Limit
 			design:    #Limit
