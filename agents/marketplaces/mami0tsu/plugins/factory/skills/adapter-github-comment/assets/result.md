@@ -2,5 +2,6 @@
 - complete: 全件取得と必要な事後確認が済んだ場合だけ true
 - binding: adapter / definition / target / output / role
 - request: 受け取った依頼を保持する。
+- subject: 確認済み親の id / url / revision
 - items: id / url / revision / body と確認済みの key など
 - reason / 再開に必要な入力:

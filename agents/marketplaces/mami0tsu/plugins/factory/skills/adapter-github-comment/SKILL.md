@@ -24,7 +24,7 @@ allowed-tools: >-
 ## 出力
 
 status/complete/binding/items と元の request を返し、items の id/url/revision/body と確認済み項目を保持する。
-未確定の key は省略し、metadata の復元と決定論的な照合は呼び出し元の worker に渡す。
+subject に確認済み親の id/url/revision を返し、未確定の key は省略して metadata の復元と照合を worker に渡す。
 
 ## 制約
 
