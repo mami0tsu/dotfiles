@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Register"
+  short_description: "AI レビュー済みの候補を既存アイデアと照合して登録し、元候補との対応を残す"
+  default_prompt: "Use $register to register factory candidates that passed AI review and preserve their source references."
