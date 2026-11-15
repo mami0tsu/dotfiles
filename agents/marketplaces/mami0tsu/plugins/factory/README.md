@@ -1,72 +1,58 @@
 # Factory
 
-アイデアの調査から成果物のリリースまでを進めるプラグインです。
-初期設定には [init スキル](skills/init/SKILL.md)を使います。
-`loop` などの処理スキルとアダプター本体は後続チケットで追加します。
+アイデアの調査からレビュー済み成果物の記録までを進めるプラグインです。
+レビュー後の公開は人間が行います。
 
-## 初期設定
+## 設定
 
-factory の `init` を呼び、`factory.json` の保存先を指定します。
-必要な値を確認した後、同梱の [CUE 定義](skills/init/assets/config.cue)で検証した JSON を生成します。
-各パラメーターの説明、型、制約、既定値はこの CUE 定義で管理します。
-利用者が CUE を編集する必要はありません。
-既存の JSON は検証し、無断では上書きしません。
+[init](skills/init/SKILL.md) に `factory.json` の絶対パスを渡します。
+型、制約、既定値は [CUE 定義](skills/init/assets/config.cue)だけで管理します。
+Python 3 は CUE の呼び出し、入力の生成、結果の検証を担います。
+既存設定は検証だけを行い、不正でも上書きしません。
+未作成の場合だけ回答から生成し、必須値が不明なら `wait` を返します。
+CUE が未導入なら保留します。
 
-生成と検証には CUE を使います。
-CUE は Home Manager のパッケージと Nix の test 環境に含めます。
-未導入の場合、スキルはインストールせず保留します。
-各処理スキルは開始時に同じ定義で設定を検証し、標準出力の既定値補完済み JSON を使います。
-設定が存在しない場合だけ `loop` から同じパスを渡して `init` を呼びます。
+`roles.ideas` と `roles.tasks` は管理先です。
+タスクは `outputs` のキーを1つ選び、以後の工程へ引き継ぎます。
+出力先はファイル、コメント、変更提案から選びます。
+複数のリポジトリへ変更する場合はタスクを分割します。
+`repositories` は周期調査の対象です。
+記録した出力先、対象、成果物の `id,url,revision` が現在の設定や正本と異なる場合は保留します。
 
-## タスクと出力先
+## 実行
 
-アイデアとタスクの管理先は `roles.ideas` と `roles.tasks` に指定します。
-タスクの出力先は名前付きの `outputs` に定義し、ファイル、コメント、変更提案を選べます。
-変更提案そのものも成果物として扱います。
-`repositories` は定期調査の対象であり、管理先や出力先を兼ねるとは推測しません。
+[loop](skills/loop/SKILL.md) は手動対象、周期調査、worker の成功結果から候補を選びます。
+各作業の Python スクリプトが、全体とスキル別の上限、同一対象と工程の排他、子の再開記録を扱います。
+LLM は native 子を起動し、内容を判断します。
+独自の子プロセス基盤や待ち行列は持ちません。
+記録の場所と呼び出し形式は [実行契約](skills/loop/references/runtime.md)を参照してください。
 
-後続の `plan` は、タスクに設定内の出力先キーを1つ記録する契約とします。
-たとえば別々のリポジトリを指す `outputs.component-a` と `outputs.component-b` があれば、両方の変更を含むアイデアは2つのタスクへ分け、それぞれに `output: "component-a"` と `output: "component-b"` を記録し、タスク間の依存関係を設定します。
-変更提案を使うタスクは、1タスクにつき1リポジトリの1変更提案を扱います。
-出力先が未指定、不明なキー、複数値、または受け入れ条件と矛盾する場合は、推測せず保留します。
+worker は `research`、`review`、`register`、`plan`、`design`、`implement`、`respond` です。
+各 worker は次の工程を返し、子を直接起動しません。
+人間待ちは native 子の終了確認後に処理枠を解放します。
+未確認の子と結果不明の書き込みは枠を保持し、再開時に照合します。
 
-選んだ出力先の参照は、実装、レビュー、リリースへ同じ値を引き継ぎます。
-アイデア、タスク、出力先、成果物の `id`、`url`、`revision` を関連付けて追跡します。
-同じキーの設定先が変わり、記録済みの成果物や対象リポジトリと一致しない場合は保留し、別の出力先へ切り替えません。
-タスク分割と出力先選択の実装は、後続の処理スキルで追加します。
+## アダプター
 
-## アダプターの共通契約
+設定の `adapters` は builtin の skill または external の plugin と skill を指定します。
+導入済みカタログから解決し、指定先の入力契約と対応操作を確認します。
+未知の設定項目や自由な接続オプションは追加しません。
+接続済み MCP ツールを使い、サービス SDK や別の API 認証は追加しません。
+Python はツール引数と結果を検証し、API 呼び出し自体は MCP ツールが行います。
 
-管理先と出力先にアダプターと操作先を指定し、同じアダプターを複数の箇所に割り当てられます。
-ビルトインと外部スキルは提供元だけが異なり、同じ設定項目と次の操作を受け取ります。
-独自の設定項目は受け付けません。
-`staging`、`artifacts`、`changes` は操作上の役割であり、タスクが選んだ同じ出力先を使います。
-
-| 役割 | 操作先の種類 | 操作 |
+| 役割 | target.kind | 操作 |
 | --- | --- | --- |
-| `ideas` | `collection` | `list`, `get`, `create`, `comments`, `comment`, `decision` |
-| `tasks` | `collection` | `list`, `get`, `create`, `update`, `comment` |
-| `staging`, `artifacts` | `file`, `comment`, `change` | `get`, `save` |
-| `changes` | `change` | `get`, `create`, `request-review`, `approval`, `merge` |
+| `ideas` | `collection` | `list,get,create,comments,comment,decision` |
+| `tasks` | `collection` | `list,get,create,update,comments,comment` |
+| `staging,artifacts` | `file,comment,change` | `get,save` |
+| `changes` | `change` | `get,comments,comment,create,request-review` |
 
-操作先の識別子はアダプターが接続先の表現へ変換します。
-実行前に、指定スキルの存在と、役割、操作先の種類、操作への対応を確認します。
-未対応なら停止または保留し、別のアダプターへ暗黙に切り替えません。
-
-依頼には `role`、`target`、`operation`、`input`、更新時には再試行を照合する安定した `key` を渡します。
-コメントの `subject` は、現在処理中のアイデアやタスク、または固定 URL を指します。
-呼び出し元は実行時にその対象を解決し、対象の `id` と `url` を `input` に渡します。
-既存コメントの取得や更新に使う識別子は、操作の入力と結果で受け渡します。
-結果には `status: success | wait | error`、`items`、`reason` を返します。
-各項目は `id` と `url`、成果物と変更提案では `revision` も持ちます。
-採用と承認は人間の判断の根拠を確認し、リリースでは承認対象の版とタスクのリリース可能状態を照合します。
-結果が不明な書き込みは保留し、再実行前に既存結果を照合します。
-
-## スキルの追加
-
-各スキルは `skills/<name>/SKILL.md` に短い条件、入力、手順、出力を書き、ケースは内部で分岐します。
-出力テンプレートは各スキルの `assets/`、必要な補足資料は各スキルの `references/` に置きます。
-Git 操作や設計、実装、レビューの既存手順は `dev` プラグインから再利用します。
+依頼は `config,role,target,operation,input` と、更新を照合する安定した `key` を持ちます。
+出力先を使う操作ではタスクの単一 `output` と記録した binding も渡します。
+結果は `status: success | wait | error` とし、対象の `id,url`、成果物の `revision` を保持します。
+コメントは全ページの取得範囲、親と root の参照、発言者、日時、本文、版を区別します。
+未対応の操作、版の不一致、取得範囲の不足は保留し、暗黙に別の対象や形式へ切り替えません。
+結果不明の書き込みは、同じ key の既存結果を照合するまで繰り返しません。
 
 ## 登録と削除
 
@@ -77,8 +63,8 @@ task agent-plugins:deploy:factory
 task agent-plugins:clean:factory
 ```
 
-全体の `deploy` と `clean` も factory を対象にします。
 Codex CLI はルート manifest、Claude Code は `.claude-plugin/plugin.json` を使います。
+各 skill は入力、出力、制約、手順を短く書き、決定論的な処理を作業別スクリプトへ置きます。
 
 ## 公開資料
 
@@ -86,4 +72,3 @@ Codex CLI はルート manifest、Claude Code は `.claude-plugin/plugin.json` �
 - [Agent Skills](https://agentskills.io/skill-creation/best-practices)
 - [OpenAI](https://developers.openai.com/plugins/build/skills)
 - [Anthropic](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [CUE による JSON 検証](https://cuelang.org/docs/howto/validate-json-using-cue/)

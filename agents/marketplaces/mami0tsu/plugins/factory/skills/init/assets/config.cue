@@ -3,7 +3,7 @@ import "struct"
 
 #Text:   string & !=""
 #Name:   string & =~"^[a-z][a-z0-9-]*$"
-#Worker: "research" | "review" | "register" | "plan" | "design" | "implement" | "release" | "respond"
+#Worker: "research" | "review" | "register" | "plan" | "design" | "implement" | "respond"
 #Limit: {
 	// 同時に処理する対象件数の上限を指定する。
 	concurrency: *1 | (int & >0)
@@ -99,8 +99,7 @@ import "struct"
 			withdrawn: #Text
 		}
 		tasks: {
-			ready:           #Text
-			"release-ready": #Text
+			ready: #Text
 		}
 	}
 	// スキル名ごとにレビュアーを指定し、未指定なら default を使う。
@@ -124,7 +123,6 @@ import "struct"
 			plan:      #Limit
 			design:    #Limit
 			implement: #Limit
-			release:   #Limit
 			respond:   #Limit
 		}
 	}

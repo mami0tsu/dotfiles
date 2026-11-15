@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Loop"
+  short_description: "処理枠と native 子の再開記録を管理する"
+  default_prompt: "Use $loop to coordinate factory workers with bounded native subagents."
