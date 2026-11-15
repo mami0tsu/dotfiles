@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Implement"
+  short_description: "実装とレビュー修正を検証し、同じ成果物として記録する"
+  default_prompt: "Use $implement to implement a ready factory task or revise its existing artifact."
