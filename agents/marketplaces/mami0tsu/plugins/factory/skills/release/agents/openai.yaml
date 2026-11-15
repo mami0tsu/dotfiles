@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Release"
+  short_description: "人間の承認とタスク状態を照合して成果物をリリースする"
+  default_prompt: "Use $release to release an approved factory artifact after checking its revision and task readiness."
