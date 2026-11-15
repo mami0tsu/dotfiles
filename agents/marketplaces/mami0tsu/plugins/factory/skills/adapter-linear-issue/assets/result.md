@@ -1,0 +1,5 @@
+- status: success / wait / error
+- complete / binding / operation:
+- items: id / url / revision / key
+- call / context:
+- reason / 再開に必要な入力:

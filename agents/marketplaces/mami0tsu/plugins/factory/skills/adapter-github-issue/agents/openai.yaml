@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory GitHub Issue"
+  short_description: "GitHub Issue を既存 MCP と共通契約で操作する"
+  default_prompt: "Use $adapter-github-issue for the bound factory resource operation."

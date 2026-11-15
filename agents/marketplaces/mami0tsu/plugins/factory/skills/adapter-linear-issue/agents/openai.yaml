@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Linear Issue"
+  short_description: "Linear Issue を既存 MCP と共通契約で操作する"
+  default_prompt: "Use $adapter-linear-issue for the bound factory resource operation."

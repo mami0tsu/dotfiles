@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory Linear Comment"
+  short_description: "Linear Comment を既存 MCP と共通契約で操作する"
+  default_prompt: "Use $adapter-linear-comment for the bound factory resource operation."

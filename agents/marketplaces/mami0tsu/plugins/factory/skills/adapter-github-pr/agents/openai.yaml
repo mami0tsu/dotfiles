@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory GitHub PR"
+  short_description: "GitHub PR を既存 MCP と共通契約で操作する"
+  default_prompt: "Use $adapter-github-pr for the bound factory resource operation."
