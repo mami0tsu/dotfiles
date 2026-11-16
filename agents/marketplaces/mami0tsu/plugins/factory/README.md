@@ -1,6 +1,6 @@
 # Factory
 
-アイデアの調査から成果物のレビューまでを進めるプラグインです。
+Issue の調査から成果物のレビューまでを進めるプラグインです。
 初期設定には [init スキル](skills/init/SKILL.md)を使います。
 未実装の処理スキルは後続チケットで追加します。
 
@@ -12,6 +12,8 @@ factory の `init` を呼び、`factory.json` を作成します。
 各パラメーターの説明、型、制約、既定値はこの CUE 定義で管理します。
 利用者が CUE を編集する必要はありません。
 既存の JSON は検証し、必要な値を確認したうえで不足分を補います。
+旧設定では `roles.ideas` と `states.ideas` をそれぞれ `roles.issues` と `states.issues` に変更します。
+`loop.skills.review` と `reviewers.review` がある場合は、それぞれ `review-pr` に変更します。
 
 生成と検証には CUE を使います。
 CUE は Home Manager のパッケージと Nix の test 環境に含めます。
@@ -21,13 +23,13 @@ CUE は Home Manager のパッケージと Nix の test 環境に含めます。
 ## 定期実行
 
 `loop.skills` の各スキルに `intervalSeconds` を指定すると、実装済みのスキルをその間隔で実行します。
-research と create-task と review の既定値は3600秒です。
-`loop.skills.research.maxOpenIssues` を指定すると、未クローズのアイデア Issue が上限に達している間は research を見送ります。
+research、create-task、review-pr の既定値は3600秒です。
+`loop.skills.research.maxOpenIssues` を指定すると、管理先の未クローズ Issue が上限に達している間は research を見送ります。
 実行間隔ごとに再確認し、上限を下回ると再開します。
 
 ## タスクと出力先
 
-アイデアは GitHub Issue に保存し、`roles.ideas.repository` に保存先リポジトリの URL を指定します。
+Issue は GitHub に保存し、`roles.issues.repository` に保存先リポジトリの URL を指定します。
 タスクを管理するサービス名は `roles.tasks.service` に指定します。
 タスクの ID を構成するキーは `roles.tasks.key` に指定します。
 そのサービスでタスクが着手可能であることを示す状態名は `states.tasks.ready` に指定します。
@@ -44,12 +46,12 @@ research と create-task と review の既定値は3600秒です。
 `repositories` は最新のデフォルトブランチを定期調査する対象であり、管理先や出力先を兼ねるとは推測しません。
 
 後続の `plan` はタスクに設定内の出力先キーを1つ記録する契約とします。
-たとえば別々のリポジトリを指す `outputs.component-a` と `outputs.component-b` があれば、両方の変更を含むアイデアは2つのタスクへ分け、それぞれに `output: "component-a"` と `output: "component-b"` を記録し、タスク間の依存関係を設定します。
+たとえば別々のリポジトリを指す `outputs.component-a` と `outputs.component-b` があれば、両方の変更を含む Issue は2つのタスクへ分け、それぞれに `output: "component-a"` と `output: "component-b"` を記録し、タスク間の依存関係を設定します。
 プルリクエストを使うタスクは1タスクにつき1リポジトリの1プルリクエストを扱います。
 出力先が未指定、不明なキー、複数値、または受け入れ条件と矛盾する場合は、推測せず保留します。
 
 選んだ出力先の参照は実装とレビューへ同じ値を引き継ぎます。
-アイデア、タスク、出力先、成果物の `id`、`url`、`revision` を関連付けて追跡します。
+Issue、タスク、出力先、成果物の `id`、`url`、`revision` を関連付けて追跡します。
 同じキーの設定先が変わり、記録済みの成果物や対象リポジトリと一致しない場合は保留し、別の出力先へ切り替えません。
 タスク分割と出力先選択の実装は、後続の処理スキルで追加します。
 

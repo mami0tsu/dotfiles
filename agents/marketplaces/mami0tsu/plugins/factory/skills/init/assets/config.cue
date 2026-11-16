@@ -3,7 +3,7 @@ import "struct"
 
 #Text:   string & !=""
 #Name:   string & =~"^[a-z][a-z0-9-]*$"
-#Worker: "research" | "review" | "register" | "create-task" | "plan" | "design" | "implement" | "respond"
+#Worker: "research" | "review-pr" | "review-issue" | "register" | "create-task" | "plan" | "design" | "implement" | "respond"
 #Limit: {
 	// 同時に処理する対象の件数の上限を指定する。
 	concurrency: *1 | (int & >0)
@@ -17,9 +17,9 @@ import "struct"
 		url: #Text
 		paths: *["."] | [...#Text]
 	}]
-	// アイデアは GitHub Issue に保存し、タスクは指定したサービスで管理する。
+	// Issue は GitHub に保存し、タスクは指定したサービスで管理する。
 	roles: {
-		ideas: {
+		issues: {
 			// Issue の保存先となる GitHub リポジトリの URL を指定する。
 			repository: #Text & =~"^https://[^/]+/[^/]+/[^/]+/?$"
 		}
@@ -49,7 +49,7 @@ import "struct"
 	// 実在するサービスの状態名を指定する。
 	// 人間の判断を代行しない。
 	states: {
-		ideas: {
+		issues: {
 			adopted:   #Text
 			withdrawn: #Text
 		}
@@ -76,7 +76,7 @@ import "struct"
 			research: {
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
-				// 未クローズのアイデア Issue の上限を指定する。
+				// 未クローズの Issue の上限を指定する。
 				maxOpenIssues?: int & >0
 			}
 			register: #Limit
@@ -84,15 +84,15 @@ import "struct"
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
 			}
-			review: {
+			"review-pr": {
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
 			}
-			register:  #Limit
-			plan:      #Limit
-			design:    #Limit
-			implement: #Limit
-			respond:   #Limit
+			"review-issue": #Limit
+			plan:           #Limit
+			design:         #Limit
+			implement:      #Limit
+			respond:        #Limit
 		}
 	}
 }

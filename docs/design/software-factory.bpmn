@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_SoftwareFactory" targetNamespace="urn:software-factory:bpmn">
-  <bpmn:process id="SoftwareFactory" name="アイデアの登録からタスクの完了まで" isExecutable="false">
+  <bpmn:process id="SoftwareFactory" name="Issue の登録からタスクの完了まで" isExecutable="false">
     <bpmn:laneSet id="FactoryLanes">
       <bpmn:lane id="HumanLane" name="人間">
         <bpmn:flowNodeRef>HumanStart</bpmn:flowNodeRef>
@@ -48,7 +48,7 @@
       <bpmn:outgoing>Flow_ResearchStart_ResearchTrigger</bpmn:outgoing>
       <bpmn:timerEventDefinition id="ScheduledResearch" />
     </bpmn:startEvent>
-    <bpmn:userTask id="Manual" name="アイデアを&#10;登録する">
+    <bpmn:userTask id="Manual" name="Issue を&#10;登録する">
       <bpmn:incoming>Flow_HumanStart_Manual</bpmn:incoming>
       <bpmn:outgoing>Flow_Manual_Join</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_Manual">
@@ -75,7 +75,7 @@
       <bpmn:incoming>Flow_Research_ReviewTrigger</bpmn:incoming>
       <bpmn:outgoing>Flow_ReviewTrigger_ReviewIdea</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="ReviewIdea" name="アイデアを&#10;レビューする">
+    <bpmn:task id="ReviewIdea" name="Issue を&#10;レビューする">
       <bpmn:incoming>Flow_ReviewTrigger_ReviewIdea</bpmn:incoming>
       <bpmn:outgoing>Flow_ReviewIdea_ReviewGate</bpmn:outgoing>
     </bpmn:task>
@@ -88,7 +88,7 @@
       <bpmn:incoming>Flow_ReviewGate_RegisterTrigger</bpmn:incoming>
       <bpmn:outgoing>Flow_RegisterTrigger_Register</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Register" name="アイデアを&#10;登録する">
+    <bpmn:task id="Register" name="Issue を&#10;登録する">
       <bpmn:incoming>Flow_RegisterTrigger_Register</bpmn:incoming>
       <bpmn:outgoing>Flow_Register_Join</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_Register">
@@ -112,7 +112,7 @@
       <bpmn:incoming>Flow_Join_PrepareTrigger</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareTrigger_Investigate</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="InvestigateIdea" name="登録済みの&#10;アイデアを調査する">
+    <bpmn:task id="InvestigateIdea" name="登録済みの&#10;Issue を調査する">
       <bpmn:incoming>Flow_PrepareTrigger_Investigate</bpmn:incoming>
       <bpmn:outgoing>Flow_Investigate_PrepareReviewTrigger</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_InvestigateIdea">
@@ -146,7 +146,7 @@
         <bpmn:targetRef>IdeaRef</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:task>
-    <bpmn:userTask id="ConsiderIdea" name="アイデアを&#10;レビューする">
+    <bpmn:userTask id="ConsiderIdea" name="Issue を&#10;レビューする">
       <bpmn:incoming>Flow_PrepareReview_Consider</bpmn:incoming>
       <bpmn:outgoing>Flow_Consider_Gate</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_ConsiderIdea">
@@ -176,7 +176,7 @@
     <bpmn:endEvent id="IdeaDeferred" name="見送り">
       <bpmn:incoming>Flow_Defer</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Adopt" name="アイデアを&#10;採用する">
+    <bpmn:userTask id="Adopt" name="Issue を&#10;採用する">
       <bpmn:incoming>Flow_Proceed_Adopt</bpmn:incoming>
       <bpmn:outgoing>Flow_Adopt_TicketTrigger</bpmn:outgoing>
       <bpmn:ioSpecification id="IO_Adopt">
@@ -334,7 +334,7 @@
     <bpmn:sequenceFlow id="Flow_Register_Join" sourceRef="Register" targetRef="Join" />
     <bpmn:sequenceFlow id="Flow_Consider_Gate" sourceRef="ConsiderIdea" targetRef="ConsiderGate" />
     <bpmn:sequenceFlow id="Flow_Proceed_Adopt" sourceRef="ConsiderGate" targetRef="Adopt">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">人間がアイデアを採用する</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">人間が Issue を採用する</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_Defer" sourceRef="ConsiderGate" targetRef="IdeaDeferred" />
     <bpmn:sequenceFlow id="Flow_Adopt_TicketTrigger" sourceRef="Adopt" targetRef="TicketTrigger" />
@@ -358,7 +358,7 @@
     <bpmn:sequenceFlow id="Flow_Investigate_PrepareReviewTrigger" sourceRef="InvestigateIdea" targetRef="PrepareReviewTrigger" />
     <bpmn:sequenceFlow id="Flow_Trigger_PrepareReview" sourceRef="PrepareReviewTrigger" targetRef="PrepareReview" />
     <bpmn:sequenceFlow id="Flow_PrepareReview_Consider" sourceRef="PrepareReview" targetRef="ConsiderIdea" />
-    <bpmn:dataStoreReference id="IdeaRef" name="アイデアの保管場所" dataStoreRef="IdeaStore" />
+    <bpmn:dataStoreReference id="IdeaRef" name="Issue の保管場所" dataStoreRef="IdeaStore" />
     <bpmn:dataStoreReference id="TicketRef" name="タスクの保管場所" dataStoreRef="TicketStore" />
     <bpmn:dataStoreReference id="ReviewRef" name="成果物の一時保管場所" dataStoreRef="ReviewStore" />
     <bpmn:dataStoreReference id="ArtifactRef" name="成果物の保管場所" dataStoreRef="ArtifactStore" />
@@ -375,7 +375,7 @@
   <bpmn:collaboration id="SoftwareFactoryCollaboration">
     <bpmn:participant id="FactoryPool" processRef="SoftwareFactory" />
   </bpmn:collaboration>
-  <bpmn:dataStore id="IdeaStore" name="アイデアの保管場所" />
+  <bpmn:dataStore id="IdeaStore" name="Issue の保管場所" />
   <bpmn:dataStore id="TicketStore" name="タスクの保管場所" />
   <bpmn:dataStore id="ReviewStore" name="成果物の一時保管場所" />
   <bpmn:dataStore id="ArtifactStore" name="成果物の保管場所" />

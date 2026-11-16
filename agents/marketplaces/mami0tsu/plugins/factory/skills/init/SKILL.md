@@ -16,7 +16,7 @@ allowed-tools: >-
 | 項目 | 内容 |
 | --- | --- |
 | 設定パス | `factory.json` の絶対パス |
-| 設定値 | [config.cue](assets/config.cue) に定義された値。アイデアの保存先には GitHub リポジトリの URL を指定する |
+| 設定値 | [config.cue](assets/config.cue) に定義された値。Issue の保存先には GitHub リポジトリの URL を指定する |
 | 不足項目 | 呼び出し元が必要とする設定値 |
 
 ## 出力

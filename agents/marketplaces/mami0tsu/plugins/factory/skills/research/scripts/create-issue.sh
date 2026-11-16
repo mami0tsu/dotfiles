@@ -8,8 +8,7 @@ if cue export json: "$config" -e loop.skills.research.maxOpenIssues >/dev/null 2
 fi
 issue_title=$2
 issue_body=$3
-issue_labels=$4
-ideas_repo=$(cue export json: "$config" -e roles.ideas.repository --out text)
-ideas_repo=${ideas_repo#https://}
-ideas_repo=${ideas_repo%/}
-gh issue create --repo "$ideas_repo" --title "$issue_title" --body-file "$issue_body" --label "$issue_labels"
+issues_repo=$(cue export json: "$config" -e roles.issues.repository --out text)
+issues_repo=${issues_repo#https://}
+issues_repo=${issues_repo%/}
+gh issue create --repo "$issues_repo" --title "$issue_title" --body-file "$issue_body"
