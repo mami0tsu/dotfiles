@@ -3,7 +3,7 @@ set -euo pipefail
 
 config=$1
 query=$2
-ideas_repo=$(cue export json: "$config" -e roles.ideas.repository --out text)
-ideas_repo=${ideas_repo#https://}
-ideas_repo=${ideas_repo%/}
-gh issue list --repo "$ideas_repo" --state all --search "$query" --limit 1000 --json number,title,body,state,url
+issues_repo=$(cue export json: "$config" -e roles.issues.repository --out text)
+issues_repo=${issues_repo#https://}
+issues_repo=${issues_repo%/}
+gh issue list --repo "$issues_repo" --state all --search "$query" --limit 1000 --json number,title,body,state,url
