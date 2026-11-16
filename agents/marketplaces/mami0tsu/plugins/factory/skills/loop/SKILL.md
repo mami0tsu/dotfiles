@@ -34,7 +34,7 @@ allowed-tools: >-
 ### スキルの実行
 
 1. `intervalSeconds` が設定されたスキルのうち、実装済みのスキルを実行対象とする。
-   現在は [research スキル](../research/SKILL.md)と [create-task スキル](../create-task/SKILL.md)が対象である。
+   現在は [research スキル](../research/SKILL.md)と [create-task スキル](../create-task/SKILL.md)と [review スキル](../review/SKILL.md)が対象である。
 1. 実行対象ごとに、loop の起動時を最初の実行予定時刻とする。
 1. research の実行予定時刻になり、`maxOpenIssues` が指定されている場合は、[上限確認フック](../../hooks/check-research-issues.sh) に設定ファイルの絶対パスを渡して実行する。
    終了コードが 2 の場合は research の実行を見送り、実行間隔が経過した後に再び確認する。
