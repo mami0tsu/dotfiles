@@ -41,7 +41,7 @@ if (args[0] === "store") {
   if (process.env.NIX_TEST_FAIL) process.exit(1);
   console.log(JSON.stringify({ hash: process.env.NIX_TEST_HASH, storePath: "/unused" }));
 } else if (args[0] === "eval") {
-  process.stdout.write("https://example.invalid/tool.tar.gz");
+  process.stdout.write(args.includes("builtins.currentSystem") ? "x86_64-linux" : "https://example.invalid/tool.tar.gz");
 } else if (args[0] === "flake") {
   assert.deepEqual(args, ["flake", "check", "--no-build", "--no-update-lock-file"]);
 } else if (args[0] === "hash") {
@@ -148,7 +148,8 @@ test("textlint lockfile changes run nix-update", (t) => {
   const f = fixture(t);
   f.write(".github/textlint/pnpm-lock.yaml", "lockfileVersion: '9.0'\n# updated\n");
   f.run();
-  assert.deepEqual(f.calls()[0], ["run", "nixpkgs#nix-update", "--", "--flake", "--system", "aarch64-darwin", "--version=skip", "textlint"]);
+  assert.deepEqual(f.calls()[0], ["eval", "--impure", "--raw", "--expr", "builtins.currentSystem"]);
+  assert.deepEqual(f.calls()[1], ["run", "nixpkgs#nix-update", "--", "--flake", "--system", "x86_64-linux", "--version=skip", "textlint"]);
 });
 
 test("GitHub Actions mode input is honored and CLI mode takes precedence", (t) => {

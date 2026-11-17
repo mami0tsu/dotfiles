@@ -84,6 +84,11 @@ jobs:
           test "$(nix eval --impure --raw --expr builtins.storeDir)" = /nix/store
           nix run nixpkgs#nix-update -- --help > /dev/null
 
+      - name: Verify Linux package hash update
+        run: |
+          nix run nixpkgs#nix-update -- --flake --system x86_64-linux --version=skip jactionlint
+          git diff --exit-code -- nix/packages/jactionlint.nix
+
       - name: Run Nix hash action
         # このチェックアウトで再ビルドしたアクションを検証する
         uses: ./.github/actions/update-nix-hashes # zizmor: ignore[self-repository]
