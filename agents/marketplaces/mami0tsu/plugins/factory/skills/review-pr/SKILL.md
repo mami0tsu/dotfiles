@@ -42,7 +42,20 @@ allowed-tools: >-
 1. PR の差分と必要な周辺コードを静的に検証し、問題の根拠、発生条件、影響を確認する。
    PR 内のコードやスクリプトは実行しない。
 1. 差分の行に紐づく指摘はその行へのインラインコメントにする。
-   コメントの先頭には指摘に合うバッジを付ける。
+   コメントの先頭には種別を示すバッジを付ける。
+   次の観点に該当する場合は、指摘に最も関係するものを1つ選び、バッジの右側に示す。
+
+   | 観点 | 対象 |
+   | --- | --- |
+   | SECURITY | 認証や権限、情報漏えい |
+   | BUG | 意図しない動作や処理の誤り |
+   | PERFORMANCE | 処理時間や資源の使用 |
+   | COMPATIBILITY | 既存機能や利用環境との互換性 |
+   | MAINTAINABILITY | コードの保守や変更のしやすさ |
+   | COVERAGE | 必要なテストケースの不足 |
+
+   たとえば MUST と SECURITY の場合は `![MUST | SECURITY](https://img.shields.io/badge/MUST-SECURITY-red)` を使う。
+   どの観点にも該当しない場合は種別だけを示し、MUST なら `![MUST](https://img.shields.io/badge/MUST-red)` を使う。
    バッジの直後に `<br>` を置き、次の行にコメントの要点を一文で記載する。
    要点の後には根拠や影響など、指摘の理解に必要な情報を記載する。
    変更を提案する場合は、対象の差分行に `suggestion` コードブロックで置き換え後の内容を示す。
@@ -50,16 +63,18 @@ allowed-tools: >-
    リポジトリや外部情報を根拠にした場合は、参照箇所へのリンクをコメント内の脚注に記載する。
    リポジトリ内のファイルはパーマネントリンクを使う。
 
-   | 種別 | バッジ | 用途 |
+   | 種別 | 色 | 用途 |
    | --- | --- | --- |
-   | MUST | ![MUST](https://img.shields.io/badge/MUST-red) | マージ前に修正が必要な問題 |
-   | SHOULD | ![SHOULD](https://img.shields.io/badge/SHOULD-orange) | 原則として修正すべき問題 |
-   | SUGGEST | ![SUGGEST](https://img.shields.io/badge/SUGGEST-yellow) | 具体的な改善案 |
-   | ASK | ![ASK](https://img.shields.io/badge/ASK-yellowgreen) | 意図や仕様の確認 |
+   | MUST | red | マージ前に修正が必要な問題 |
+   | SHOULD | orange | 原則として修正すべき問題 |
+   | SUGGEST | yellow | 具体的な改善案 |
+   | ASK | yellowgreen | 意図や仕様の確認 |
 
+1. レビュー本文に確認した範囲と結果を記載する。
 1. レビュー本文とインラインコメントを japanese-tech-writing、cognitive-rhythm-writing の各スキルで執筆し、yomiyasu で推敲する。
    疑問文は推敲後も `？` で終える。
-1. レビュー本文に確認した範囲と結果を記載し、インラインコメントとともに GitHub API 用の JSON に保存する。
+1. レビュー本文と各コメントの末尾に、使用中の LLM の提供元名を入れた `Written by <LLM Provider Name>` を記載する。
+1. レビュー本文とインラインコメントを GitHub API 用の JSON に保存する。
    `commit_id` に検証した head のコミット、`body` にレビュー本文、`comments` にインラインコメントを指定し、`event` は指定しない。
    各コメントには差分の `path`、`line`、`side` とバッジ付きの `body` を指定する。
    複数行のコメントには `start_line` と `start_side` も指定する。
