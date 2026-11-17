@@ -7,16 +7,16 @@
 buildGo127Module rec {
   pname = "jactionlint";
   # renovate: datasource=github-releases depName=jdx/jactionlint extractVersion=^v(?<version>.+)$
-  version = "2.3.0";
+  version = "2.5.0";
 
   src = fetchFromGitHub {
     owner = "jdx";
     repo = "jactionlint";
     tag = "v${version}";
-    hash = "sha256-/gCh+9NmRDsoqrcLl287qxmpiLnb2hF3vb2KTNP+BXM=";
+    hash = "sha256-u9qyLHqiccAzLKOS8MPA0Nq/CWLu2GGYConX5xUFXks=";
   };
 
-  vendorHash = "sha256-SnP9Siop3zgGrVMuHU2IOqDkPKnfyJZVxUB/iBV8hIA=";
+  vendorHash = "sha256-jf7hKPnaSl4iTYT0mtRRAEmgLKAA/lj0vSVoO9+iOvw=";
 
   subPackages = [ "cmd/jactionlint" ];
 

@@ -70,7 +70,8 @@ function updateSourcePackage(file: string): void {
 }
 
 function updateWithNixUpdate(packageName: string): void {
-  nix("run", "nixpkgs#nix-update", "--", "--flake", "--system", "aarch64-darwin", "--version=skip", packageName);
+  const system = nix("eval", "--impure", "--raw", "--expr", "builtins.currentSystem").trim();
+  nix("run", "nixpkgs#nix-update", "--", "--flake", "--system", system, "--version=skip", packageName);
 }
 
 function updateChangedPackages(): void {

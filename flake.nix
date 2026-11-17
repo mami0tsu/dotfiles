@@ -107,6 +107,12 @@
       darwinConfigurations.ci = getDarwinConfig "ci" "mami0tsu.jp+ci@gmail.com";
       darwinConfigurations.mami0tsu = getDarwinConfig "mami0tsu" "mami0tsu.jp@gmail.com";
       packages.${system} = localPackages;
+      packages.x86_64-linux =
+        let
+          pkgs = import nixpkgs { system = "x86_64-linux"; };
+          packages = import ./nix/packages { inherit pkgs; inherit (pkgs) callPackage; };
+        in
+        { inherit (packages) difit jactionlint knap textlint; };
       devShells = forAllSystems (
         system:
         let
