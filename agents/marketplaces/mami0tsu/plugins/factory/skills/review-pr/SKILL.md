@@ -73,7 +73,8 @@ allowed-tools: >-
 1. レビュー本文に確認した範囲と結果を記載する。
 1. レビュー本文とインラインコメントを japanese-tech-writing、cognitive-rhythm-writing の各スキルで執筆し、yomiyasu で推敲する。
    疑問文は推敲後も `？` で終える。
-1. レビュー本文と各コメントの末尾に、使用中の LLM の提供元名を入れた `Written by <LLM Provider Name>` を記載する。
+1. レビュー本文と各コメントの末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。
+   モデル名を確認できない場合は、推測せずエージェント名だけを記載する。
 1. レビュー本文とインラインコメントを GitHub API 用の JSON に保存する。
    `commit_id` に検証した head のコミット、`body` にレビュー本文、`comments` にインラインコメントを指定し、`event` は指定しない。
    各コメントには差分の `path`、`line`、`side` とバッジ付きの `body` を指定する。

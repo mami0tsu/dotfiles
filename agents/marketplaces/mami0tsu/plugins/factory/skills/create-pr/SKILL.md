@@ -49,7 +49,8 @@ allowed-tools: >-
 1. [render-pr.sh](scripts/render-pr.sh) にテンプレート、JSON、本文の保存先の絶対パスを渡して実行する。
 1. 本文を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    リポジトリのテンプレートの必須項目を満たすことを確認する。
-1. 本文の末尾に、使用中の LLM の提供元名を入れた `Written by <LLM Provider Name>` を記載する。
+1. 本文の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。
+   モデル名を確認できない場合は、推測せずエージェント名だけを記載する。
 
 ### PR の作成
 

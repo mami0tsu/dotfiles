@@ -65,7 +65,8 @@ loop から候補とレビュー結果を受け取った場合は、[候補の�
 1. [render-issue.sh](scripts/render-issue.sh) に JSON ファイルとレンダリング結果の保存先の絶対パスを渡して実行する。
 1. レンダリングした本文を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    内容とリンクを保ち、推敲後の本文をレンダリング結果のファイルに保存する。
-1. 本文の末尾に、使用中の LLM の提供元名を入れた `Written by <LLM Provider Name>` を記載する。
+1. 本文の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。
+   モデル名を確認できない場合は、推測せずエージェント名だけを記載する。
 1. 候補の題名、本文ファイルの絶対パスと調査の根拠を loop に返す。
 
 ### 候補の修正と登録
