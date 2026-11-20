@@ -48,6 +48,7 @@ allowed-tools: >-
 1. 未作成のタスクについて、サービスに対応する外部スキルを呼び出す。
    サービス、キー、Issue の URL と合意した内容を渡し、タスクから Issue を参照できるようにする。
    担当者にはタスク管理サービスで認証中のユーザーを指定する。
-   GitHub Issue を作成する場合は、使用中の LLM の提供元名を入れた `Written by <LLM Provider Name>` を本文の末尾に記載するよう依頼する。
+   GitHub Issue を作成する場合は、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を本文の末尾に記載するよう依頼する。
+   モデル名を確認できない場合は、推測せずエージェント名だけを記載するよう依頼する。
 1. 対応するすべてのタスクの作成を確認したら、[close-issue.sh](scripts/close-issue.sh) に設定ファイルの絶対パスと Issue 番号を渡して実行し、Issue をクローズする。
 1. 作成したタスクとクローズした Issue の URL を返す。
