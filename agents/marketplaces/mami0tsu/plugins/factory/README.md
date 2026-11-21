@@ -14,6 +14,7 @@ factory の `init` を呼び、`factory.json` を作成します。
 既存の JSON は検証し、必要な値を確認したうえで不足分を補います。
 旧設定では `roles.ideas` と `states.ideas` をそれぞれ `roles.issues` と `states.issues` に変更します。
 `loop.skills.review` と `reviewers.review` がある場合は、それぞれ `review-pr` に変更します。
+旧設定にある `loop.skills` と `reviewers` の `plan`、`register` は削除します。
 
 生成と検証には CUE を使います。
 CUE は Home Manager のパッケージと Nix の test 環境に含めます。
