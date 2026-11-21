@@ -91,7 +91,10 @@ import "struct"
 			"review-issue": #Limit
 			plan:           #Limit
 			design:         #Limit
-			implement:      #Limit
+			implement: {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+			}
 			respond: {
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
