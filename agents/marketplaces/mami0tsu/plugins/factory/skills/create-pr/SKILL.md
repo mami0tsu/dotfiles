@@ -47,6 +47,7 @@ allowed-tools: >-
    レビューに必要な影響や未検証の事項は省かない。
    リポジトリのテンプレートが形式や内容を指定する場合は、その指定に従う。
 1. [render-pr.sh](scripts/render-pr.sh) にテンプレート、JSON、本文の保存先の絶対パスを渡して実行する。
+   用途に合う重要な情報には [GitHub のアラート](https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)を使う。
 1. 本文を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    リポジトリのテンプレートの必須項目を満たすことを確認する。
 1. 本文の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。

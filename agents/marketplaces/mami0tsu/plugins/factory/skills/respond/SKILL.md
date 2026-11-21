@@ -54,6 +54,7 @@ allowed-tools: >-
    参考にした一次情報へのリンクを回答内の脚注に記載する。
    リポジトリ内のファイルはパーマネントリンクを使う。
    確認できない内容は推測せず、必要な情報を質問する。
+   用途に合う重要な情報には [GitHub のアラート](https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)を使う。
 1. 回答を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    疑問文は `？` で終える。
 1. 回答の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。

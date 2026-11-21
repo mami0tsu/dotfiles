@@ -63,6 +63,7 @@ loop から候補とレビュー結果を受け取った場合は、[候補の�
    根拠となる一次情報は該当する文章中のリンクか脚注で示す。
    表を使う対象以外の項目では、同列の情報を比較または列挙するときは箇条書きで示す。
 1. [render-issue.sh](scripts/render-issue.sh) に JSON ファイルとレンダリング結果の保存先の絶対パスを渡して実行する。
+   用途に合う重要な情報には [GitHub のアラート](https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)を使う。
 1. レンダリングした本文を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    内容とリンクを保ち、推敲後の本文をレンダリング結果のファイルに保存する。
 1. 本文の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。

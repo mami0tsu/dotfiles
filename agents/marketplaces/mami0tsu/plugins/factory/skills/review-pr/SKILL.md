@@ -71,6 +71,7 @@ allowed-tools: >-
    | ASK | yellowgreen | 意図や仕様の確認 |
 
 1. レビュー本文に確認した範囲と結果を記載する。
+   レビュー本文とインラインコメントの用途に合う重要な情報には [GitHub のアラート](https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)を使う。
 1. レビュー本文とインラインコメントを japanese-tech-writing、cognitive-rhythm-writing の各スキルで執筆し、yomiyasu で推敲する。
    疑問文は推敲後も `？` で終える。
 1. レビュー本文と各コメントの末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。
