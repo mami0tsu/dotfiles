@@ -1,6 +1,7 @@
 ---
 name: implement
 description: 着手可能なタスクに沿ってコードを実装し、検証結果を返す。
+compatibility: Requires Bash, Git, and git-wt.
 allowed-tools: >-
   Read
   Write
@@ -23,7 +24,7 @@ allowed-tools: >-
 
 | 成果物 | 内容 |
 | --- | --- |
-| 実装 | タスクに対応するコードの変更 |
+| 実装 | タスクに対応するコミット済みのコードの変更 |
 | 検証結果 | 実行した確認とその結果 |
 
 ## 手順
@@ -41,7 +42,13 @@ allowed-tools: >-
 
 1. 対象リポジトリと既存の成果物を確認する。
    同じタスクに対応する成果物がある場合は再利用する。
-1. Git のスキルを使い、対象リポジトリにタスクごとの作業場所とブランチを用意する。
+1. git-wt でタスクごとに専用の worktree とブランチを用意する。
+   worktree 名は `<task-id>-<short-description>` とする。
+   リポジトリにブランチの命名規約がなければ、`<type>/<task-id>/<short-description>` とする。
+   `type` は `feature`、`hotfix`、`chore` から選ぶ。
+1. [prepare-worktree.sh](scripts/prepare-worktree.sh) に対象リポジトリの絶対パス、リモート名、ブランチ名と worktree 名を渡して実行する。
+   デフォルトブランチを最新化し、新しいブランチはそのコミットを起点にする。
+   返されたパスを作業場所とし、準備できない場合は保留する。
 1. タスクの受け入れ条件に沿って実装し、必要なテストなどで検証する。
    可読性とメンテナンス性を保ち、必要な拡張やテストのしやすさも考慮して、シンプルで簡潔な実装を選ぶ。
 1. コードコメントは必要な場合に記載し、日本語のコメントを japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
@@ -59,4 +66,8 @@ allowed-tools: >-
    | `WARN:` | 変更や利用の際に注意が必要な事項 |
    | `refs:` | 根拠や参考となる情報の URL |
 
+1. 検証した変更を関心ごとにコミットする。
+   コミットメッセージはリポジトリの規約を確認し、[Conventional Commits 1.0.0](https://github.com/conventional-commits/conventionalcommits.org/blob/master/content/v1.0.0/index.ja.md) に従う。
+   タイトルにはタスク ID を含める。
+1. [commit.sh](scripts/commit.sh) に worktree の絶対パス、コミットメッセージと worktree からの対象ファイルの相対パスを渡して実行する。
 1. タスク、作業場所、ブランチと検証結果を loop に返す。
