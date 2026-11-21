@@ -23,7 +23,7 @@ CUE は Home Manager のパッケージと Nix の test 環境に含めます。
 ## 定期実行
 
 `loop.skills` の各スキルに `intervalSeconds` を指定すると、実装済みのスキルをその間隔で実行します。
-research、create-task、review-pr の既定値は3600秒です。
+research、create-task、review-pr、respond の既定値は3600秒です。
 `loop.skills.research.maxOpenIssues` を指定すると、管理先の未クローズ Issue が上限に達している間は research を見送ります。
 実行間隔ごとに再確認し、上限を下回ると再開します。
 

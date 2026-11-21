@@ -92,7 +92,10 @@ import "struct"
 			plan:           #Limit
 			design:         #Limit
 			implement:      #Limit
-			respond:        #Limit
+			respond: {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+			}
 		}
 	}
 }
