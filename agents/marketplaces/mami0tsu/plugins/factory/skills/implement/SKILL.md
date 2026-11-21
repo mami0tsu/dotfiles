@@ -26,6 +26,7 @@ allowed-tools: >-
 | --- | --- |
 | 実装 | タスクに対応するコミット済みのコードの変更 |
 | 検証結果 | 実行した確認とその結果 |
+| PR の作成情報 | リポジトリの `OWNER/REPO`、worktree、リモート名、変更元と取り込み先のブランチ |
 
 ## 手順
 
@@ -70,4 +71,4 @@ allowed-tools: >-
    コミットメッセージはリポジトリの規約を確認し、[Conventional Commits 1.0.0](https://github.com/conventional-commits/conventionalcommits.org/blob/master/content/v1.0.0/index.ja.md) に従う。
    タイトルにはタスク ID を含める。
 1. [commit.sh](scripts/commit.sh) に worktree の絶対パス、コミットメッセージと worktree からの対象ファイルの相対パスを渡して実行する。
-1. タスク、作業場所、ブランチと検証結果を loop に返す。
+1. タスク、PR の作成情報と検証結果を loop に返す。

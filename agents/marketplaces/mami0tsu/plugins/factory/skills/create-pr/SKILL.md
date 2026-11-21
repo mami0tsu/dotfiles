@@ -38,6 +38,8 @@ allowed-tools: >-
 ### 本文の作成
 
 1. 取り込み先との差分と検証結果を確認し、既存の PR がないか確認する。
+   同じリポジトリと変更元、取り込み先の open PR があれば、[push-branch.sh](scripts/push-branch.sh) で変更元を push し、その PR の URL を返して終了する。
+   対応する PR がクローズ済みまたはマージ済みの場合は保留する。
 1. デフォルトブランチの `.github/pull_request_template.md` と `.github/PULL_REQUEST_TEMPLATE/` からテンプレートを探す。
    テンプレートが複数ある場合は変更内容に合うものを選び、選べなければ確認する。
 1. テンプレートがある場合は、その構成と必須項目に従って Knap テンプレートを作る。
