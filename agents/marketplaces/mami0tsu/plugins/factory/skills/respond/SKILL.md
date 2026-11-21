@@ -1,6 +1,6 @@
 ---
 name: respond
-description: GitHub の Issue と PR のコメントを確認し、返信する。
+description: GitHub の Issue と PR に返信する。
 compatibility: Requires Bash and GitHub CLI (gh).
 allowed-tools: >-
   Read
@@ -24,6 +24,7 @@ allowed-tools: >-
 | 項目 | 内容 |
 | --- | --- |
 | GitHub | 認証中の利用者への Issue と PR の通知 |
+| 追加調査結果 | loop から渡された Issue の URL とレビュー済みの調査結果 |
 
 ## 出力
 
@@ -36,16 +37,18 @@ allowed-tools: >-
 
 ### 対象の確認
 
-1. [list-notifications.sh](scripts/list-notifications.sh) を実行し、Issue と PR の通知を取得する。
-1. 対象の本文とコメントを確認し、人間が投稿した返信の必要なコメントを選ぶ。
+1. loop から追加調査結果を受け取っていない場合は、[list-notifications.sh](scripts/list-notifications.sh) を実行し、Issue と PR の通知を取得する。
+1. 通知から対象を探す場合は、本文とコメントを確認し、人間が投稿した返信の必要なコメントを選ぶ。
    PR のインラインレビューコメントも確認する。
    エージェントの署名がある自分の投稿と、すでに返信した指摘は除く。
+   loop から追加調査結果を受け取った場合は、指定された Issue を対象とする。
 
 ### 返信
 
 1. コメントの内容と関連する情報を確認し、回答を作成する。
+   追加調査結果を受け取った場合は、その内容を回答に使う。
    スレッドに複数の指摘がある場合は、指摘ごとに回答を分ける。
-   スレッド以外のコメントには指摘事項と採否の表を示した後、各指摘への回答を列挙する。
+   スレッド以外のコメントに含まれる指摘には、指摘事項と採否の表を示した後、各指摘への回答を列挙する。
 
    | 指摘事項 | 採否 |
    | --- | --- |
@@ -58,9 +61,10 @@ allowed-tools: >-
 1. 回答を japanese-tech-writing、cognitive-rhythm-writing、yomiyasu の各スキルで推敲する。
    疑問文は `？` で終える。
 1. 回答の末尾に、使用中のエージェント名とモデル名を入れた `Written by <Agent Name> (<Model Name>)` を記載する。
+   署名がある場合は重複して記載しない。
    モデル名を確認できない場合は、推測せずエージェント名だけを記載する。
 1. 回答をファイルに保存する。
-1. Issue と PR の通常コメントには返信元のコメントへのリンクを含め、[reply.sh](scripts/reply.sh) を実行する。
+1. Issue と PR の通常コメントには、返信元のコメントがある場合はそのリンクを含め、[reply.sh](scripts/reply.sh) を実行する。
    引数にはリポジトリの `OWNER/REPO`、Issue または PR の番号、回答ファイルの絶対パスを渡す。
 1. PR のインラインコメントへの返信を対象 PR の保留中レビューに追加する。
    既存の保留中レビューが自分の作成したものと特定できない場合は、そのレビューを変更せず保留する。
