@@ -3,7 +3,7 @@ import "struct"
 
 #Text:   string & !=""
 #Name:   string & =~"^[a-z][a-z0-9-]*$"
-#Worker: "research" | "review-pr" | "review-issue" | "create-issue" | "create-task" | "create-pr" | "design" | "implement" | "respond"
+#Worker: "setup-repository" | "inspect" | "research" | "review-pr" | "review-issue" | "create-issue" | "create-task" | "create-pr" | "design" | "implement" | "respond"
 #Limit: {
 	// 同時に処理する対象の件数の上限を指定する。
 	concurrency: *1 | (int & >0)
@@ -73,15 +73,16 @@ import "struct"
 		concurrency: *1 | (int & >0)
 		// 全体上限と各スキルの上限を同時に守る。
 		skills: {
+			"setup-repository": #Limit
+			inspect: {
+				concurrency:     #Limit.concurrency
+				intervalSeconds: *3600 | (int & >0)
+				// 未クローズの Issue の上限を指定する。
+				maxOpenIssues?: int & >0
+			}
 			research: {
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
-				// Issue の追加調査に使う同時処理数を指定する。
-				additionalResearch: {
-					concurrency: #Limit.concurrency
-				}
-				// 未クローズの Issue の上限を指定する。
-				maxOpenIssues?: int & >0
 			}
 			"create-task": {
 				concurrency:     #Limit.concurrency
