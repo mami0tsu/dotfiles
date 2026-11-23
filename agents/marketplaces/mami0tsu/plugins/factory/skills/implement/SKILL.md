@@ -19,6 +19,7 @@ allowed-tools: >-
 | 項目 | 内容 |
 | --- | --- |
 | `factory.json` | loop から渡された設定ファイルの絶対パス |
+| タスクとリポジトリ | loop から渡されたタスク、リポジトリの絶対パスとコミット |
 
 ## 出力
 
@@ -26,8 +27,11 @@ allowed-tools: >-
 | --- | --- |
 | 実装 | タスクに対応するコミット済みのコードの変更 |
 | 検証結果 | 実行した確認とその結果 |
+| PR の作成情報 | リポジトリの `OWNER/REPO`、worktree、リモート名、変更元と取り込み先のブランチ |
 
 ## 手順
+
+タスクを指定された場合は、[実装](#実装)から実行する。
 
 ### タスクの確認
 
@@ -37,6 +41,7 @@ allowed-tools: >-
    着手可能な状態は `states.tasks.ready` を使う。
 1. 各タスクの作業範囲、受け入れ条件と出力先を確認する。
    出力先が `pull-request` のタスクを対象とし、不足や矛盾がある場合は保留する。
+1. 対象タスクとリポジトリの URL を loop に返す。
 
 ### 実装
 
@@ -46,8 +51,8 @@ allowed-tools: >-
    worktree 名は `<task-id>-<short-description>` とする。
    リポジトリにブランチの命名規約がなければ、`<type>/<task-id>/<short-description>` とする。
    `type` は `feature`、`hotfix`、`chore` から選ぶ。
-1. [prepare-worktree.sh](scripts/prepare-worktree.sh) に対象リポジトリの絶対パス、リモート名、ブランチ名と worktree 名を渡して実行する。
-   デフォルトブランチを最新化し、新しいブランチはそのコミットを起点にする。
+1. [prepare-worktree.sh](scripts/prepare-worktree.sh) に対象リポジトリの絶対パス、ブランチ名、worktree 名と準備されたコミットを渡して実行する。
+   新しいブランチは準備されたコミットを起点にする。
    返されたパスを作業場所とし、準備できない場合は保留する。
 1. タスクの受け入れ条件に沿って実装し、必要なテストなどで検証する。
    可読性とメンテナンス性を保ち、必要な拡張やテストのしやすさも考慮して、シンプルで簡潔な実装を選ぶ。
@@ -70,4 +75,4 @@ allowed-tools: >-
    コミットメッセージはリポジトリの規約を確認し、[Conventional Commits 1.0.0](https://github.com/conventional-commits/conventionalcommits.org/blob/master/content/v1.0.0/index.ja.md) に従う。
    タイトルにはタスク ID を含める。
 1. [commit.sh](scripts/commit.sh) に worktree の絶対パス、コミットメッセージと worktree からの対象ファイルの相対パスを渡して実行する。
-1. タスク、作業場所、ブランチと検証結果を loop に返す。
+1. タスク、PR の作成情報と検証結果を loop に返す。

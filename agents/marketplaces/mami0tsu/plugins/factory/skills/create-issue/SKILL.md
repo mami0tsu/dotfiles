@@ -28,4 +28,5 @@ allowed-tools: >-
 1. [search-issues.sh](scripts/search-issues.sh) に設定ファイルの絶対パスと候補を表す検索語を渡し、既存 Issue と照合する。
    重複する候補は登録しない。
 1. [create-issue.sh](scripts/create-issue.sh) に設定ファイルの絶対パス、題名と本文ファイルの絶対パスを渡して実行する。
+   終了コードが 2 の場合は、Issue の上限に達したことを loop に返して終了する。
 1. 登録した Issue の URL を返す。

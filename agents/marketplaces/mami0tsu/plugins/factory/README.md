@@ -25,9 +25,10 @@ loop は `init` を呼び、設定の修正後に処理スキルを再実行し�
 ## 定期実行
 
 `loop.skills` の各スキルに `intervalSeconds` を指定すると、実装済みのスキルをその間隔で実行します。
-research、create-task、review-pr、respond、implement の既定値は3600秒です。
-`loop.skills.research.maxOpenIssues` を指定すると、管理先の未クローズ Issue が上限に達している間は research を見送ります。
-実行間隔ごとに再確認し、上限を下回ると再開します。
+inspect、research、create-task、review-pr、respond、implement の既定値は3600秒です。
+inspect と research はそれぞれ `concurrency` で同時実行数を指定し、`loop.concurrency` の全体上限も適用します。
+`loop.skills.inspect.maxOpenIssues` を指定すると、管理先の未クローズ Issue が上限に達している間は inspect を見送ります。
+research は続け、inspect の実行間隔ごとに上限を再確認します。
 
 ## タスクと出力先
 
