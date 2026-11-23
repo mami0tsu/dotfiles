@@ -1,7 +1,7 @@
 ---
 name: respond
 description: GitHub の Issue と PR に返信する。
-compatibility: Requires Bash and GitHub CLI (gh).
+compatibility: Requires Bash, CUE (cue), and GitHub CLI (gh).
 allowed-tools: >-
   Read
   Write
@@ -13,6 +13,7 @@ allowed-tools: >-
   Bash(gh pr view *)
   Bash(bash */skills/respond/scripts/list-notifications.sh)
   Bash(bash */skills/respond/scripts/reply.sh *)
+  Bash(bash */skills/respond/scripts/mark-needs-review.sh *)
   Bash(bash */skills/respond/scripts/create-pending-review.sh *)
   Bash(bash */skills/respond/scripts/reply-review.sh *)
 ---
@@ -24,7 +25,7 @@ allowed-tools: >-
 | 項目 | 内容 |
 | --- | --- |
 | GitHub | 認証中の利用者への Issue と PR の通知 |
-| 追加調査結果 | loop から渡された Issue の URL とレビュー済みの調査結果 |
+| 追加調査結果 | loop から渡された Issue の URL、レビュー済みの調査結果または追加調査が不要である旨、設定ファイルの絶対パス |
 
 ## 出力
 
@@ -37,11 +38,13 @@ allowed-tools: >-
 
 ### 対象の確認
 
-1. loop から追加調査結果を受け取っていない場合は、[list-notifications.sh](scripts/list-notifications.sh) を実行し、Issue と PR の通知を取得する。
+1. loop から追加調査結果または調査不要の通知を受け取っていない場合は、[list-notifications.sh](scripts/list-notifications.sh) を実行し、Issue と PR の通知を取得する。
 1. 通知から対象を探す場合は、本文とコメントを確認し、人間が投稿した返信の必要なコメントを選ぶ。
    PR のインラインレビューコメントも確認する。
    エージェントの署名がある自分の投稿と、すでに返信した指摘は除く。
-   loop から追加調査結果を受け取った場合は、指定された Issue を対象とする。
+   loop から追加調査結果または調査不要の通知を受け取った場合は、指定された Issue を対象とする。
+
+1. 追加調査が不要な場合は、[mark-needs-review.sh](scripts/mark-needs-review.sh) に設定ファイルの絶対パスと Issue の URL を渡して実行し、終了する。
 
 ### 返信
 
@@ -66,6 +69,9 @@ allowed-tools: >-
 1. 回答をファイルに保存する。
 1. Issue と PR の通常コメントには、返信元のコメントがある場合はそのリンクを含め、[reply.sh](scripts/reply.sh) を実行する。
    引数にはリポジトリの `OWNER/REPO`、Issue または PR の番号、回答ファイルの絶対パスを渡す。
+   同じ調査結果がすでに投稿されている場合は、投稿を省く。
+1. 追加調査結果を処理した場合は、投稿後に [mark-needs-review.sh](scripts/mark-needs-review.sh) に設定ファイルの絶対パスと Issue の URL を渡して実行する。
+   投稿または状態ラベルの変更に失敗した場合は理由を返して終了する。
 1. PR のインラインコメントへの返信を対象 PR の保留中レビューに追加する。
    既存の保留中レビューが自分の作成したものと特定できない場合は、そのレビューを変更せず保留する。
    保留中のレビューがない場合は [create-pending-review.sh](scripts/create-pending-review.sh) にリポジトリの `OWNER/REPO` と PR 番号を渡して作成する。

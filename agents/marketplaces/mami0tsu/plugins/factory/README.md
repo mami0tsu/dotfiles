@@ -27,8 +27,25 @@ loop は `init` を呼び、設定の修正後に処理スキルを再実行し�
 `loop.skills` の各スキルに `intervalSeconds` を指定すると、実装済みのスキルをその間隔で実行します。
 inspect、research、create-task、review-pr、respond、implement の既定値は3600秒です。
 inspect と research はそれぞれ `concurrency` で同時実行数を指定し、`loop.concurrency` の全体上限も適用します。
-`loop.skills.inspect.maxOpenIssues` を指定すると、管理先の未クローズ Issue が上限に達している間は inspect を見送ります。
+`loop.skills.inspect.maxOpenIssues` を指定すると、採否が未決定のオープンな Issue が上限に達している間は inspect を見送ります。
+採用済みと却下済みの Issue は上限に含めません。
 research は続け、inspect の実行間隔ごとに上限を再確認します。
+Issue の状態ラベルは `states.issues` で指定し、保存先に用意します。
+状態ラベルは同時に1つだけ付けます。
+
+| 既定のラベル | 状態 |
+| --- | --- |
+| `status:needs-research` | AI による調査が必要 |
+| `status:needs-review` | 人間によるレビューが必要 |
+| `status:accepted` | 人間が提案を採用した |
+| `status:rejected` | 人間が提案を却下した |
+
+状態ラベルのない Issue も調査します。
+調査結果の記録後、状態を `status:needs-review` に変えます。
+追加調査を依頼する場合は、人間が `status:needs-research` に付け替えます。
+人間が採用または却下を決めたら、それぞれのラベルに付け替えます。
+採用された Issue はタスクの作成後にクローズし、却下した Issue は人間がクローズします。
+旧来の `ready` ラベルが付いた Issue は、人間が採用を確認してから `status:accepted` に付け替えます。
 
 ## タスクと出力先
 
