@@ -7,13 +7,13 @@
 mkGithubReleaseArchive rec {
   pname = "claude-code";
   # renovate: datasource=github-releases depName=anthropics/claude-code extractVersion=^v(?<version>.+)$
-  version = "2.1.319";
+  version = "2.1.325";
 
   archiveName = "claude-darwin-arm64.tar.gz";
 
   src = fetchurl {
     url = "https://github.com/anthropics/claude-code/releases/download/v${version}/${archiveName}";
-    hash = "sha256-euEJGc5ANGvvq+PBjaTVzMhgIBtnhbOucm2JYUctDl0=";
+    hash = "sha256-sNwj8tjD71Wysi8D7yBOmLBrIrbFGhW2bSY7E0QsTgM=";
   };
 
   sourceRoot = ".";
