@@ -35,6 +35,7 @@ allowed-tools: >-
    research の `intervalSeconds` は保持し、`additionalResearch` を削除する。
    `reviewers.research` が指定されている場合は、同じ値を `reviewers.inspect` にも設定する。
    `reviewers.inspect` が既に指定されている場合は、その値を保持する。
+1. 旧設定の `states.issues` から、未使用の `adopted` と `withdrawn` を削除する。
 1. 一時 JSON を検証し、旧項目の削除や修正が不要で、不足項目も満たしていれば結果を返す。
 1. CUE 定義と呼び出し元の不足項目を確認し、不足や不正な値、構造の修正に必要な情報を利用者に確認する。
    タスクを管理するサービス名、タスクの ID を構成するキー、着手可能な状態を示すサービス上の状態名を確認する。

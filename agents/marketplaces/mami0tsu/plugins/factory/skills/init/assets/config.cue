@@ -3,7 +3,7 @@ import "struct"
 
 #Text:   string & !=""
 #Name:   string & =~"^[a-z][a-z0-9-]*$"
-#Worker: "setup-repository" | "inspect" | "research" | "review-pr" | "review-issue" | "create-issue" | "create-task" | "create-pr" | "design" | "implement" | "respond"
+#Worker: "setup-repository" | "inspect" | "research" | "review-pr" | "review-code" | "review-issue" | "create-issue" | "create-task" | "create-pr" | "design" | "implement" | "respond"
 #Limit: {
 	// 同時に処理する対象の件数の上限を指定する。
 	concurrency: *1 | (int & >0)
@@ -50,8 +50,11 @@ import "struct"
 	// 人間の判断を代行しない。
 	states: {
 		issues: {
-			adopted:   #Text
-			withdrawn: #Text
+			// Issue の状態を表すラベルを指定する。
+			needsResearch: *"status:needs-research" | #Text
+			needsReview:   *"status:needs-review" | #Text
+			accepted:      *"status:accepted" | #Text
+			rejected:      *"status:rejected" | #Text
 		}
 		tasks: {
 			// タスクが着手可能であることを示す状態名を指定する。
@@ -77,7 +80,7 @@ import "struct"
 			inspect: {
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
-				// 未クローズの Issue の上限を指定する。
+				// 採否が未決定のオープンな Issue の上限を指定する。
 				maxOpenIssues?: int & >0
 			}
 			research: {
@@ -92,6 +95,7 @@ import "struct"
 				concurrency:     #Limit.concurrency
 				intervalSeconds: *3600 | (int & >0)
 			}
+			"review-code":  #Limit
 			"review-issue": #Limit
 			"create-issue": #Limit
 			"create-pr":    #Limit
