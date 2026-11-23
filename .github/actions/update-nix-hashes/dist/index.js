@@ -58,7 +58,8 @@ function updateSourcePackage(file) {
     replaceSingleHash(file, prefetchHash(`https://github.com/${owner}/${repo}/archive/${revision}.tar.gz`, true));
 }
 function updateWithNixUpdate(packageName) {
-    nix("run", "nixpkgs#nix-update", "--", "--flake", "--system", "aarch64-darwin", "--version=skip", packageName);
+    const system = nix("eval", "--impure", "--raw", "--expr", "builtins.currentSystem").trim();
+    nix("run", "nixpkgs#nix-update", "--", "--flake", "--system", system, "--version=skip", packageName);
 }
 function updateChangedPackages() {
     const changedFiles = run("git", ["diff", "--name-only", "-z", "HEAD", "--", "nix/packages"]).split("\0");
